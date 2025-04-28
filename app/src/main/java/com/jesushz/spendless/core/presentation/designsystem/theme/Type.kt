@@ -1,4 +1,4 @@
-package com.jesushz.spendless.ui.theme
+package com.jesushz.spendless.core.presentation.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

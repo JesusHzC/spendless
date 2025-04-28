@@ -1,6 +1,5 @@
-package com.jesushz.spendless.ui.theme
+package com.jesushz.spendless.core.presentation.designsystem.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
