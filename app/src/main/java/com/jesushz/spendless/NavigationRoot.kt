@@ -1,0 +1,35 @@
+package com.jesushz.spendless
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
+import com.jesushz.spendless.core.util.Routes
+
+@Composable
+fun NavigationRoot(
+    navController: NavHostController,
+    startDestination: Routes = Routes.AuthGraph
+) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        authGraph(navController)
+    }
+}
+
+private fun NavGraphBuilder.authGraph(
+    navController: NavHostController
+) {
+    navigation<Routes.AuthGraph>(
+        startDestination = Routes.RegisterScreen
+    ) {
+        composable<Routes.RegisterScreen> {
+            RegisterScreenRoot()
+        }
+    }
+}
