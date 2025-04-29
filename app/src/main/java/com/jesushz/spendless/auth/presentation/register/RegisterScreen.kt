@@ -35,7 +35,9 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RegisterScreenRoot(
-    viewModel: RegisterViewModel = koinViewModel()
+    viewModel: RegisterViewModel = koinViewModel(),
+    onNavigateToPin: () -> Unit,
+    onNavigateToLogin: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     RegisterScreen(
@@ -43,8 +45,10 @@ fun RegisterScreenRoot(
         onAction = { action ->
             when (action) {
                 RegisterAction.OnLoginClick -> {
+                    onNavigateToLogin()
                 }
                 RegisterAction.OnNextButtonClick -> {
+                    onNavigateToPin()
                 }
             }
         }

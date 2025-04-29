@@ -12,7 +12,8 @@ fun SpendLessScaffold(
 ) {
     Scaffold(
         topBar = topBar,
-        contentColor = MaterialTheme.colorScheme.background
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         content(innerPadding)
     }
