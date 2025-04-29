@@ -41,7 +41,11 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.PinScreen> {
-            PinScreenRoot()
+            PinScreenRoot(
+                onNavigateUp = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }

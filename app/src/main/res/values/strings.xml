@@ -6,4 +6,7 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="next">Next</string>
     <string name="back">Back</string>
+    <string name="create_pin">Create PIN</string>
+    <string name="create_pin_description">Use PIN to login to your account</string>
+    <string name="delete_key">Delete</string>
 </resources>
