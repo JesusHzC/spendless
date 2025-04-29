@@ -8,7 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -122,7 +122,7 @@ fun NumericKeyboard(
 private fun NumericKeyboardPreview() {
     NumericKeyboard(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxSize(),
         onKeyClick = {}
     )
 }
