@@ -1,4 +1,4 @@
-package com.jesushz.spendless.auth.presentation.components
+package com.jesushz.spendless.auth.presentation.register.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

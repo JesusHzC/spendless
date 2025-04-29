@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
-import com.jesushz.spendless.auth.presentation.components.UsernameRegisterTextField
+import com.jesushz.spendless.auth.presentation.register.components.UsernameRegisterTextField
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
