@@ -13,5 +13,7 @@ sealed interface Routes {
     data object RegisterScreen : Routes
     @Serializable
     data object PinScreen : Routes
+    @Serializable
+    data object LoginScreen : Routes
 
 }
