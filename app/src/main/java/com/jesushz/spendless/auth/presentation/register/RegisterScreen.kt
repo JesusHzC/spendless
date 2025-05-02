@@ -1,5 +1,6 @@
 package com.jesushz.spendless.auth.presentation.register
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +33,7 @@ import com.jesushz.spendless.auth.presentation.register.components.UsernameRegis
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -39,7 +42,24 @@ fun RegisterScreenRoot(
     onNavigateToPin: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    ObserveAsEvents(
+        flow = viewModel.event,
+    ) { event ->
+        when (event) {
+            is RegisterEvent.OnError -> {
+                Toast.makeText(
+                    context,
+                    event.error.asString(context),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            RegisterEvent.OnUsernameSuccess -> {
+                onNavigateToPin()
+            }
+        }
+    }
     RegisterScreen(
         state = state,
         onAction = { action ->
@@ -47,9 +67,7 @@ fun RegisterScreenRoot(
                 RegisterAction.OnLoginClick -> {
                     onNavigateToLogin()
                 }
-                RegisterAction.OnNextButtonClick -> {
-                    onNavigateToPin()
-                }
+                else -> viewModel.onAction(action)
             }
         }
     )
