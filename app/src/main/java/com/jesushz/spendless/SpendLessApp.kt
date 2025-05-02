@@ -6,6 +6,7 @@ import com.jesushz.spendless.core.database.di.databaseModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import timber.log.Timber
 
 class SpendLessApp: Application() {
 
@@ -18,6 +19,10 @@ class SpendLessApp: Application() {
                 authModule,
                 databaseModule
             )
+        }
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
         }
     }
 
