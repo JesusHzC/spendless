@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
@@ -33,7 +34,7 @@ private fun NavGraphBuilder.authGraph(
         composable<Routes.RegisterScreen> {
             RegisterScreenRoot(
                 onNavigateToPin = {
-                    navController.navigate(Routes.PinScreen)
+                    navController.navigate(Routes.PinScreen(PinFlow.REGISTER))
                 },
                 onNavigateToLogin = {
                     navController.navigate(Routes.LoginScreen)

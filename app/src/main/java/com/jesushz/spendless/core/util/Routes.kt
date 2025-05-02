@@ -1,5 +1,6 @@
 package com.jesushz.spendless.core.util
 
+import com.jesushz.spendless.auth.domain.PinFlow
 import kotlinx.serialization.Serializable
 
 sealed interface Routes {
@@ -12,7 +13,7 @@ sealed interface Routes {
     @Serializable
     data object RegisterScreen : Routes
     @Serializable
-    data object PinScreen : Routes
+    data class PinScreen(val flow: PinFlow) : Routes
     @Serializable
     data object LoginScreen : Routes
 
