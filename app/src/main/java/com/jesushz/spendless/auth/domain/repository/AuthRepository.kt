@@ -9,6 +9,6 @@ interface AuthRepository {
 
     suspend fun login(username: String): Result<User?, DataError.Local>
     suspend fun checkIfUsernameExists(username: String): Result<Boolean, DataError.Local>
-    suspend fun register(username: String, pin: String): EmptyDataResult<DataError.Local>
+    suspend fun register(user: User): EmptyDataResult<DataError.Local>
 
 }

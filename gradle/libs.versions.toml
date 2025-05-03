@@ -13,7 +13,7 @@ navigationCompose = "2.8.9"
 kotlinSerialization = "1.8.0"
 room = "2.7.0"
 ksp = "2.0.20-1.0.24"
-data-store = "1.1.5"
+data-store = "1.1.4"
 timber = "5.0.1"
 
 [libraries]

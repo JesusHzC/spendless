@@ -42,7 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun RegisterScreenRoot(
     viewModel: RegisterViewModel = koinViewModel(),
-    onNavigateToPin: () -> Unit,
+    onNavigateToPin: (username: String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
@@ -60,8 +60,8 @@ fun RegisterScreenRoot(
                     )
                 }
             }
-            RegisterEvent.OnUsernameSuccess -> {
-                onNavigateToPin()
+            is RegisterEvent.OnUsernameSuccess -> {
+                onNavigateToPin(event.username)
             }
         }
     }

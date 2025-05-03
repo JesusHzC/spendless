@@ -13,7 +13,7 @@ sealed interface Routes {
     @Serializable
     data object RegisterScreen : Routes
     @Serializable
-    data class PinScreen(val flow: PinFlow) : Routes
+    data class PinScreen(val flow: PinFlow, val username: String? = null) : Routes
     @Serializable
     data object LoginScreen : Routes
 

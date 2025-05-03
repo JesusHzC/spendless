@@ -24,14 +24,18 @@ class DefaultDataStoreManager(
         }
     }
 
-    override suspend fun getUser(): User {
+    override suspend fun getUser(): User? {
         val preferences = context.dataStore.data.first()
         val usernameKey = stringPreferencesKey(PreferencesKeys.USER_NAME)
         val userPinKey = stringPreferencesKey(PreferencesKeys.USER_PIN)
-        return User(
-            username = preferences[usernameKey].orEmpty(),
-            pin = preferences[userPinKey].orEmpty()
-        )
+        return if (preferences[usernameKey].isNullOrEmpty() || preferences[userPinKey].isNullOrEmpty()) {
+            null
+        } else {
+            User(
+                username = preferences[usernameKey].orEmpty(),
+                pin = preferences[userPinKey].orEmpty()
+            )
+        }
     }
 
     companion object {

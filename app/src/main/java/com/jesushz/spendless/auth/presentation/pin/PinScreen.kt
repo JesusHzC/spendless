@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jesushz.spendless.R
 import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.auth.presentation.pin.components.NumericKeyboard
@@ -34,11 +33,13 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PinScreenRoot(
-    viewModel: PinViewModel = viewModel(),
+    viewModel: PinViewModel = koinViewModel(),
     onNavigateUp: () -> Unit,
+    onNavigateToPreferences: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -54,6 +55,9 @@ fun PinScreenRoot(
                         message = event.message.asString(context)
                     )
                 }
+            }
+            PinEvent.OnRegisterSuccess -> {
+                onNavigateToPreferences()
             }
         }
     }

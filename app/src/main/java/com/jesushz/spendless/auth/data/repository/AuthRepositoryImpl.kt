@@ -20,10 +20,8 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun register(
-        username: String,
-        pin: String
+        user: User
     ): EmptyDataResult<DataError.Local> {
-        val user = User(username, pin)
         return localUserDataSource.upsertUser(user)
     }
 

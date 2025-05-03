@@ -5,6 +5,6 @@ import com.jesushz.spendless.core.domain.user.User
 interface DataStoreManager {
 
     suspend fun saveUser(user: User)
-    suspend fun getUser(): User
+    suspend fun getUser(): User?
 
 }

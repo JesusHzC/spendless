@@ -11,6 +11,7 @@ import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.util.Routes
+import timber.log.Timber
 
 @Composable
 fun NavigationRoot(
@@ -33,8 +34,8 @@ private fun NavGraphBuilder.authGraph(
     ) {
         composable<Routes.RegisterScreen> {
             RegisterScreenRoot(
-                onNavigateToPin = {
-                    navController.navigate(Routes.PinScreen(PinFlow.REGISTER))
+                onNavigateToPin = { username ->
+                    navController.navigate(Routes.PinScreen(PinFlow.REGISTER, username))
                 },
                 onNavigateToLogin = {
                     navController.navigate(Routes.LoginScreen)
@@ -46,6 +47,9 @@ private fun NavGraphBuilder.authGraph(
             PinScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
+                },
+                onNavigateToPreferences = {
+                    Timber.i("Navigate to preferences")
                 }
             )
         }

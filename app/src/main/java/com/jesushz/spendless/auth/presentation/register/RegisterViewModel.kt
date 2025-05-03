@@ -59,7 +59,7 @@ class RegisterViewModel(
     private fun validateUsername() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = repository
-                .checkIfUsernameExists(state.value.username.text.toString())
+                .checkIfUsernameExists(state.value.username.text.toString().trim())
             withContext(Dispatchers.Main) {
                 when (result) {
                     is Result.Error -> {
@@ -75,7 +75,11 @@ class RegisterViewModel(
                                 )
                             )
                         } else {
-                            _event.send(RegisterEvent.OnUsernameSuccess)
+                            _event.send(
+                                RegisterEvent.OnUsernameSuccess(
+                                    state.value.username.text.toString().trim()
+                                )
+                            )
                         }
                     }
                 }
