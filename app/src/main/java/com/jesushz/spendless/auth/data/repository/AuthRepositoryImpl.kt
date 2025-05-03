@@ -11,8 +11,11 @@ class AuthRepositoryImpl(
     private val localUserDataSource: LocalUserDataSource
 ): AuthRepository {
 
-    override suspend fun login(username: String): Result<User?, DataError.Local> {
-        return localUserDataSource.getUserByUsername(username)
+    override suspend fun login(
+        username: String,
+        pin: String
+    ): Result<User?, DataError.Local> {
+        return localUserDataSource.getUserByUsernameAndPin(username, pin)
     }
 
     override suspend fun checkIfUsernameExists(username: String): Result<Boolean, DataError.Local> {

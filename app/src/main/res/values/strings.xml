@@ -27,4 +27,5 @@
     <string name="repeat_pin">Repeat Your Pin</string>
     <string name="repeat_pin_description">Enter your PIN again</string>
     <string name="pin_not_match">PINs don’t match. Try again</string>
+    <string name="error_login">We couldn\'t log you in with those credentials.</string>
 </resources>

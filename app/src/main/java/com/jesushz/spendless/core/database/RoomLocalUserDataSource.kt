@@ -29,8 +29,8 @@ class RoomLocalUserDataSource(
         }
     }
 
-    override suspend fun getUserByUsername(username: String): Result<User?, DataError.Local> {
-        return userDao.findUserByUsername(username)?.let {
+    override suspend fun getUserByUsernameAndPin(username: String, pin: String): Result<User?, DataError.Local> {
+        return userDao.findUserByUsernameAndPin(username, pin)?.let {
             Result.Success(it.toUser())
         } ?: Result.Success(null)
     }

@@ -11,8 +11,8 @@ interface UserDao {
     @Upsert
     suspend fun upsertUser(user: UserEntity)
 
-    @Query("SELECT * FROM userentity WHERE username = :username")
-    suspend fun findUserByUsername(username: String): UserEntity?
+    @Query("SELECT * FROM userentity WHERE username = :username AND pin = :pin")
+    suspend fun findUserByUsernameAndPin(username: String, pin: String): UserEntity?
 
     @Query("SELECT EXISTS(SELECT 1 FROM userentity WHERE username = :username)")
     suspend fun checkIfUsernameExists(username: String): Boolean

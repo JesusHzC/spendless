@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -27,16 +31,37 @@ import com.jesushz.spendless.auth.presentation.login.components.UsernameLoginTex
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreenRoot(
     viewModel: LoginViewModel = koinViewModel(),
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToDashboard: () -> Unit
 ) {
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+    ObserveAsEvents(
+        flow = viewModel.event,
+    ) { event ->
+        when (event) {
+            is LoginEvent.OnError -> {
+                scope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = event.error.asString(context)
+                    )
+                }
+            }
+            LoginEvent.OnLoginSuccess -> onNavigateToDashboard()
+        }
+    }
     LoginScreen(
         state = state,
+        snackBarHostState = snackBarHostState,
         onAction = { action ->
             when (action) {
                 LoginAction.OnRegisterClick -> {
@@ -51,9 +76,12 @@ fun LoginScreenRoot(
 @Composable
 private fun LoginScreen(
     state: LoginState,
+    snackBarHostState: SnackbarHostState,
     onAction: (LoginAction) -> Unit
 ) {
-    SpendLessScaffold { innerPadding ->
+    SpendLessScaffold(
+        snackBarHost = snackBarHostState
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -130,6 +158,7 @@ private fun LoginScreenPreview() {
     SpendLessTheme {
         LoginScreen(
             state = LoginState(),
+            snackBarHostState = SnackbarHostState(),
             onAction = {}
         )
     }

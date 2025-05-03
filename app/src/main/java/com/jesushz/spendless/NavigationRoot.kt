@@ -58,6 +58,9 @@ private fun NavGraphBuilder.authGraph(
             LoginScreenRoot(
                 onNavigateToRegister = {
                     navController.navigate(Routes.RegisterScreen)
+                },
+                onNavigateToDashboard = {
+                    Timber.i("Navigate to dashboard")
                 }
             )
         }
