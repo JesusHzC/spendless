@@ -1,6 +1,5 @@
 package com.jesushz.spendless.auth.presentation.register
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +14,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +36,7 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -44,16 +47,18 @@ fun RegisterScreenRoot(
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
     ObserveAsEvents(
         flow = viewModel.event,
     ) { event ->
         when (event) {
             is RegisterEvent.OnError -> {
-                Toast.makeText(
-                    context,
-                    event.error.asString(context),
-                    Toast.LENGTH_SHORT
-                ).show()
+                scope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = event.error.asString(context)
+                    )
+                }
             }
             RegisterEvent.OnUsernameSuccess -> {
                 onNavigateToPin()
@@ -62,6 +67,7 @@ fun RegisterScreenRoot(
     }
     RegisterScreen(
         state = state,
+        snackBarHostState = snackBarHostState,
         onAction = { action ->
             when (action) {
                 RegisterAction.OnLoginClick -> {
@@ -76,9 +82,12 @@ fun RegisterScreenRoot(
 @Composable
 private fun RegisterScreen(
     state: RegisterState,
+    snackBarHostState: SnackbarHostState,
     onAction: (RegisterAction) -> Unit
 ) {
-    SpendLessScaffold { innerPadding ->
+    SpendLessScaffold(
+        snackBarHost = snackBarHostState
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -159,6 +168,7 @@ private fun RegisterScreenPreview() {
     SpendLessTheme {
         RegisterScreen(
             state = RegisterState(),
+            snackBarHostState = SnackbarHostState(),
             onAction = {}
         )
     }

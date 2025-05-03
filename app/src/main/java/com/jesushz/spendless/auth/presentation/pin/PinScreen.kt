@@ -1,6 +1,5 @@
 package com.jesushz.spendless.auth.presentation.pin
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +9,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,6 +33,7 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessTopBar
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import kotlinx.coroutines.launch
 
 @Composable
 fun PinScreenRoot(
@@ -39,17 +42,24 @@ fun PinScreenRoot(
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
     ObserveAsEvents(
         flow = viewModel.event
     ) { event ->
         when (event) {
             is PinEvent.OnError -> {
-                Toast.makeText(context, event.message.asString(context), Toast.LENGTH_SHORT).show()
+                scope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = event.message.asString(context)
+                    )
+                }
             }
         }
     }
     PinScreen(
         state = state,
+        snackBarHostState = snackBarHostState,
         onAction = { action ->
             when (action) {
                 PinAction.OnBackPressed -> onNavigateUp()
@@ -62,6 +72,7 @@ fun PinScreenRoot(
 @Composable
 private fun PinScreen(
     state: PinState,
+    snackBarHostState: SnackbarHostState,
     onAction: (PinAction) -> Unit,
 ) {
     SpendLessScaffold(
@@ -71,7 +82,8 @@ private fun PinScreen(
                     onAction(PinAction.OnBackPressed)
                 }
             )
-        }
+        },
+        snackBarHost = snackBarHostState
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -145,6 +157,7 @@ private fun PinScreenPreview() {
     SpendLessTheme {
         PinScreen(
             state = PinState(),
+            snackBarHostState = SnackbarHostState(),
             onAction = {}
         )
     }
