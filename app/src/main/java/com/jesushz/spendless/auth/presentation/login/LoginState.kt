@@ -1,9 +1,9 @@
 package com.jesushz.spendless.auth.presentation.login
 
-import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.text.input.TextFieldValue
 
 data class LoginState(
-    val username: TextFieldState = TextFieldState(),
-    val pin : TextFieldState = TextFieldState(),
+    val username: TextFieldValue = TextFieldValue(),
+    val pin : TextFieldValue = TextFieldValue(),
     val canLogin: Boolean = false,
 )

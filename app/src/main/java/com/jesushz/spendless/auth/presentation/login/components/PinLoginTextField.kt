@@ -6,9 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicSecureTextField
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,18 +21,22 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun PinLoginTextField(
     modifier: Modifier = Modifier,
-    state: TextFieldState,
+    value: TextFieldValue,
     hint: String,
+    onValueChange: (TextFieldValue) -> Unit
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
-    BasicSecureTextField(
-        state = state,
+    BasicTextField(
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier
             .shadow(
                 elevation = 10.dp,
@@ -65,14 +68,16 @@ fun PinLoginTextField(
             keyboardType = KeyboardType.Number,
             imeAction = ImeAction.Done
         ),
+        singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-        decorator = { innerBox ->
+        visualTransformation = PasswordVisualTransformation(),
+        decorationBox = { innerBox ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-                if (state.text.isEmpty() && !isFocused) {
+                if (value.text.isEmpty() && !isFocused) {
                     Text(
                         text = hint,
                         style = MaterialTheme.typography.bodyMedium,

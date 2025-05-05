@@ -1,6 +1,5 @@
 package com.jesushz.spendless.auth.presentation.login
 
-import androidx.compose.runtime.snapshotFlow
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,8 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,29 +31,29 @@ class LoginViewModel(
     private val _event = Channel<LoginEvent>()
     val event = _event.receiveAsFlow()
 
-    private val username = snapshotFlow {
-        state.value.username.text
-    }
-    private val pin = snapshotFlow {
-        state.value.pin.text
-    }
-
-    init {
-        combine(username, pin) { username, pin ->
-            val isValidUsername = validator.validate(username)
-            val isValidPin = pin.length == 5 && pin.isDigitsOnly()
-
-            _state.update {
-                it.copy(
-                    canLogin = isValidUsername && isValidPin
-                )
-            }
-        }.launchIn(viewModelScope)
-    }
-
     fun onAction(action: LoginAction) {
         when (action) {
             LoginAction.OnLoginClick -> login()
+            is LoginAction.OnUsernameChange -> {
+                if (action.username.text.length <= USERNAME_MAX_LENGTH) {
+                    _state.update {
+                        it.copy(
+                            username = action.username
+                        )
+                    }
+                }
+                validateFields()
+            }
+            is LoginAction.OnPinChange -> {
+                if (action.pin.text.length <= PIN_MAX_LENGTH) {
+                    _state.update {
+                        it.copy(
+                            pin = action.pin
+                        )
+                    }
+                }
+                validateFields()
+            }
             else -> Unit
         }
     }
@@ -87,6 +84,25 @@ class LoginViewModel(
                 }
             }
         }
+    }
+
+    private fun validateFields() {
+        val username = state.value.username.text
+        val pin = state.value.pin.text
+
+        val isValidUsername = validator.validate(username)
+        val isValidPin = pin.length == PIN_MAX_LENGTH && pin.isDigitsOnly()
+
+        _state.update {
+            it.copy(
+                canLogin = isValidUsername && isValidPin
+            )
+        }
+    }
+
+    companion object {
+        private const val USERNAME_MAX_LENGTH = 14
+        private const val PIN_MAX_LENGTH = 5
     }
 
 }

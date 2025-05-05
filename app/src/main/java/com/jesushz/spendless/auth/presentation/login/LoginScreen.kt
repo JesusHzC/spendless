@@ -111,15 +111,21 @@ private fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(36.dp))
             UsernameLoginTextField(
-                state = state.username,
+                value = state.username,
                 hint = stringResource(R.string.username_hint_login),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    onAction(LoginAction.OnUsernameChange(it))
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             PinLoginTextField(
-                state = state.pin,
+                value = state.pin,
                 hint = stringResource(R.string.pin_hint),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    onAction(LoginAction.OnPinChange(it))
+                }
             )
             Spacer(modifier = Modifier.height(24.dp))
             SpendLessButton(
