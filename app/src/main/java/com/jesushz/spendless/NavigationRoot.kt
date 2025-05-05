@@ -11,6 +11,7 @@ import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.util.Routes
+import com.jesushz.spendless.dashboard.presentation.preferences.PreferencesScreenRoot
 import timber.log.Timber
 
 @Composable
@@ -23,6 +24,7 @@ fun NavigationRoot(
         startDestination = startDestination
     ) {
         authGraph(navController)
+        dashboardGraph(navController)
     }
 }
 
@@ -49,7 +51,7 @@ private fun NavGraphBuilder.authGraph(
                     navController.navigateUp()
                 },
                 onNavigateToPreferences = {
-                    Timber.i("Navigate to preferences")
+                    navController.navigate(Routes.PreferencesScreen)
                 }
             )
         }
@@ -57,12 +59,24 @@ private fun NavGraphBuilder.authGraph(
         composable<Routes.LoginScreen> {
             LoginScreenRoot(
                 onNavigateToRegister = {
-                    navController.navigate(Routes.RegisterScreen)
+                    navController.navigate(Routes.LoginScreen)
                 },
                 onNavigateToDashboard = {
                     Timber.i("Navigate to dashboard")
                 }
             )
+        }
+    }
+}
+
+private fun NavGraphBuilder.dashboardGraph(
+    navController: NavHostController
+) {
+    navigation<Routes.DashboardGraph>(
+        startDestination = Routes.PreferencesScreen
+    ) {
+        composable<Routes.PreferencesScreen> {
+            PreferencesScreenRoot()
         }
     }
 }

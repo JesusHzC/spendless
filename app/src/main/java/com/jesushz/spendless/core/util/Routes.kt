@@ -7,7 +7,9 @@ sealed interface Routes {
 
     // Graphs
     @Serializable
-    object AuthGraph : Routes
+    data object AuthGraph : Routes
+    @Serializable
+    data object DashboardGraph : Routes
 
     // Screens And Graph
     @Serializable
@@ -16,5 +18,8 @@ sealed interface Routes {
     data class PinScreen(val flow: PinFlow, val username: String? = null) : Routes
     @Serializable
     data object LoginScreen : Routes
+
+    @Serializable
+    data object PreferencesScreen : Routes
 
 }
