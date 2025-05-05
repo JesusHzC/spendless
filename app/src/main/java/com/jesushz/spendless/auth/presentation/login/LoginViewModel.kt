@@ -9,6 +9,8 @@ import com.jesushz.spendless.auth.domain.repository.AuthRepository
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
+import com.jesushz.spendless.core.util.Constants.PIN_MAX_LENGTH
+import com.jesushz.spendless.core.util.Constants.USERNAME_MAX_LENGTH
 import com.jesushz.spendless.core.util.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -98,11 +100,6 @@ class LoginViewModel(
                 canLogin = isValidUsername && isValidPin
             )
         }
-    }
-
-    companion object {
-        private const val USERNAME_MAX_LENGTH = 14
-        private const val PIN_MAX_LENGTH = 5
     }
 
 }

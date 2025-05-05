@@ -20,20 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun UsernameRegisterTextField(
-    state: TextFieldState,
+    value: TextFieldValue,
     modifier: Modifier = Modifier,
     hint: String,
-    lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine
+    onValueChange: (TextFieldValue) -> Unit,
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
     BasicTextField(
-        state = state,
+        value = value,
+        onValueChange = onValueChange,
         modifier = modifier
             .clip(
                 RoundedCornerShape(16.dp)
@@ -48,16 +50,16 @@ fun UsernameRegisterTextField(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         ),
-        lineLimits = lineLimits,
+        singleLine = true,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-        decorator = { innerBox ->
+        decorationBox = { innerBox ->
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
-                if (state.text.isEmpty() && !isFocused) {
+                if (value.text.isEmpty() && !isFocused) {
                     Text(
                         text = hint,
                         style = MaterialTheme.typography.displayMedium.copy(

@@ -117,9 +117,12 @@ private fun RegisterScreen(
             )
             Spacer(modifier = Modifier.height(36.dp))
             UsernameRegisterTextField(
-                state = state.username,
+                value = state.username,
                 hint = stringResource(R.string.username_hint),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = {
+                    onAction(RegisterAction.OnUsernameChange(it))
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             SpendLessButton(
