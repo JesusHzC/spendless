@@ -81,7 +81,9 @@ private fun PreferencesScreen(
     SpendLessScaffold(
         topBar = {
             SpendLessTopBar(
-                onNavigateBack = {}
+                onNavigateBack = {
+                    onAction(PreferencesAction.OnNavigateBack)
+                }
             )
         }
     ) { innerPadding ->
