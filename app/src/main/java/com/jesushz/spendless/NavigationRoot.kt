@@ -76,7 +76,11 @@ private fun NavGraphBuilder.dashboardGraph(
         startDestination = Routes.PreferencesScreen
     ) {
         composable<Routes.PreferencesScreen> {
-            PreferencesScreenRoot()
+            PreferencesScreenRoot(
+                onNavigateToDashboard = {
+
+                }
+            )
         }
     }
 }
