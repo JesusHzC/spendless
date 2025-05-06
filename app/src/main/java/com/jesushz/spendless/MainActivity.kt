@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = if (viewModel.state.isLoggedIn) {
                         Routes.DashboardGraph
                     } else {
-                        Routes.DashboardGraph
+                        Routes.AuthGraph
                     }
                 )
             }
