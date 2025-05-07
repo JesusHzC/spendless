@@ -43,12 +43,12 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.dashboard.presentation.home.components.DashboardScaffold
 
 @Composable
-fun DashboardScreenRoot() {
-    DashboardScreen()
+fun HomeScreenRoot() {
+    HomeScreen()
 }
 
 @Composable
-private fun DashboardScreen() {
+private fun HomeScreen() {
     DashboardScaffold(
         title = "Dashboard",
         onExportDataClick = {},
@@ -514,8 +514,8 @@ private fun AccountBalance(
 
 @Preview
 @Composable
-private fun DashboardScreenPreview() {
+private fun HomeScreenPreview() {
     SpendLessTheme {
-        DashboardScreen()
+        HomeScreen()
     }
 }

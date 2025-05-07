@@ -22,6 +22,6 @@ sealed interface Routes {
     @Serializable
     data object PreferencesScreen : Routes
     @Serializable
-    data object DashboardScreen : Routes
+    data object HomeScreen : Routes
 
 }
