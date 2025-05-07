@@ -37,23 +37,43 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
 import com.jesushz.spendless.dashboard.presentation.home.components.DashboardScaffold
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreenRoot() {
-    HomeScreen()
+fun HomeScreenRoot(
+    viewModel: HomeViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    HomeScreen(
+        state = state,
+        onAction = viewModel::onAction
+    )
 }
 
 @Composable
-private fun HomeScreen() {
+private fun HomeScreen(
+    state: HomeState,
+    onAction: (HomAction) -> Unit
+) {
+    CreateTransactionBottomSheetRoot(
+        showBottomSheet = state.showCreateTransactionBottomSheet,
+        onDismissRequest = {
+            onAction(HomAction.OnDismissTransactionClick)
+        }
+    )
     DashboardScaffold(
         title = "Dashboard",
         onExportDataClick = {},
         onSettingsClick = {},
-        onAddNewExpenseClick = {}
+        onAddNewExpenseClick = {
+            onAction(HomAction.OnCreateTransactionClick)
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -516,6 +536,9 @@ private fun AccountBalance(
 @Composable
 private fun HomeScreenPreview() {
     SpendLessTheme {
-        HomeScreen()
+        HomeScreen(
+            state = HomeState(),
+            onAction = {}
+        )
     }
 }
