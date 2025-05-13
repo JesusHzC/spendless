@@ -68,7 +68,7 @@ private fun HomeScreen(
         }
     )
     DashboardScaffold(
-        title = "Dashboard",
+        title = state.username,
         onExportDataClick = {},
         onSettingsClick = {},
         onAddNewExpenseClick = {

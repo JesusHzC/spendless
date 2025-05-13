@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +33,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,7 +58,9 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContainerLow
 import com.jesushz.spendless.dashboard.domain.TransactionType
-import com.jesushz.spendless.dashboard.presentation.create_transaction.components.CreateTransactionTextField
+import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField
+import com.jesushz.spendless.dashboard.presentation.create_transaction.components.NoteTextField
+import com.jesushz.spendless.dashboard.presentation.create_transaction.components.ReceiverTextField
 import kotlinx.coroutines.launch
 
 @Composable
@@ -80,7 +86,7 @@ fun CreateTransactionBottomSheetRoot(
                             onDismissRequest()
                         }
                     }
-                    else -> Unit
+                    else -> viewModel.onAction(action)
                 }
             }
         )
@@ -184,56 +190,27 @@ private fun CreateTransactionBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .align(Alignment.CenterHorizontally)
+                    .align(Alignment.CenterHorizontally),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CreateTransactionTextField(
-                    value = "",
-                    onValueChange = {},
-                    hint = "Receiver",
-                    textStyle = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    ),
-                    imeAction = ImeAction.Next,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                CreateTransactionTextField(
-                    value = "",
-                    onValueChange = {},
-                    hint = "00.00",
-                    textStyle = MaterialTheme.typography.displayMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    ),
-                    keyBoardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next,
-                    extraContent = {
-                        Text(
-                            text = "-$",
-                            style = MaterialTheme.typography.displayMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                ReceiverTextField(
+                    receiver = state.receiver,
+                    onReceiverChange = {
+                        onAction(CreateTransactionAction.OnReceiverChange(it))
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                CreateTransactionTextField(
-                    value = "",
-                    onValueChange = {},
-                    hint = "Add note",
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center
-                    ),
-                    imeAction = ImeAction.Done,
-                    extraContent = {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                        )
+                AmountTextField(
+                    amount = state.amount,
+                    onAmountChange = {
+                        onAction(CreateTransactionAction.OnAmountChange(it))
                     }
+                )
+                NoteTextField(
+                    note = state.note,
+                    onNoteChange = {
+                        onAction(CreateTransactionAction.OnNoteChange(it))
+                    },
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
