@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.domain
+package com.jesushz.spendless.core.domain
 
 enum class DecimalSeparator(val value: String) {
     POINT("1.00"),

@@ -43,10 +43,10 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessTopBar
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
-import com.jesushz.spendless.dashboard.domain.Currency
-import com.jesushz.spendless.dashboard.domain.DecimalSeparator
-import com.jesushz.spendless.dashboard.domain.ExpenseFormat
-import com.jesushz.spendless.dashboard.domain.ThousandSeparator
+import com.jesushz.spendless.core.domain.Currency
+import com.jesushz.spendless.core.domain.DecimalSeparator
+import com.jesushz.spendless.core.domain.ExpenseFormat
+import com.jesushz.spendless.core.domain.ThousandSeparator
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

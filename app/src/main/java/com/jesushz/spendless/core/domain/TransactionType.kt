@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.domain
+package com.jesushz.spendless.core.domain
 
 import androidx.annotation.DrawableRes
 import com.jesushz.spendless.R

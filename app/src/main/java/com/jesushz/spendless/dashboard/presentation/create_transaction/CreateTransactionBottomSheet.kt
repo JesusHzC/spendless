@@ -58,9 +58,9 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.OnPrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContainerLow
-import com.jesushz.spendless.dashboard.domain.Category
-import com.jesushz.spendless.dashboard.domain.Repeat
-import com.jesushz.spendless.dashboard.domain.TransactionType
+import com.jesushz.spendless.core.domain.Category
+import com.jesushz.spendless.core.domain.Repeat
+import com.jesushz.spendless.core.domain.TransactionType
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.NoteTextField
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.ReceiverTextField

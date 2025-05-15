@@ -1,5 +1,9 @@
 package com.jesushz.spendless.dashboard.domain
 
+import com.jesushz.spendless.core.domain.Currency
+import com.jesushz.spendless.core.domain.DecimalSeparator
+import com.jesushz.spendless.core.domain.ExpenseFormat
+import com.jesushz.spendless.core.domain.ThousandSeparator
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

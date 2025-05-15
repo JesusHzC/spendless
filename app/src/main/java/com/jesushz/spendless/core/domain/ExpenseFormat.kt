@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.domain
+package com.jesushz.spendless.core.domain
 
 enum class ExpenseFormat(val value: String) {
     NEGATIVE("-$10"),
