@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -35,9 +34,9 @@ fun AmountTextField(
     hint: String = stringResource(id = R.string.amount_hint),
     onAmountChange: (String) -> Unit,
     expenseFormat: ExpenseFormat = ExpenseFormat.POSITIVE,
-    transactionType: TransactionType = TransactionType.EXPENSE,
-    textStyle: TextStyle = MaterialTheme.typography.displayMedium
+    transactionType: TransactionType = TransactionType.EXPENSE
 ) {
+    val textStyle = MaterialTheme.typography.displayMedium
     var isFocused by remember { mutableStateOf(false) }
 
     Row(
