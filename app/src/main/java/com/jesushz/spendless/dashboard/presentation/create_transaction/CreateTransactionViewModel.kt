@@ -40,6 +40,20 @@ class CreateTransactionViewModel: ViewModel() {
                     )
                 }
             }
+            is CreateTransactionAction.OnCategorySelected -> {
+                _state.update {
+                    it.copy(
+                        categorySelected = action.category
+                    )
+                }
+            }
+            is CreateTransactionAction.OnRepeatSelected -> {
+                _state.update {
+                    it.copy(
+                        repeatSelected = action.repeat
+                    )
+                }
+            }
             else -> {
                 Unit
             }

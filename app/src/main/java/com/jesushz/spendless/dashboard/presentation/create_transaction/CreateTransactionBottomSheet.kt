@@ -13,14 +13,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -41,13 +42,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,6 +58,8 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.OnPrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContainerLow
+import com.jesushz.spendless.dashboard.domain.Category
+import com.jesushz.spendless.dashboard.domain.Repeat
 import com.jesushz.spendless.dashboard.domain.TransactionType
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.NoteTextField
@@ -119,7 +122,7 @@ private fun CreateTransactionBottomSheet(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Create Transaction",
+                    text = stringResource(R.string.create_transactions),
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(
@@ -216,12 +219,20 @@ private fun CreateTransactionBottomSheet(
             Spacer(modifier = Modifier.height(24.dp))
             DropDownCategories(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                categorySelected = state.categorySelected,
+                onCategorySelected = {
+                    onAction(CreateTransactionAction.OnCategorySelected(it))
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             DropDownRepeat(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                repeatSelected = state.repeatSelected,
+                onRepeatTypeSelected = {
+                    onAction(CreateTransactionAction.OnRepeatSelected(it))
+                }
             )
         }
     }
@@ -229,88 +240,220 @@ private fun CreateTransactionBottomSheet(
 
 @Composable
 private fun DropDownCategories(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    categorySelected: Category,
+    onCategorySelected: (Category) -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .size(40.dp)
-                    .background(
-                        color = PrimaryFixed
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+    var menuMaxWidth by remember {
+        mutableIntStateOf(0)
+    }
+    val menuMaxWidthDp = with(LocalDensity.current) { menuMaxWidth.toDp() }
 
+    var menuIsExpanded by remember { mutableStateOf(false) }
+    Box(
+        modifier = modifier
+            .onSizeChanged { size ->
+                menuMaxWidth = maxOf(menuMaxWidth, size.width)
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Other",
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(16.dp),
+            onClick = {
+                menuIsExpanded = true
+            }
+        ) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null
-            )
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .size(40.dp)
+                        .background(
+                            color = PrimaryFixed
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = categorySelected.icon
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = categorySelected.title,
+                    modifier = Modifier
+                        .weight(1f),
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = menuIsExpanded,
+            onDismissRequest = { menuIsExpanded = false },
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .width(menuMaxWidthDp),
+            offset = DpOffset(0.dp, (-10).dp)
+        ) {
+            Category.entries.fastForEach { category ->
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .size(40.dp)
+                                    .background(
+                                        color = PrimaryFixed
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = category.icon
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = category.title,
+                                modifier = Modifier
+                                    .weight(1f),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    },
+                    onClick = {
+                        menuIsExpanded = false
+                        onCategorySelected(category)
+                    }
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun DropDownRepeat(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    repeatSelected: Repeat,
+    onRepeatTypeSelected: (Repeat) -> Unit
 ) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .size(40.dp)
-                    .background(
-                        color = PrimaryFixed
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
+    var menuMaxWidth by remember {
+        mutableIntStateOf(0)
+    }
+    val menuMaxWidthDp = with(LocalDensity.current) { menuMaxWidth.toDp() }
 
+    var menuIsExpanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier
+            .onSizeChanged { size ->
+                menuMaxWidth = maxOf(menuMaxWidth, size.width)
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Does not repeat",
+    ) {
+        Card(
+            modifier = modifier,
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(16.dp),
+            onClick = {
+                menuIsExpanded = true
+            }
+        ) {
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null
-            )
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .size(40.dp)
+                        .background(
+                            color = PrimaryFixed
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "\uD83D\uDD04"
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = repeatSelected.title,
+                    modifier = Modifier
+                        .weight(1f),
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = null
+                )
+            }
+        }
+        DropdownMenu(
+            expanded = menuIsExpanded,
+            onDismissRequest = { menuIsExpanded = false },
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .width(menuMaxWidthDp)
+        ) {
+            Repeat.entries.fastForEach { type ->
+                DropdownMenuItem(
+                    text = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.weight(0.1f))
+                            Text(
+                                text = type.title,
+                                modifier = Modifier
+                                    .weight(1f),
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    },
+                    onClick = {
+                        menuIsExpanded = false
+                        onRepeatTypeSelected(type)
+                    }
+                )
+            }
         }
     }
 }
