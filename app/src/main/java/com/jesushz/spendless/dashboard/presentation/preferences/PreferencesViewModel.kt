@@ -2,7 +2,9 @@ package com.jesushz.spendless.dashboard.presentation.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jesushz.spendless.dashboard.domain.Preferences
+import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class PreferencesViewModel(
-    private val preferences: Preferences
+    private val dataStoreManager: DataStoreManager,
+    private val applicationScope: CoroutineScope
 ): ViewModel() {
 
     private val _state = MutableStateFlow(PreferencesState())
@@ -22,54 +25,49 @@ class PreferencesViewModel(
 
     init {
         viewModelScope.launch {
-            preferences.initialize()
-            _state.update {
-                it.copy(
-                    expenseFormat = preferences.expenseFormat,
-                    currency = preferences.currency,
-                    decimalSeparator = preferences.decimalSeparator,
-                    thousandSeparator = preferences.thousandSeparator,
-                    totalSpendFormat = preferences.formatAmount(state.value.totalSpend)
-                )
-            }
+            initPreferences()
         }
     }
 
     fun onAction(action: PreferencesAction) {
         when (action) {
             is PreferencesAction.OnExpenseFormatSelected -> {
-                preferences.updateExpenseFormat(action.format)
-                _state.update {
-                    it.copy(
-                        expenseFormat = action.format,
-                        totalSpendFormat = preferences.formatAmount(state.value.totalSpend)
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        expenseFormat = action.format
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
                     )
                 }
             }
             is PreferencesAction.OnCurrencySelected -> {
-                preferences.updateCurrency(action.currency)
-                _state.update {
-                    it.copy(
-                        currency = action.currency,
-                        totalSpendFormat = preferences.formatAmount(state.value.totalSpend)
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        currency = action.currency
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
                     )
                 }
             }
             is PreferencesAction.OnDecimalSeparatorSelected -> {
-                preferences.updateDecimalSeparator(action.separator)
-                _state.update {
-                    it.copy(
-                        decimalSeparator = action.separator,
-                        totalSpendFormat = preferences.formatAmount(state.value.totalSpend)
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        decimalSeparator = action.separator
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
                     )
                 }
             }
             is PreferencesAction.OnThousandSeparatorSelected -> {
-                preferences.updateThousandSeparator(action.separator)
-                _state.update {
-                    it.copy(
-                        thousandSeparator = action.separator,
-                        totalSpendFormat = preferences.formatAmount(state.value.totalSpend)
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        thousandSeparator = action.separator
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
                     )
                 }
             }
@@ -80,10 +78,40 @@ class PreferencesViewModel(
         }
     }
 
+    private suspend fun initPreferences() {
+        applicationScope.launch {
+            val currency = async { dataStoreManager.getCurrency() }
+            val expenseFormat = async { dataStoreManager.getExpenseFormat() }
+            val decimalSeparator = async { dataStoreManager.getDecimalSeparator() }
+            val thousandSeparator = async { dataStoreManager.getThousandSeparator() }
+
+            _state.update { oldState ->
+                val newState = oldState.copy(
+                    currency = currency.await(),
+                    expenseFormat = expenseFormat.await(),
+                    decimalSeparator = decimalSeparator.await(),
+                    thousandSeparator = thousandSeparator.await(),
+                )
+                newState.copy(
+                    totalSpendFormat = newState.formatAmount()
+                )
+            }
+        }.join()
+    }
+
+    private suspend fun savePreferences() {
+        applicationScope.launch {
+            dataStoreManager.saveCurrency(state.value.currency)
+            dataStoreManager.saveExpenseFormat(state.value.expenseFormat)
+            dataStoreManager.saveDecimalSeparator(state.value.decimalSeparator)
+            dataStoreManager.saveThousandSeparator(state.value.thousandSeparator)
+        }.join()
+    }
+
     private fun onStartTracking() {
         viewModelScope.launch {
-            preferences.savePreferences()
             _event.send(PreferencesEvent.OnSavePreferencesSuccess)
+            savePreferences()
         }
     }
 

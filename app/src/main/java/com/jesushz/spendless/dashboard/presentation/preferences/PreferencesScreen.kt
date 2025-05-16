@@ -409,8 +409,11 @@ private fun ThousandsSeparatorSelector(
 @Composable
 private fun PreferencesScreenPreview() {
     SpendLessTheme {
+        val state = PreferencesState()
         PreferencesScreen(
-            state = PreferencesState(),
+            state = state.copy(
+                totalSpendFormat = state.formatAmount()
+            ),
             onAction = {}
         )
     }
