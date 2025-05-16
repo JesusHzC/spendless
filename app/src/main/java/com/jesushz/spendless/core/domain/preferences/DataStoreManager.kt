@@ -18,5 +18,7 @@ interface DataStoreManager {
     suspend fun getDecimalSeparator(): DecimalSeparator
     suspend fun saveThousandSeparator(separator: ThousandSeparator)
     suspend fun getThousandSeparator(): ThousandSeparator
+    suspend fun saveAllTransactionsPreferences(preferences: TransactionsPreferences)
+    suspend fun getAllTransactionsPreferences(): TransactionsPreferences
 
 }

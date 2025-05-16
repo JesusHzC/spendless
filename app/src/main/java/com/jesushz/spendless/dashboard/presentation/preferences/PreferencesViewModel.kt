@@ -3,8 +3,8 @@ package com.jesushz.spendless.dashboard.presentation.preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,9 +24,7 @@ class PreferencesViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            initPreferences()
-        }
+        initPreferences()
     }
 
     fun onAction(action: PreferencesAction) {
@@ -78,33 +76,34 @@ class PreferencesViewModel(
         }
     }
 
-    private suspend fun initPreferences() {
-        applicationScope.launch {
-            val currency = async { dataStoreManager.getCurrency() }
-            val expenseFormat = async { dataStoreManager.getExpenseFormat() }
-            val decimalSeparator = async { dataStoreManager.getDecimalSeparator() }
-            val thousandSeparator = async { dataStoreManager.getThousandSeparator() }
+    private fun initPreferences() {
+        viewModelScope.launch {
+            val transactionsPreferences =
+                dataStoreManager.getAllTransactionsPreferences()
 
             _state.update { oldState ->
                 val newState = oldState.copy(
-                    currency = currency.await(),
-                    expenseFormat = expenseFormat.await(),
-                    decimalSeparator = decimalSeparator.await(),
-                    thousandSeparator = thousandSeparator.await(),
+                    currency = transactionsPreferences.currency,
+                    expenseFormat = transactionsPreferences.expenseFormat,
+                    decimalSeparator = transactionsPreferences.decimalSeparator,
+                    thousandSeparator = transactionsPreferences.thousandSeparator,
                 )
                 newState.copy(
                     totalSpendFormat = newState.formatAmount()
                 )
             }
-        }.join()
+        }
     }
 
     private suspend fun savePreferences() {
         applicationScope.launch {
-            dataStoreManager.saveCurrency(state.value.currency)
-            dataStoreManager.saveExpenseFormat(state.value.expenseFormat)
-            dataStoreManager.saveDecimalSeparator(state.value.decimalSeparator)
-            dataStoreManager.saveThousandSeparator(state.value.thousandSeparator)
+            val transactionsPreferences = TransactionsPreferences(
+                currency = state.value.currency,
+                expenseFormat = state.value.expenseFormat,
+                decimalSeparator = state.value.decimalSeparator,
+                thousandSeparator = state.value.thousandSeparator
+            )
+            dataStoreManager.saveAllTransactionsPreferences(transactionsPreferences)
         }.join()
     }
 

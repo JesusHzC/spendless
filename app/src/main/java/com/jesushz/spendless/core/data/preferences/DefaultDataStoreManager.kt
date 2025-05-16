@@ -11,10 +11,14 @@ import com.jesushz.spendless.core.domain.Currency
 import com.jesushz.spendless.core.domain.DecimalSeparator
 import com.jesushz.spendless.core.domain.ExpenseFormat
 import com.jesushz.spendless.core.domain.ThousandSeparator
+import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 class DefaultDataStoreManager(
-    private val context: Context
+    private val context: Context,
+    private val applicationScope: CoroutineScope
 ): DataStoreManager {
 
     private val Context.dataStore by preferencesDataStore(name = DATA_STORE_FILE_NAME)
@@ -92,6 +96,24 @@ class DefaultDataStoreManager(
         val preferences = context.dataStore.data.first()
         val thousandSeparatorKey = stringPreferencesKey(PreferencesKeys.THOUSAND_SEPARATOR)
         return ThousandSeparator.valueOf(preferences[thousandSeparatorKey] ?: ThousandSeparator.SPACE.name)
+    }
+
+    override suspend fun saveAllTransactionsPreferences(preferences: TransactionsPreferences) {
+        applicationScope.launch {
+            saveCurrency(preferences.currency)
+            saveDecimalSeparator(preferences.decimalSeparator)
+            saveExpenseFormat(preferences.expenseFormat)
+            saveThousandSeparator(preferences.thousandSeparator)
+        }.join()
+    }
+
+    override suspend fun getAllTransactionsPreferences(): TransactionsPreferences {
+        return TransactionsPreferences(
+            currency = getCurrency(),
+            expenseFormat = getExpenseFormat(),
+            decimalSeparator = getDecimalSeparator(),
+            thousandSeparator = getThousandSeparator()
+        )
     }
 
     companion object {
