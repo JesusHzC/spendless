@@ -15,7 +15,6 @@ import kotlin.uuid.Uuid
 )
 data class UserEntity(
     @PrimaryKey(autoGenerate = false)
-    val id: String = Uuid.random().toString(),
     val username: String,
     val pin: String,
     val createdAt: Long

@@ -1,8 +1,10 @@
 package com.jesushz.spendless.core.database.di
 
 import androidx.room.Room
+import com.jesushz.spendless.core.database.RoomLocalTransactionDataSource
 import com.jesushz.spendless.core.database.RoomLocalUserDataSource
 import com.jesushz.spendless.core.database.SpendLessDatabase
+import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
 import com.jesushz.spendless.core.domain.user.LocalUserDataSource
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
@@ -20,7 +22,9 @@ val databaseModule = module {
     }
 
     single { get<SpendLessDatabase>().userDao }
+    single { get<SpendLessDatabase>().transactionDao }
 
     singleOf(::RoomLocalUserDataSource).bind<LocalUserDataSource>()
+    singleOf(::RoomLocalTransactionDataSource).bind<LocalTransactionDataSource>()
 
 }
