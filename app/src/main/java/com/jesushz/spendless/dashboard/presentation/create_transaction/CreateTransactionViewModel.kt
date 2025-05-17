@@ -1,14 +1,29 @@
 package com.jesushz.spendless.dashboard.presentation.create_transaction
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class CreateTransactionViewModel: ViewModel() {
+class CreateTransactionViewModel(
+    private val dataStoreManager: DataStoreManager
+): ViewModel() {
 
     private val _state = MutableStateFlow(CreateTransactionState())
     val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    transactionsPreferences = dataStoreManager.getAllTransactionsPreferences()
+                )
+            }
+        }
+    }
 
     fun onAction(action: CreateTransactionAction) {
         when (action) {

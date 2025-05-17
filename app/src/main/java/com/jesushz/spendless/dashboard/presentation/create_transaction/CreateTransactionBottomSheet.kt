@@ -38,7 +38,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.theme.OnPrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
@@ -51,10 +50,11 @@ import com.jesushz.spendless.dashboard.presentation.create_transaction.component
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.NoteTextField
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.ReceiverTextField
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CreateTransactionBottomSheetRoot(
-    viewModel: CreateTransactionViewModel = viewModel(),
+    viewModel: CreateTransactionViewModel = koinViewModel(),
     showBottomSheet: Boolean,
     onDismissRequest: () -> Unit
 ) {
@@ -153,7 +153,7 @@ private fun CreateTransactionBottomSheet(
                 Spacer(modifier = Modifier.height(8.dp))
                 AmountTextField(
                     amount = state.amount,
-                    expenseFormat = state.expenseFormat,
+                    expenseFormat = state.transactionsPreferences.expenseFormat,
                     transactionType = state.transactionType,
                     onAmountChange = {
                         onAction(CreateTransactionAction.OnAmountChange(it))
@@ -168,15 +168,17 @@ private fun CreateTransactionBottomSheet(
                 )
             }
             Spacer(modifier = Modifier.height(34.dp))
-            DropDownCategories(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                categorySelected = state.categorySelected,
-                onCategorySelected = {
-                    onAction(CreateTransactionAction.OnCategorySelected(it))
-                }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            if (state.transactionType == TransactionType.EXPENSE) {
+                DropDownCategories(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    categorySelected = state.categorySelected,
+                    onCategorySelected = {
+                        onAction(CreateTransactionAction.OnCategorySelected(it))
+                    }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
             DropDownRepeat(
                 modifier = Modifier
                     .fillMaxWidth(),

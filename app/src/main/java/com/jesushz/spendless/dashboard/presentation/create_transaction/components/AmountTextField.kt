@@ -47,7 +47,11 @@ fun AmountTextField(
         when (expenseFormat) {
             ExpenseFormat.NEGATIVE -> {
                 Text(
-                    text = "-$",
+                    text = if (transactionType == TransactionType.EXPENSE) {
+                        "-$"
+                    } else {
+                        "$"
+                    },
                     style = textStyle,
                     color = if (transactionType == TransactionType.EXPENSE) {
                         MaterialTheme.colorScheme.error
@@ -58,7 +62,11 @@ fun AmountTextField(
             }
             ExpenseFormat.POSITIVE -> {
                 Text(
-                    text = "($",
+                    text = if (transactionType == TransactionType.EXPENSE) {
+                        "-($"
+                    } else {
+                        "($"
+                    },
                     style = textStyle,
                     color = if (transactionType == TransactionType.EXPENSE) {
                         MaterialTheme.colorScheme.error
