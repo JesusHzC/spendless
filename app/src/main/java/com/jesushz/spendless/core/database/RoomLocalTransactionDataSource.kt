@@ -8,6 +8,7 @@ import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
 import com.jesushz.spendless.core.util.Result
 import kotlinx.coroutines.flow.Flow
+import timber.log.Timber
 
 
 class RoomLocalTransactionDataSource(
@@ -19,8 +20,10 @@ class RoomLocalTransactionDataSource(
             transactionDao.upsert(transactionEntity)
             Result.Success(Unit)
         } catch (e: SQLiteFullException) {
+            Timber.e(e)
             Result.Error(DataError.Local.DISK_FULL)
         } catch (e: Exception) {
+            Timber.e(e)
             Result.Error(DataError.Local.UNKNOWN)
         }
     }

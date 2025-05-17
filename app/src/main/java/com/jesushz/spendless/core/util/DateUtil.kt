@@ -1,6 +1,8 @@
 package com.jesushz.spendless.core.util
 
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -40,4 +42,14 @@ fun getCurrentDayOfMonthWithSuffix(): String {
         else -> "th"
     }
     return "$day$suffix"
+}
+
+/**
+ * Get date time
+ *
+ * Example: 2025-05-16T17:45:00
+ */
+fun getDateFormat(): String {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    return LocalDateTime.now().format(formatter)
 }

@@ -12,5 +12,6 @@ data class CreateTransactionState(
     val note: String = "",
     val categorySelected: Category = Category.OTHER,
     val repeatSelected: Repeat = Repeat.NOT_REPEAT,
-    val transactionsPreferences: TransactionsPreferences = TransactionsPreferences()
+    val transactionsPreferences: TransactionsPreferences = TransactionsPreferences(),
+    val userId: String = ""
 )

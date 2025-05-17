@@ -45,4 +45,6 @@
     <string name="amount_hint">00.00</string>
     <string name="receiver">Receiver</string>
     <string name="create_transaction">Create</string>
+    <string name="amount_is_required">Amount is required</string>
+    <string name="receiver_is_required">Receiver is required</string>
 </resources>

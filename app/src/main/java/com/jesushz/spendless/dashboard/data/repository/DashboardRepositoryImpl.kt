@@ -1,6 +1,9 @@
 package com.jesushz.spendless.dashboard.data.repository
 
 import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.domain.Category
+import com.jesushz.spendless.core.domain.Repeat
+import com.jesushz.spendless.core.domain.TransactionType
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
@@ -11,7 +14,26 @@ class DashboardRepositoryImpl(
     private val localTransactionDataSource: LocalTransactionDataSource
 ): DashboardRepository {
 
-    override suspend fun upsertTransaction(transactionEntity: TransactionEntity): EmptyDataResult<DataError.Local> {
+    override suspend fun upsertTransaction(
+        userId: String,
+        category: Category,
+        amount: Double,
+        receiver: String,
+        note: String,
+        dateTime: String,
+        repeat: Repeat,
+        transactionType: TransactionType
+    ): EmptyDataResult<DataError.Local> {
+        val transactionEntity = TransactionEntity(
+            userId = userId,
+            category = category,
+            amount = amount,
+            receiver = receiver,
+            note = note,
+            dateTime = dateTime,
+            repeat = repeat,
+            transactionType = transactionType
+        )
         return localTransactionDataSource.upsertTransaction(transactionEntity)
     }
 
