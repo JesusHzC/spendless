@@ -1,4 +1,4 @@
-package com.jesushz.spendless.core.domain
+package com.jesushz.spendless.core.domain.transactions
 
 import com.jesushz.spendless.core.util.getCurrentDayOfMonthWithSuffix
 import com.jesushz.spendless.core.util.getCurrentMonthName

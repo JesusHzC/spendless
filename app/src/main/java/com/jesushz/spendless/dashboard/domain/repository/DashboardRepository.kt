@@ -1,9 +1,9 @@
 package com.jesushz.spendless.dashboard.domain.repository
 
 import com.jesushz.spendless.core.database.entity.TransactionEntity
-import com.jesushz.spendless.core.domain.Category
-import com.jesushz.spendless.core.domain.Repeat
-import com.jesushz.spendless.core.domain.TransactionType
+import com.jesushz.spendless.core.domain.transactions.Category
+import com.jesushz.spendless.core.domain.transactions.Repeat
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
 import kotlinx.coroutines.flow.Flow

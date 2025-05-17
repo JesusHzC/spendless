@@ -32,7 +32,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import com.jesushz.spendless.core.domain.Category
+import com.jesushz.spendless.core.domain.transactions.Category
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 
 @Composable

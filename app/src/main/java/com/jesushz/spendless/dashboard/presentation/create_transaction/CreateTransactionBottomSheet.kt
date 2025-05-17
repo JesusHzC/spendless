@@ -44,7 +44,7 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.theme.OnPrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContainerLow
-import com.jesushz.spendless.core.domain.TransactionType
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField

@@ -3,11 +3,10 @@
 package com.jesushz.spendless.core.database.entity
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.jesushz.spendless.core.domain.Category
-import com.jesushz.spendless.core.domain.Repeat
-import com.jesushz.spendless.core.domain.TransactionType
+import com.jesushz.spendless.core.domain.transactions.Category
+import com.jesushz.spendless.core.domain.transactions.Repeat
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

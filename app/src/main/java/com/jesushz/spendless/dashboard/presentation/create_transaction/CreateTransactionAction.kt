@@ -1,8 +1,8 @@
 package com.jesushz.spendless.dashboard.presentation.create_transaction
 
-import com.jesushz.spendless.core.domain.Category
-import com.jesushz.spendless.core.domain.Repeat
-import com.jesushz.spendless.core.domain.TransactionType
+import com.jesushz.spendless.core.domain.transactions.Category
+import com.jesushz.spendless.core.domain.transactions.Repeat
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 
 sealed interface CreateTransactionAction {
 

@@ -1,7 +1,7 @@
 package com.jesushz.spendless.core.database.converters
 
 import androidx.room.TypeConverter
-import com.jesushz.spendless.core.domain.Category
+import com.jesushz.spendless.core.domain.transactions.Category
 
 class CategoryTypeConverter {
 

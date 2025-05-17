@@ -1,4 +1,4 @@
-package com.jesushz.spendless.core.domain
+package com.jesushz.spendless.core.domain.transactions
 
 enum class Currency(val value: String) {
     MEXICAN_PESO("$ Mexican Peso (MXN)"),

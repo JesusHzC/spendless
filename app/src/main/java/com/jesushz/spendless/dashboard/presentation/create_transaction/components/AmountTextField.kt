@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.theme.Success
-import com.jesushz.spendless.core.domain.ExpenseFormat
-import com.jesushz.spendless.core.domain.TransactionType
+import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 
 @Composable
 fun AmountTextField(

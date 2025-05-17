@@ -1,4 +1,4 @@
-package com.jesushz.spendless.core.domain
+package com.jesushz.spendless.core.domain.transactions
 
 enum class ThousandSeparator(val value: String) {
     POINT("1.000"),
