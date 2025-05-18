@@ -6,6 +6,7 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.core.database.entity.TransactionEntity
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
 import com.jesushz.spendless.core.util.Result
@@ -117,13 +118,15 @@ class CreateTransactionViewModel(
         }
 
         val userId = state.value.userId
-        val category = state.value.categorySelected
+        val transactionType = state.value.transactionType
+        val category = if (transactionType == TransactionType.EXPENSE) {
+            state.value.categorySelected
+        } else null
         val amount = state.value.amount.toNumber()
         val receiver = state.value.receiver
         val note = state.value.note
         val dateTime = getDateFormat()
         val repeat = state.value.repeatSelected
-        val transactionType = state.value.transactionType
 
         viewModelScope.launch(Dispatchers.IO) {
             val result = dashboardRepository

@@ -12,7 +12,7 @@ interface DashboardRepository {
 
     suspend fun upsertTransaction(
         userId: String,
-        category: Category,
+        category: Category?,
         amount: Double,
         receiver: String,
         note: String,
