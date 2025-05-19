@@ -3,15 +3,12 @@ package com.jesushz.spendless.dashboard.presentation.create_transaction
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.R
-import com.jesushz.spendless.core.database.entity.TransactionEntity
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
-import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
 import com.jesushz.spendless.core.util.Result
 import com.jesushz.spendless.core.util.getDateFormat
-import com.jesushz.spendless.core.util.isNumber
 import com.jesushz.spendless.core.util.toNumber
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +45,6 @@ class CreateTransactionViewModel(
     fun onAction(action: CreateTransactionAction) {
         when (action) {
             is CreateTransactionAction.OnAmountChange -> {
-                if (!action.amount.isNumber())
-                    return
-
                 _state.update {
                     it.copy(
                         amount = action.amount

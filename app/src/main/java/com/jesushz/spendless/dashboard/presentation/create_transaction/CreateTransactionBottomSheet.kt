@@ -63,7 +63,9 @@ fun CreateTransactionBottomSheetRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current

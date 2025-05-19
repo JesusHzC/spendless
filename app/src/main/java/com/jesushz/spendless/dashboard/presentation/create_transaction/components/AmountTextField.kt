@@ -26,6 +26,7 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.theme.Success
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.TransactionType
+import com.jesushz.spendless.core.util.isNumber
 
 @Composable
 fun AmountTextField(
@@ -79,7 +80,7 @@ fun AmountTextField(
         BasicTextField(
             value = amount,
             onValueChange = {
-                if (it.all { char -> char.isDigit() || char == '.' }) {
+                if (it.isNumber() || it.isEmpty()) {
                     onAmountChange(it)
                 }
             },
