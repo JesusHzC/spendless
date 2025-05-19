@@ -11,6 +11,7 @@ import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.util.Routes
+import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.home.HomeScreenRoot
 import com.jesushz.spendless.dashboard.presentation.preferences.PreferencesScreenRoot
 
@@ -84,7 +85,15 @@ private fun NavGraphBuilder.dashboardGraph(
         }
 
         composable<Routes.HomeScreen> {
-            HomeScreenRoot()
+            HomeScreenRoot(
+                onNavigateToShowAllTransactions = {
+                    navController.navigate(Routes.AllTransactionsScreen)
+                }
+            )
+        }
+
+        composable<Routes.AllTransactionsScreen> {
+            AllTransactionsScreenRoot()
         }
     }
 }

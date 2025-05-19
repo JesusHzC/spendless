@@ -36,7 +36,7 @@ class RoomLocalTransactionDataSource(
         return transactionDao.getYesterdayTransactions(userId)
     }
 
-    override suspend fun getLongestTransaction(userId: String): TransactionEntity? {
+    override fun getLongestTransaction(userId: String): Flow<TransactionEntity?> {
         return transactionDao.getLongestTransaction(userId)
     }
 
@@ -44,12 +44,16 @@ class RoomLocalTransactionDataSource(
         return transactionDao.getPreviousWeekBalance(userId)
     }
 
-    override suspend fun getAccountBalance(userId: String): Double? {
+    override fun getAccountBalance(userId: String): Flow<Double?> {
         return transactionDao.getAccountBalance(userId)
     }
 
     override fun getAllTransactions(userId: String): Flow<List<TransactionEntity>> {
         return transactionDao.getAllTransactions(userId)
+    }
+
+    override fun getLatestTransaction(userId: String): Flow<TransactionEntity?> {
+        return transactionDao.getLatestTransaction(userId)
     }
 
 }

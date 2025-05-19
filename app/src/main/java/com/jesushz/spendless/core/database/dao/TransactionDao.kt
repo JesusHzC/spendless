@@ -18,6 +18,7 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE date(dateTime) = date('now') AND userId = :userId
+            ORDER BY dateTime DESC
         """
     )
     fun getTodayTransactions(userId: String): Flow<List<TransactionEntity>>
@@ -27,6 +28,7 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE date(dateTime) = date('now', '-1 day') AND userId = :userId
+            ORDER BY dateTime DESC
         """
     )
     fun getYesterdayTransactions(userId: String): Flow<List<TransactionEntity>>
@@ -40,7 +42,7 @@ interface TransactionDao {
             LIMIT 1
         """
     )
-    suspend fun getLongestTransaction(userId: String): TransactionEntity?
+    fun getLongestTransaction(userId: String): Flow<TransactionEntity?>
 
     // Get balance of previous week (Income - Expenses)
     @Query(
@@ -64,7 +66,7 @@ interface TransactionDao {
             WHERE userId = :userId
         """
     )
-    suspend fun getAccountBalance(userId: String): Double?
+    fun getAccountBalance(userId: String): Flow<Double?>
 
     // Get all transactions
     @Query(
@@ -76,5 +78,15 @@ interface TransactionDao {
     )
     fun getAllTransactions(userId: String): Flow<List<TransactionEntity>>
 
-}
+    // Get the latest transaction (by most recent dateTime)
+    @Query(
+        """
+        SELECT * FROM TransactionEntity 
+        WHERE userId = :userId 
+        ORDER BY dateTime DESC 
+        LIMIT 1
+    """
+    )
+    fun getLatestTransaction(userId: String): Flow<TransactionEntity?>
 
+}

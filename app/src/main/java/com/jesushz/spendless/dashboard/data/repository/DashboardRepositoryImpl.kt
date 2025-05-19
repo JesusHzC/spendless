@@ -45,7 +45,7 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.getYesterdayTransactions(userId)
     }
 
-    override suspend fun getLongestTransaction(userId: String): TransactionEntity? {
+    override fun getLongestTransaction(userId: String): Flow<TransactionEntity?> {
         return localTransactionDataSource.getLongestTransaction(userId)
     }
 
@@ -53,12 +53,16 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.getPreviousWeekBalance(userId)
     }
 
-    override suspend fun getAccountBalance(userId: String): Double? {
+    override fun getAccountBalance(userId: String): Flow<Double?> {
         return localTransactionDataSource.getAccountBalance(userId)
     }
 
     override fun getAllTransactions(userId: String): Flow<List<TransactionEntity>> {
         return localTransactionDataSource.getAllTransactions(userId)
+    }
+
+    override fun getLatestTransaction(userId: String): Flow<TransactionEntity?> {
+        return localTransactionDataSource.getLatestTransaction(userId)
     }
 
 }

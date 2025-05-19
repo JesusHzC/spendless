@@ -2,8 +2,8 @@
 
 package com.jesushz.spendless.dashboard.presentation.home
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,33 +26,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jesushz.spendless.R
+import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.core.util.formatToReadableDate
+import com.jesushz.spendless.dashboard.presentation.components.TransactionItem
 import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
 import com.jesushz.spendless.dashboard.presentation.home.components.DashboardScaffold
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeScreenRoot(
-    viewModel: HomeViewModel = koinViewModel()
+    viewModel: HomeViewModel = koinViewModel(),
+    onNavigateToShowAllTransactions: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     HomeScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            when (action) {
+                HomAction.OnShowAllTransactions -> {
+                    onNavigateToShowAllTransactions()
+                }
+                else -> viewModel.onAction(action)
+            }
+        }
     )
 }
 
@@ -87,6 +102,7 @@ private fun HomeScreen(
                     .padding(16.dp)
             ) {
                 AccountBalance(
+                    accountBalance = state.formatAmount(state.accountBalance),
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
@@ -94,7 +110,8 @@ private fun HomeScreen(
                 Statistics(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
+                    state = state
                 )
             }
             Column(
@@ -109,7 +126,11 @@ private fun HomeScreen(
                 LatestTransactions(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp)
+                        .padding(12.dp),
+                    state = state,
+                    onShowAllTransactions = {
+                        onAction(HomAction.OnShowAllTransactions)
+                    }
                 )
             }
         }
@@ -118,9 +139,11 @@ private fun HomeScreen(
 
 @Composable
 private fun LatestTransactions(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: HomeState,
+    onShowAllTransactions: () -> Unit
 ) {
-    var itemSelected by remember { mutableIntStateOf(0) }
+    var itemSelected by remember { mutableStateOf<TransactionEntity?>(null) }
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -133,226 +156,77 @@ private fun LatestTransactions(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Latest Transactions",
+                    text = stringResource(R.string.latest_transactions),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 TextButton(
-                    onClick = {}
+                    onClick = onShowAllTransactions
                 ) {
                     Text(
-                        text = "Show all",
+                        text = stringResource(R.string.show_all),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
         }
-        stickyHeader {
-            Text(
-                text = "TODAY",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background
-                    )
-            )
-        }
-        itemsIndexed (
-            items = listOf("", "", "", "", "", "", "")
-        ) { index, item ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (index == itemSelected) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        Color.Transparent
-                    },
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = if (index == itemSelected) {
-                        4.dp
-                    } else {
-                        0.dp
-                    }
-                ),
-                onClick = {
-                    itemSelected = index
-                }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .size(56.dp)
-                                .background(
-                                    color = PrimaryFixed
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
+        when {
+            state.latestTransactions.isNotEmpty() -> {
+                state.latestTransactions.fastForEach { transactions ->
+                    if (transactions.transactions.isNotEmpty()) {
+                        stickyHeader {
                             Text(
-                                text = "\uD83C\uDF55",
-                                fontSize = 30.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                        ) {
-                            Text(
-                                text = "Food & Groceries",
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Text(
-                                text = "Food & Groceries",
+                                text = stringResource(transactions.title),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontSize = 12.sp
-                                )
-                            )
-                        }
-                        Text(
-                            text = "-$45.99",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-                    AnimatedVisibility(
-                        visible = index == itemSelected
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Spacer(modifier = Modifier.weight(0.2f))
-                            Text(
-                                text = "Enjoyed a coffee and a snack at Starbucks with Rick and M.",
-                                style = MaterialTheme.typography.bodySmall,
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier
-                                    .weight(1f)
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = MaterialTheme.colorScheme.background
+                                    )
+                            )
+                        }
+                        items(
+                            items = transactions.transactions,
+                            key = { it.id }
+                        ) { transaction ->
+                            TransactionItem(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                transaction = transaction,
+                                itemSelected = itemSelected,
+                                amountFormatted = state.formatAmount(transaction.amount),
+                                onItemSelected = {
+                                    itemSelected = transaction
+                                }
                             )
                         }
                     }
                 }
             }
-        }
-        stickyHeader {
-            Text(
-                text = "YESTERDAY",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp
-                ),
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.background
-                    )
-            )
-        }
-        itemsIndexed (
-            items = listOf("", "")
-        ) { index, item ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (index == itemSelected) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        Color.Transparent
-                    },
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = if (index == itemSelected) {
-                        4.dp
-                    } else {
-                        0.dp
-                    }
-                ),
-                onClick = {
-                    itemSelected = index
-                }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp)
-                ) {
-                    Row(
+            else -> {
+                item {
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                            .fillParentMaxWidth()
+                            .fillParentMaxHeight(0.8f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Box(
+                        Image(
+                            painter = painterResource(R.drawable.logo_spend),
+                            contentDescription = null,
                             modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .size(56.dp)
-                                .background(
-                                    color = PrimaryFixed
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "\uD83C\uDF55",
-                                fontSize = 30.sp
-                            )
-                        }
-                        Spacer(modifier = Modifier.size(10.dp))
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                        ) {
-                            Text(
-                                text = "Food & Groceries",
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                            Text(
-                                text = "Food & Groceries",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.sp
-                                )
-                            )
-                        }
-                        Text(
-                            text = "-$45.99",
-                            style = MaterialTheme.typography.titleLarge
+                                .size(90.dp),
                         )
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-                    AnimatedVisibility(
-                        visible = index == itemSelected
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            Spacer(modifier = Modifier.weight(0.2f))
-                            Text(
-                                text = "Enjoyed a coffee and a snack at Starbucks with Rick and M.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .weight(1f)
-                            )
-                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.no_transactions),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 }
             }
@@ -360,123 +234,142 @@ private fun LatestTransactions(
     }
 }
 
+
+
 @Composable
 private fun Statistics(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: HomeState,
 ) {
     Column(
         modifier = modifier,
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary.copy(
-                    alpha = 0.2f
-                ),
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            )
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .size(56.dp)
-                        .background(
-                            color = PrimaryFixed
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "\uD83C\uDF55",
-                        fontSize = 30.sp
-                    )
-                }
-                Spacer(modifier = Modifier.size(10.dp))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    Text(
-                        text = "Food & Groceries",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        text = "Food & Groceries",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 12.sp
-                        )
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
+        state.latestTransaction?.let { transaction ->
             Card(
                 modifier = Modifier
-                    .weight(1f),
+                    .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = PrimaryFixed,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    containerColor = MaterialTheme.colorScheme.onPrimary.copy(
+                        alpha = 0.2f
+                    ),
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
+                        .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .size(56.dp)
+                            .background(
+                                color = if (transaction.transactionType == TransactionType.INCOME) {
+                                    SecondaryFixed.copy(alpha = 0.9f)
+                                } else {
+                                    PrimaryFixed
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (transaction.transactionType == TransactionType.INCOME) {
+                                "\uD83D\uDCB0"
+                            } else {
+                                transaction.category?.icon.orEmpty()
+                            },
+                            fontSize = 30.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.size(10.dp))
                     Column(
                         modifier = Modifier
                             .weight(1f)
                     ) {
                         Text(
-                            text = "Adobe Yearly",
-                            style = MaterialTheme.typography.titleLarge,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+                            text = transaction.receiver,
+                            style = MaterialTheme.typography.titleLarge
                         )
                         Text(
-                            text = "Largest transaction",
+                            text = if (transaction.transactionType == TransactionType.INCOME) {
+                                stringResource(R.string.income)
+                            } else {
+                                transaction.category?.title.orEmpty()
+                            },
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 12.sp
-                            ),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Column(
-                        modifier = Modifier
-                            .weight(0.7f),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "-$59.99",
-                            style = MaterialTheme.typography.titleLarge,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
-                        Text(
-                            text = "Jan 7, 2025",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 12.sp
-                            ),
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
+                            )
                         )
                     }
                 }
             }
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            state.longestTransaction?.let { transaction ->
+                Card(
+                    modifier = Modifier
+                        .weight(1f),
+                    colors = CardDefaults.cardColors(
+                        containerColor = PrimaryFixed,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = transaction.receiver,
+                                style = MaterialTheme.typography.titleLarge,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = stringResource(R.string.longest_transaction),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 12.sp
+                                ),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Column(
+                            modifier = Modifier
+                                .weight(0.7f),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = state.formatAmount(transaction.amount),
+                                style = MaterialTheme.typography.titleLarge,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = formatToReadableDate(transaction.dateTime),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 12.sp
+                                ),
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             Card(
                 modifier = Modifier
                     .weight(0.5f),
@@ -492,13 +385,13 @@ private fun Statistics(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "-$59.99",
+                        text = state.formatAmount(state.previousWeekBalance),
                         style = MaterialTheme.typography.titleLarge,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
                     )
                     Text(
-                        text = "Previous week",
+                        text = stringResource(R.string.previous_week_balance),
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 12.sp
                         ),
@@ -513,7 +406,8 @@ private fun Statistics(
 
 @Composable
 private fun AccountBalance(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    accountBalance: String
 ) {
     Column(
         modifier = modifier,
@@ -521,12 +415,12 @@ private fun AccountBalance(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "$10,382.45",
+            text = accountBalance,
             style = MaterialTheme.typography.displayLarge
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Account balance",
+            text = stringResource(R.string.account_balance),
             style = MaterialTheme.typography.bodySmall
         )
     }

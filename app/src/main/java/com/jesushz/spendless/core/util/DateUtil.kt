@@ -53,3 +53,15 @@ fun getDateFormat(): String {
     val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
     return LocalDateTime.now().format(formatter)
 }
+
+/***
+ * Receive getDateFormat 2025-05-16T17:45:00
+ *
+ * @return Jan 7, 2025
+ */
+fun formatToReadableDate(input: String): String {
+    val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val outputFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
+    val dateTime = LocalDateTime.parse(input, inputFormatter)
+    return dateTime.format(outputFormatter)
+}

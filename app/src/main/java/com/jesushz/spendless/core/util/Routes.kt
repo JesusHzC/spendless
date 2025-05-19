@@ -11,7 +11,7 @@ sealed interface Routes {
     @Serializable
     data object DashboardGraph : Routes
 
-    // Screens And Graph
+    // Screens Auth Graph
     @Serializable
     data object RegisterScreen : Routes
     @Serializable
@@ -19,9 +19,12 @@ sealed interface Routes {
     @Serializable
     data object LoginScreen : Routes
 
+    // Screens Dashboard Graph
     @Serializable
     data object PreferencesScreen : Routes
     @Serializable
     data object HomeScreen : Routes
+    @Serializable
+    data object AllTransactionsScreen : Routes
 
 }
