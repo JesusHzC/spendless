@@ -93,7 +93,11 @@ private fun NavGraphBuilder.dashboardGraph(
         }
 
         composable<Routes.AllTransactionsScreen> {
-            AllTransactionsScreenRoot()
+            AllTransactionsScreenRoot(
+                onNavigateUp = {
+                    navController.navigateUp()
+                }
+            )
         }
     }
 }
