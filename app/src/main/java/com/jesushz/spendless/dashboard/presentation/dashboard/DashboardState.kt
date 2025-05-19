@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.home
+package com.jesushz.spendless.dashboard.presentation.dashboard
 
 import com.jesushz.spendless.core.database.entity.TransactionEntity
 import com.jesushz.spendless.core.domain.transactions.CombineTransaction
@@ -8,7 +8,7 @@ import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.ThousandSeparator
 import com.jesushz.spendless.core.util.PrefsUtil
 
-data class HomeState(
+data class DashboardState(
     val showCreateTransactionBottomSheet: Boolean = false,
     val username: String = "",
     val latestTransactions: List<CombineTransaction> = emptyList(),

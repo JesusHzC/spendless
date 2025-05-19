@@ -23,7 +23,7 @@ sealed interface Routes {
     @Serializable
     data object PreferencesScreen : Routes
     @Serializable
-    data object HomeScreen : Routes
+    data object DashboardScreen : Routes
     @Serializable
     data object AllTransactionsScreen : Routes
 

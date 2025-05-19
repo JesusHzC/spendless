@@ -12,7 +12,7 @@ import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
-import com.jesushz.spendless.dashboard.presentation.home.HomeScreenRoot
+import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
 import com.jesushz.spendless.dashboard.presentation.preferences.PreferencesScreenRoot
 
 @Composable
@@ -74,18 +74,18 @@ private fun NavGraphBuilder.dashboardGraph(
     navController: NavHostController
 ) {
     navigation<Routes.DashboardGraph>(
-        startDestination = Routes.HomeScreen
+        startDestination = Routes.DashboardScreen
     ) {
         composable<Routes.PreferencesScreen> {
             PreferencesScreenRoot(
                 onNavigateToDashboard = {
-                    navController.navigate(Routes.HomeScreen)
+                    navController.navigate(Routes.DashboardScreen)
                 }
             )
         }
 
-        composable<Routes.HomeScreen> {
-            HomeScreenRoot(
+        composable<Routes.DashboardScreen> {
+            DashboardScreenRoot(
                 onNavigateToShowAllTransactions = {
                     navController.navigate(Routes.AllTransactionsScreen)
                 }

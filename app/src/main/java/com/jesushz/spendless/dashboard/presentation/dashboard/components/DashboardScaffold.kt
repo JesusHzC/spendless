@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.home.components
+package com.jesushz.spendless.dashboard.presentation.dashboard.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues

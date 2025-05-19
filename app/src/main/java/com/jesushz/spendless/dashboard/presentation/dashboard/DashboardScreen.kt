@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalFoundationApi::class)
 
-package com.jesushz.spendless.dashboard.presentation.home
+package com.jesushz.spendless.dashboard.presentation.dashboard
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -49,20 +49,20 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.util.formatToReadableDate
 import com.jesushz.spendless.dashboard.presentation.components.TransactionItem
 import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
-import com.jesushz.spendless.dashboard.presentation.home.components.DashboardScaffold
+import com.jesushz.spendless.dashboard.presentation.dashboard.components.DashboardScaffold
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun HomeScreenRoot(
-    viewModel: HomeViewModel = koinViewModel(),
+fun DashboardScreenRoot(
+    viewModel: DashboardViewModel = koinViewModel(),
     onNavigateToShowAllTransactions: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    HomeScreen(
+    DashboardScreen(
         state = state,
         onAction = { action ->
             when (action) {
-                HomAction.OnShowAllTransactions -> {
+                DashboardAction.OnShowAllTransactions -> {
                     onNavigateToShowAllTransactions()
                 }
                 else -> viewModel.onAction(action)
@@ -72,14 +72,14 @@ fun HomeScreenRoot(
 }
 
 @Composable
-private fun HomeScreen(
-    state: HomeState,
-    onAction: (HomAction) -> Unit
+private fun DashboardScreen(
+    state: DashboardState,
+    onAction: (DashboardAction) -> Unit
 ) {
     CreateTransactionBottomSheetRoot(
         showBottomSheet = state.showCreateTransactionBottomSheet,
         onDismissRequest = {
-            onAction(HomAction.OnDismissTransactionClick)
+            onAction(DashboardAction.OnDismissTransactionClick)
         }
     )
     DashboardScaffold(
@@ -87,7 +87,7 @@ private fun HomeScreen(
         onExportDataClick = {},
         onSettingsClick = {},
         onAddNewExpenseClick = {
-            onAction(HomAction.OnCreateTransactionClick)
+            onAction(DashboardAction.OnCreateTransactionClick)
         }
     ) { innerPadding ->
         Column(
@@ -129,7 +129,7 @@ private fun HomeScreen(
                         .padding(12.dp),
                     state = state,
                     onShowAllTransactions = {
-                        onAction(HomAction.OnShowAllTransactions)
+                        onAction(DashboardAction.OnShowAllTransactions)
                     }
                 )
             }
@@ -140,7 +140,7 @@ private fun HomeScreen(
 @Composable
 private fun LatestTransactions(
     modifier: Modifier = Modifier,
-    state: HomeState,
+    state: DashboardState,
     onShowAllTransactions: () -> Unit
 ) {
     var itemSelected by remember { mutableStateOf<TransactionEntity?>(null) }
@@ -241,7 +241,7 @@ private fun LatestTransactions(
 @Composable
 private fun Statistics(
     modifier: Modifier = Modifier,
-    state: HomeState,
+    state: DashboardState,
 ) {
     Column(
         modifier = modifier,
@@ -430,10 +430,10 @@ private fun AccountBalance(
 
 @Preview
 @Composable
-private fun HomeScreenPreview() {
+private fun DashboardScreenPreview() {
     SpendLessTheme {
-        HomeScreen(
-            state = HomeState(),
+        DashboardScreen(
+            state = DashboardState(),
             onAction = {}
         )
     }

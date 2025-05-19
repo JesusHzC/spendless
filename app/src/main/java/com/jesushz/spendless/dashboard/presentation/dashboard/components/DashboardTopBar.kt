@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.jesushz.spendless.dashboard.presentation.home.components
+package com.jesushz.spendless.dashboard.presentation.dashboard.components
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api

@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.home
+package com.jesushz.spendless.dashboard.presentation.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,12 +16,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeViewModel(
+class DashboardViewModel(
     private val dataStoreManager: DataStoreManager,
     private val dashboardRepository: DashboardRepository
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(HomeState())
+    private val _state = MutableStateFlow(DashboardState())
     val state = _state.asStateFlow()
 
     init {
@@ -103,16 +103,16 @@ class HomeViewModel(
         }
     }
 
-    fun onAction(action: HomAction) {
+    fun onAction(action: DashboardAction) {
         when (action) {
-            HomAction.OnCreateTransactionClick -> {
+            DashboardAction.OnCreateTransactionClick -> {
                 _state.update {
                     it.copy(
                         showCreateTransactionBottomSheet = true
                     )
                 }
             }
-            HomAction.OnDismissTransactionClick -> {
+            DashboardAction.OnDismissTransactionClick -> {
                 _state.update {
                     it.copy(
                         showCreateTransactionBottomSheet = false
