@@ -10,6 +10,8 @@ sealed interface Routes {
     data object AuthGraph : Routes
     @Serializable
     data object DashboardGraph : Routes
+    @Serializable
+    data object SettingsGraph: Routes
 
     // Screens Auth Graph
     @Serializable
@@ -26,5 +28,9 @@ sealed interface Routes {
     data object DashboardScreen : Routes
     @Serializable
     data object AllTransactionsScreen : Routes
+
+    // Screens Settings Graph
+    @Serializable
+    data object SettingsScreen: Routes
 
 }

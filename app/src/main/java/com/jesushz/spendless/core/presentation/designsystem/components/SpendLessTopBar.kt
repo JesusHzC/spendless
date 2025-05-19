@@ -16,10 +16,13 @@ import com.jesushz.spendless.R
 
 @Composable
 fun SpendLessTopBar(
+    title: (@Composable () -> Unit)? = null,
     onNavigateBack: () -> Unit
 ) {
     TopAppBar(
-        title = {},
+        title = {
+            title?.invoke()
+        },
         navigationIcon = {
             IconButton(
                 onClick = onNavigateBack

@@ -57,4 +57,7 @@
     <string name="income">Income</string>
     <string name="no_transactions">No transactions to show</string>
     <string name="all_transactions">All transactions</string>
+    <string name="preferences">Preferences</string>
+    <string name="security">Security</string>
+    <string name="log_out">Log out</string>
 </resources>

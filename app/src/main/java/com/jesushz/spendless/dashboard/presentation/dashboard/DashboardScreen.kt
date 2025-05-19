@@ -55,7 +55,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun DashboardScreenRoot(
     viewModel: DashboardViewModel = koinViewModel(),
-    onNavigateToShowAllTransactions: () -> Unit
+    onNavigateToShowAllTransactions: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     DashboardScreen(
@@ -64,6 +65,9 @@ fun DashboardScreenRoot(
             when (action) {
                 DashboardAction.OnShowAllTransactions -> {
                     onNavigateToShowAllTransactions()
+                }
+                DashboardAction.OnSettingsClick -> {
+                    onNavigateToSettings()
                 }
                 else -> viewModel.onAction(action)
             }
@@ -85,7 +89,9 @@ private fun DashboardScreen(
     DashboardScaffold(
         title = state.username,
         onExportDataClick = {},
-        onSettingsClick = {},
+        onSettingsClick = {
+            onAction(DashboardAction.OnSettingsClick)
+        },
         onAddNewExpenseClick = {
             onAction(DashboardAction.OnCreateTransactionClick)
         }

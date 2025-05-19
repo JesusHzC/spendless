@@ -14,6 +14,7 @@ import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
 import com.jesushz.spendless.dashboard.presentation.preferences.PreferencesScreenRoot
+import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -26,6 +27,7 @@ fun NavigationRoot(
     ) {
         authGraph(navController)
         dashboardGraph(navController)
+        settingsGraph(navController)
     }
 }
 
@@ -76,18 +78,13 @@ private fun NavGraphBuilder.dashboardGraph(
     navigation<Routes.DashboardGraph>(
         startDestination = Routes.DashboardScreen
     ) {
-        composable<Routes.PreferencesScreen> {
-            PreferencesScreenRoot(
-                onNavigateToDashboard = {
-                    navController.navigate(Routes.DashboardScreen)
-                }
-            )
-        }
-
         composable<Routes.DashboardScreen> {
             DashboardScreenRoot(
                 onNavigateToShowAllTransactions = {
                     navController.navigate(Routes.AllTransactionsScreen)
+                },
+                onNavigateToSettings = {
+                    navController.navigate(Routes.SettingsGraph)
                 }
             )
         }
@@ -96,6 +93,34 @@ private fun NavGraphBuilder.dashboardGraph(
             AllTransactionsScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
+                }
+            )
+        }
+    }
+}
+
+private fun NavGraphBuilder.settingsGraph(
+    navController: NavHostController
+) {
+    navigation<Routes.SettingsGraph>(
+        startDestination = Routes.SettingsScreen
+    ) {
+        composable<Routes.SettingsScreen> {
+            SettingsScreenRoot(
+                onNavigateUp = {
+                    navController.navigateUp()
+                },
+                onNavigateToPreferences = {
+                    navController.navigate(Routes.PreferencesScreen)
+                },
+                onNavigateToSecurity = {}
+            )
+        }
+
+        composable<Routes.PreferencesScreen> {
+            PreferencesScreenRoot(
+                onNavigateToDashboard = {
+                    navController.navigate(Routes.DashboardScreen)
                 }
             )
         }
