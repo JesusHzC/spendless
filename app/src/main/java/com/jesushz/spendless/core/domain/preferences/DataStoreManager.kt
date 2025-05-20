@@ -20,5 +20,6 @@ interface DataStoreManager {
     suspend fun getThousandSeparator(): ThousandSeparator
     suspend fun saveAllTransactionsPreferences(preferences: TransactionsPreferences)
     suspend fun getAllTransactionsPreferences(): TransactionsPreferences
+    suspend fun clearUser()
 
 }

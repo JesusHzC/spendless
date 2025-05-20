@@ -33,18 +33,27 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessTopBar
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsScreenRoot(
+    viewModel: SettingsViewModel = koinViewModel(),
     onNavigateUp: () -> Unit,
     onNavigateToPreferences: () -> Unit,
-    onNavigateToSecurity: () -> Unit
+    onNavigateToSecurity: () -> Unit,
+    onLogOut: () -> Unit
 ) {
+    ObserveAsEvents(
+        flow = viewModel.event
+    ) { event ->
+        when (event) {
+            SettingsEvent.OnLogOutSuccess -> onLogOut()
+        }
+    }
     SettingsScreen(
         onAction = { action ->
             when (action) {
-                SettingsAction.OnLogOutClick -> {
-                }
                 SettingsAction.OnPreferencesClick -> {
                     onNavigateToPreferences()
                 }
@@ -53,6 +62,7 @@ fun SettingsScreenRoot(
                 SettingsAction.OnBackClick -> {
                     onNavigateUp()
                 }
+                else -> viewModel.onAction(action)
             }
         }
     )

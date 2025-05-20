@@ -65,7 +65,11 @@ private fun NavGraphBuilder.authGraph(
                     navController.navigate(Routes.LoginScreen)
                 },
                 onNavigateToDashboard = {
-                    navController.navigate(Routes.DashboardGraph)
+                    navController.navigate(Routes.DashboardGraph) {
+                        popUpTo(Routes.AuthGraph) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -113,7 +117,14 @@ private fun NavGraphBuilder.settingsGraph(
                 onNavigateToPreferences = {
                     navController.navigate(Routes.PreferencesScreen)
                 },
-                onNavigateToSecurity = {}
+                onNavigateToSecurity = {},
+                onLogOut = {
+                    navController.navigate(Routes.AuthGraph) {
+                        popUpTo(Routes.DashboardGraph) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
 

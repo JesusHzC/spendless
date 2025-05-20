@@ -116,6 +116,17 @@ class DefaultDataStoreManager(
         )
     }
 
+    override suspend fun clearUser() {
+        applicationScope.launch {
+            val userNameKey = stringPreferencesKey(PreferencesKeys.USER_NAME)
+            val userPinKey = stringPreferencesKey(PreferencesKeys.USER_PIN)
+            context.dataStore.edit { preferences ->
+                preferences.remove(userNameKey)
+                preferences.remove(userPinKey)
+            }
+        }.join()
+    }
+
     companion object {
         private const val DATA_STORE_FILE_NAME = "spendless.preferences_pb"
     }
