@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.preferences
+package com.jesushz.spendless.settings.presentation.preferences
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

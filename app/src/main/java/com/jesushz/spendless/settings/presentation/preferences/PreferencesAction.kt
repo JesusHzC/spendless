@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.preferences
+package com.jesushz.spendless.settings.presentation.preferences
 
 import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator

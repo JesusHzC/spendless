@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.preferences
+package com.jesushz.spendless.settings.presentation.preferences
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

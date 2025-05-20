@@ -13,7 +13,7 @@ import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
-import com.jesushz.spendless.dashboard.presentation.preferences.PreferencesScreenRoot
+import com.jesushz.spendless.settings.presentation.preferences.PreferencesScreenRoot
 import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
 
 @Composable
