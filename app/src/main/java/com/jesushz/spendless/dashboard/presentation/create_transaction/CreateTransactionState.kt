@@ -4,6 +4,7 @@ import com.jesushz.spendless.core.domain.transactions.Category
 import com.jesushz.spendless.core.domain.transactions.Repeat
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
+import com.jesushz.spendless.core.util.getDateFormat
 
 data class CreateTransactionState(
     val transactionType: TransactionType = TransactionType.EXPENSE,
@@ -13,5 +14,6 @@ data class CreateTransactionState(
     val categorySelected: Category = Category.OTHER,
     val repeatSelected: Repeat = Repeat.NOT_REPEAT,
     val transactionsPreferences: TransactionsPreferences = TransactionsPreferences(),
-    val userId: String = ""
+    val userId: String = "",
+    val dateSelected: String = getDateFormat(),
 )

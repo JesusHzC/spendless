@@ -65,3 +65,16 @@ fun formatToReadableDate(input: String): String {
     val dateTime = LocalDateTime.parse(input, inputFormatter)
     return dateTime.format(outputFormatter)
 }
+
+/**
+ * Convert formatted date to Millis
+ *
+ * Example: 2025-05-16T17:45:00
+ *
+ * @return 1684257900000
+ */
+fun parseDateToMillis(input: String): Long {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val dateTime = LocalDateTime.parse(input, formatter)
+    return dateTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+}

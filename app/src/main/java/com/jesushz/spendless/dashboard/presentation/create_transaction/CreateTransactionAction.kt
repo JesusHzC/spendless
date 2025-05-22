@@ -14,5 +14,6 @@ sealed interface CreateTransactionAction {
     data class OnCategorySelected(val category: Category): CreateTransactionAction
     data class OnRepeatSelected(val repeat: Repeat): CreateTransactionAction
     data object OnCreateTransactionClick: CreateTransactionAction
+    data class OnDateSelected(val date: String): CreateTransactionAction
 
 }

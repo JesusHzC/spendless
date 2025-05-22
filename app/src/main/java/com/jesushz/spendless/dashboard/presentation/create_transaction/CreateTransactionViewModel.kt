@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class CreateTransactionViewModel(
     private val dataStoreManager: DataStoreManager,
@@ -88,6 +89,14 @@ class CreateTransactionViewModel(
             }
             CreateTransactionAction.OnCreateTransactionClick -> {
                 createTransaction()
+            }
+            is CreateTransactionAction.OnDateSelected -> {
+                Timber.i("Date selected: ${action.date}")
+                _state.update {
+                    it.copy(
+                        dateSelected = action.date
+                    )
+                }
             }
             else -> {
                 Unit

@@ -60,4 +60,8 @@
     <string name="preferences">Preferences</string>
     <string name="security">Security</string>
     <string name="log_out">Log out</string>
+    <string name="date">Date</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="pick_date">Pick transaction date</string>
 </resources>

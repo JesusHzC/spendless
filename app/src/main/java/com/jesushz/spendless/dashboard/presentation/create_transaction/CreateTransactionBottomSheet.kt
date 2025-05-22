@@ -48,6 +48,7 @@ import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField
+import com.jesushz.spendless.dashboard.presentation.create_transaction.components.DateSelector
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.DropDownCategories
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.DropDownRepeat
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.NoteTextField
@@ -196,6 +197,14 @@ private fun CreateTransactionBottomSheet(
                 )
             }
             Spacer(modifier = Modifier.height(34.dp))
+            DateSelector(
+                modifier = Modifier.fillMaxWidth(),
+                dateSelected = state.dateSelected,
+                onDateSelected = {
+                    onAction(CreateTransactionAction.OnDateSelected(it))
+                }
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             if (state.transactionType == TransactionType.EXPENSE) {
                 DropDownCategories(
                     modifier = Modifier
