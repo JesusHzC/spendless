@@ -36,7 +36,7 @@ import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.dashboard.presentation.all_transactions.components.AllTransactionsTopBar
-import com.jesushz.spendless.dashboard.presentation.components.TransactionItem
+import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
 import org.koin.androidx.compose.koinViewModel
 
 @Composable

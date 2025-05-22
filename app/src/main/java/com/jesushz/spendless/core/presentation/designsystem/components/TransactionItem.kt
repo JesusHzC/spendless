@@ -1,4 +1,4 @@
-package com.jesushz.spendless.dashboard.presentation.components
+package com.jesushz.spendless.core.presentation.designsystem.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

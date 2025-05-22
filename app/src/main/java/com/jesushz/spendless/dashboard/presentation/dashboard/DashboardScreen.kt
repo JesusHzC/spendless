@@ -47,7 +47,7 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.util.formatToReadableDate
-import com.jesushz.spendless.dashboard.presentation.components.TransactionItem
+import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
 import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.components.DashboardScaffold
 import org.koin.androidx.compose.koinViewModel
