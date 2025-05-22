@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
 import com.jesushz.spendless.core.util.Result
-import com.jesushz.spendless.core.util.getDateFormat
 import com.jesushz.spendless.core.util.toNumber
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.Dispatchers
@@ -121,27 +121,23 @@ class CreateTransactionViewModel(
         }
 
         val userId = state.value.userId
-        val transactionType = state.value.transactionType
-        val category = if (transactionType == TransactionType.EXPENSE) {
-            state.value.categorySelected
-        } else null
-        val amount = state.value.amount.toNumber()
-        val receiver = state.value.receiver
-        val note = state.value.note
-        val dateTime = getDateFormat()
-        val repeat = state.value.repeatSelected
+        val transaction = Transaction(
+            transactionType = state.value.transactionType,
+            category = if (state.value.transactionType == TransactionType.EXPENSE) {
+                state.value.categorySelected
+            } else null,
+            amount = state.value.amount.toNumber(),
+            receiver = state.value.receiver,
+            note = state.value.note,
+            date = state.value.dateSelected,
+            repeat = state.value.repeatSelected
+        )
 
         viewModelScope.launch(Dispatchers.IO) {
             val result = dashboardRepository
                 .upsertTransaction(
                     userId = userId,
-                    category = category,
-                    amount = amount,
-                    receiver = receiver,
-                    note = note,
-                    dateTime = dateTime,
-                    repeat = repeat,
-                    transactionType = transactionType
+                    transaction = transaction
                 )
 
             withContext(Dispatchers.Main) {

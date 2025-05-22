@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
-import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.dashboard.presentation.all_transactions.components.AllTransactionsTopBar
@@ -72,7 +72,7 @@ private fun AllTransactionsScreen(
     ) { innerPadding ->
         when {
             state.allTransactions.isNotEmpty() -> {
-                var itemSelected by remember { mutableStateOf<TransactionEntity?>(null) }
+                var itemSelected by remember { mutableStateOf<Transaction?>(null) }
 
                 LazyColumn(
                     modifier = Modifier

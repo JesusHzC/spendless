@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
-import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
@@ -149,7 +149,7 @@ private fun LatestTransactions(
     state: DashboardState,
     onShowAllTransactions: () -> Unit
 ) {
-    var itemSelected by remember { mutableStateOf<TransactionEntity?>(null) }
+    var itemSelected by remember { mutableStateOf<Transaction?>(null) }
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -366,7 +366,7 @@ private fun Statistics(
                                 maxLines = 1
                             )
                             Text(
-                                text = formatToReadableDate(transaction.dateTime),
+                                text = formatToReadableDate(transaction.date),
                                 style = MaterialTheme.typography.bodySmall.copy(
                                     fontSize = 12.sp
                                 ),

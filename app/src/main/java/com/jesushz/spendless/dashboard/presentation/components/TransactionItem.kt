@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jesushz.spendless.R
-import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
@@ -33,8 +33,8 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.Success
 @Composable
 fun TransactionItem(
     modifier: Modifier = Modifier,
-    transaction: TransactionEntity,
-    itemSelected: TransactionEntity?,
+    transaction: Transaction,
+    itemSelected: Transaction?,
     amountFormatted: String,
     onItemSelected: () -> Unit
 ) {

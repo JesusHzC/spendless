@@ -46,7 +46,7 @@ class AllTransactionsViewModel(
                     val outputFormatter = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.getDefault())
 
                     val newTransactions = transactions
-                        .groupBy { LocalDateTime.parse(it.dateTime, inputFormatter).toLocalDate() }
+                        .groupBy { LocalDateTime.parse(it.date, inputFormatter).toLocalDate() }
                         .toSortedMap(compareByDescending { it })
                         .map { (date, transaction) ->
                             val title = when (date) {

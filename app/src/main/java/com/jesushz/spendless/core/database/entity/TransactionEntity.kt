@@ -14,12 +14,13 @@ import kotlin.uuid.Uuid
 data class TransactionEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String = Uuid.random().toString(),
-    val userId: String,
+    val userId: String = "",
     val category: Category? = null,
     val amount: Double,
     val receiver: String,
     val note: String,
     val dateTime: String,
+    val repeatDateTime: String? = null,
     val repeat: Repeat,
     val transactionType: TransactionType
 )

@@ -1,14 +1,15 @@
 package com.jesushz.spendless.dashboard.data.repository
 
-import com.jesushz.spendless.core.database.entity.TransactionEntity
-import com.jesushz.spendless.core.domain.transactions.Category
-import com.jesushz.spendless.core.domain.transactions.Repeat
-import com.jesushz.spendless.core.domain.transactions.TransactionType
+import com.jesushz.spendless.core.database.mappers.toTransaction
+import com.jesushz.spendless.core.database.mappers.toTransactionEntity
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlin.collections.map
 
 class DashboardRepositoryImpl(
     private val localTransactionDataSource: LocalTransactionDataSource
@@ -16,37 +17,40 @@ class DashboardRepositoryImpl(
 
     override suspend fun upsertTransaction(
         userId: String,
-        category: Category?,
-        amount: Double,
-        receiver: String,
-        note: String,
-        dateTime: String,
-        repeat: Repeat,
-        transactionType: TransactionType
+        transaction: Transaction
     ): EmptyDataResult<DataError.Local> {
-        val transactionEntity = TransactionEntity(
-            userId = userId,
-            category = category,
-            amount = amount,
-            receiver = receiver,
-            note = note,
-            dateTime = dateTime,
-            repeat = repeat,
-            transactionType = transactionType
-        )
-        return localTransactionDataSource.upsertTransaction(transactionEntity)
+        val entity = transaction
+            .toTransactionEntity()
+            .copy(
+                userId = userId
+            )
+        return localTransactionDataSource.upsertTransaction(entity)
     }
 
-    override fun getTodayTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return localTransactionDataSource.getTodayTransactions(userId)
+    override fun getTodayTransactions(userId: String): Flow<List<Transaction>> {
+        return localTransactionDataSource
+            .getTodayTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransaction()
+                }
+            }
     }
 
-    override fun getYesterdayTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return localTransactionDataSource.getYesterdayTransactions(userId)
+    override fun getYesterdayTransactions(userId: String): Flow<List<Transaction>> {
+        return localTransactionDataSource
+            .getYesterdayTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransaction()
+                }
+            }
     }
 
-    override fun getLongestTransaction(userId: String): Flow<TransactionEntity?> {
-        return localTransactionDataSource.getLongestTransaction(userId)
+    override fun getLongestTransaction(userId: String): Flow<Transaction?> {
+        return localTransactionDataSource
+            .getLongestTransaction(userId)
+            .map { it?.toTransaction() }
     }
 
     override suspend fun getPreviousWeekBalance(userId: String): Double? {
@@ -57,12 +61,20 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.getAccountBalance(userId)
     }
 
-    override fun getAllTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return localTransactionDataSource.getAllTransactions(userId)
+    override fun getAllTransactions(userId: String): Flow<List<Transaction>> {
+        return localTransactionDataSource
+            .getAllTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransaction()
+                }
+            }
     }
 
-    override fun getLatestTransaction(userId: String): Flow<TransactionEntity?> {
-        return localTransactionDataSource.getLatestTransaction(userId)
+    override fun getLatestTransaction(userId: String): Flow<Transaction?> {
+        return localTransactionDataSource
+            .getLatestTransaction(userId)
+            .map { it?.toTransaction() }
     }
 
 }

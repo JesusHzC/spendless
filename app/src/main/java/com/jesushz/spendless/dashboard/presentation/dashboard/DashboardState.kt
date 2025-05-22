@@ -1,11 +1,11 @@
 package com.jesushz.spendless.dashboard.presentation.dashboard
 
-import com.jesushz.spendless.core.database.entity.TransactionEntity
 import com.jesushz.spendless.core.domain.transactions.CombineTransaction
 import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.ThousandSeparator
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.util.PrefsUtil
 
 data class DashboardState(
@@ -14,8 +14,8 @@ data class DashboardState(
     val latestTransactions: List<CombineTransaction> = emptyList(),
     val accountBalance: Double = 0.0,
     val previousWeekBalance: Double = 0.0,
-    val longestTransaction: TransactionEntity? = null,
-    val latestTransaction: TransactionEntity? = null,
+    val longestTransaction: Transaction? = null,
+    val latestTransaction: Transaction? = null,
     val currency: Currency = Currency.MEXICAN_PESO,
     val expenseFormat: ExpenseFormat = ExpenseFormat.NEGATIVE,
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,

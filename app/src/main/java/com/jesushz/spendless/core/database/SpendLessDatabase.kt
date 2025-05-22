@@ -15,7 +15,7 @@ import com.jesushz.spendless.core.database.entity.UserEntity
         UserEntity::class,
         TransactionEntity::class
     ],
-    version = 2,
+    version = 4,
 )
 @TypeConverters(
     TransactionTypeConverter::class,

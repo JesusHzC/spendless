@@ -6,5 +6,5 @@ import com.jesushz.spendless.core.database.entity.TransactionEntity
 data class CombineTransaction(
     @StringRes val title: Int? = null,
     val date: String = "",
-    val transactions: List<TransactionEntity> = emptyList()
+    val transactions: List<Transaction> = emptyList()
 )
