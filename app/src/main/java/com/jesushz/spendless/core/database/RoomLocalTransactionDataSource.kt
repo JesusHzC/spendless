@@ -56,4 +56,24 @@ class RoomLocalTransactionDataSource(
         return transactionDao.getLatestTransaction(userId)
     }
 
+    override suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionEntity>, DataError.Local> {
+        return try {
+            val transactions = transactionDao.getTodayRepeatTransactions(userId)
+            Result.Success(transactions)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {
+        return try {
+            transactionDao.clearRepeatDateTime(transactionId)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
 }

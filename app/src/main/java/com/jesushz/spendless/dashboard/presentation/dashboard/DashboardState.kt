@@ -19,7 +19,8 @@ data class DashboardState(
     val currency: Currency = Currency.MEXICAN_PESO,
     val expenseFormat: ExpenseFormat = ExpenseFormat.NEGATIVE,
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,
-    val thousandSeparator: ThousandSeparator = ThousandSeparator.COMMA
+    val thousandSeparator: ThousandSeparator = ThousandSeparator.COMMA,
+    val isLoading: Boolean = true,
 ) {
     fun formatAmount(amount: Number): String {
         return PrefsUtil.formatAmount(

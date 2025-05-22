@@ -2,10 +2,14 @@ package com.jesushz.spendless.dashboard.data.repository
 
 import com.jesushz.spendless.core.database.mappers.toTransaction
 import com.jesushz.spendless.core.database.mappers.toTransactionEntity
+import com.jesushz.spendless.core.database.mappers.toTransactionRepeat
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
 import com.jesushz.spendless.core.domain.transactions.Transaction
+import com.jesushz.spendless.core.domain.transactions.TransactionRepeat
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
+import com.jesushz.spendless.core.util.Result
+import com.jesushz.spendless.core.util.map
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -18,6 +22,18 @@ class DashboardRepositoryImpl(
     override suspend fun upsertTransaction(
         userId: String,
         transaction: Transaction
+    ): EmptyDataResult<DataError.Local> {
+        val entity = transaction
+            .toTransactionEntity()
+            .copy(
+                userId = userId
+            )
+        return localTransactionDataSource.upsertTransaction(entity)
+    }
+
+    override suspend fun upsertTransactionRepeat(
+        userId: String,
+        transaction: TransactionRepeat
     ): EmptyDataResult<DataError.Local> {
         val entity = transaction
             .toTransactionEntity()
@@ -75,6 +91,20 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource
             .getLatestTransaction(userId)
             .map { it?.toTransaction() }
+    }
+
+    override suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionRepeat>, DataError.Local> {
+        return localTransactionDataSource
+            .getTodayRepeatTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransactionRepeat()
+                }
+            }
+    }
+
+    override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {
+        return localTransactionDataSource.clearRepeatDateTime(transactionId)
     }
 
 }

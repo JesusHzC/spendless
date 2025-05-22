@@ -81,12 +81,32 @@ interface TransactionDao {
     // Get the latest transaction (by most recent dateTime)
     @Query(
         """
-        SELECT * FROM TransactionEntity 
-        WHERE userId = :userId 
-        ORDER BY dateTime DESC 
-        LIMIT 1
-    """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            ORDER BY dateTime DESC 
+            LIMIT 1
+        """
     )
     fun getLatestTransaction(userId: String): Flow<TransactionEntity?>
+
+    // Get transactions where repeatDateTime is today
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE repeatDateTime IS NOT NULL 
+            AND date(repeatDateTime) = date('now') 
+            AND userId = :userId
+        """
+    )
+    suspend fun getTodayRepeatTransactions(userId: String): List<TransactionEntity>
+
+    @Query(
+        """
+            UPDATE TransactionEntity 
+            SET repeatDateTime = NULL 
+            WHERE id = :transactionId
+        """
+    )
+    suspend fun clearRepeatDateTime(transactionId: String)
 
 }
