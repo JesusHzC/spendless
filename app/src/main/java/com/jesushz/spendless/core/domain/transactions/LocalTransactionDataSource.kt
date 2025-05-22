@@ -9,14 +9,12 @@ import kotlinx.coroutines.flow.Flow
 interface LocalTransactionDataSource {
 
     suspend fun upsertTransaction(transactionEntity: TransactionEntity): EmptyDataResult<DataError.Local>
-    fun getTodayTransactions(userId: String): Flow<List<TransactionEntity>>
-    fun getYesterdayTransactions(userId: String): Flow<List<TransactionEntity>>
     fun getLongestTransaction(userId: String): Flow<TransactionEntity?>
-    suspend fun getPreviousWeekBalance(userId: String): Double?
+    fun getPreviousWeekBalance(userId: String): Flow<Double?>
     fun getAccountBalance(userId: String): Flow<Double?>
     fun getAllTransactions(userId: String): Flow<List<TransactionEntity>>
-    fun getLatestTransaction(userId: String): Flow<TransactionEntity?>
-    suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionEntity>, DataError.Local>
+    fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>>
+    fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>>
     suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local>
 
 }

@@ -17,14 +17,12 @@ interface DashboardRepository {
         userId: String,
         transaction: TransactionRepeat
     ): EmptyDataResult<DataError.Local>
-    fun getTodayTransactions(userId: String): Flow<List<Transaction>>
-    fun getYesterdayTransactions(userId: String): Flow<List<Transaction>>
     fun getLongestTransaction(userId: String): Flow<Transaction?>
-    suspend fun getPreviousWeekBalance(userId: String): Double?
+    fun getPreviousWeekBalance(userId: String): Flow<Double?>
     fun getAccountBalance(userId: String): Flow<Double?>
     fun getAllTransactions(userId: String): Flow<List<Transaction>>
-    fun getLatestTransaction(userId: String): Flow<Transaction?>
-    suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionRepeat>, DataError.Local>
+    fun getLatestTransactions(userId: String): Flow<List<Transaction>>
+    fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionRepeat>>
     suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local>
 
 }

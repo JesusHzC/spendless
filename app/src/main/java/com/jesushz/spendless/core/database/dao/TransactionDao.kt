@@ -13,26 +13,6 @@ interface TransactionDao {
     @Upsert
     suspend fun upsert(transaction: TransactionEntity)
 
-    // Get today's transactions
-    @Query(
-        """
-            SELECT * FROM TransactionEntity 
-            WHERE date(dateTime) = date('now') AND userId = :userId
-            ORDER BY dateTime DESC
-        """
-    )
-    fun getTodayTransactions(userId: String): Flow<List<TransactionEntity>>
-
-    // Get yesterday's transactions
-    @Query(
-        """
-            SELECT * FROM TransactionEntity 
-            WHERE date(dateTime) = date('now', '-1 day') AND userId = :userId
-            ORDER BY dateTime DESC
-        """
-    )
-    fun getYesterdayTransactions(userId: String): Flow<List<TransactionEntity>>
-
     // Get the transaction with the highest amount
     @Query(
         """
@@ -50,12 +30,12 @@ interface TransactionDao {
             SELECT 
             SUM(CASE WHEN transactionType = 'INCOME' THEN amount ELSE -amount END)
             FROM TransactionEntity
-            WHERE date(dateTime) >= date('now', '-7 days') 
-            AND date(dateTime) < date('now')
+            WHERE dateTime >= datetime('now', '-7 days', 'start of day') 
+            AND dateTime < datetime('now', 'start of day')
             AND userId = :userId
         """
     )
-    suspend fun getPreviousWeekBalance(userId: String): Double?
+    fun getPreviousWeekBalance(userId: String): Flow<Double?>
 
     // Get current account balance (Income - Expenses)
     @Query(
@@ -84,21 +64,21 @@ interface TransactionDao {
             SELECT * FROM TransactionEntity 
             WHERE userId = :userId 
             ORDER BY dateTime DESC 
-            LIMIT 1
+            LIMIT 10
         """
     )
-    fun getLatestTransaction(userId: String): Flow<TransactionEntity?>
+    fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>>
 
     // Get transactions where repeatDateTime is today
     @Query(
         """
             SELECT * FROM TransactionEntity 
             WHERE repeatDateTime IS NOT NULL 
-            AND date(repeatDateTime) = date('now') 
+            AND date(repeatDateTime) <= date('now') 
             AND userId = :userId
         """
     )
-    suspend fun getTodayRepeatTransactions(userId: String): List<TransactionEntity>
+    fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>>
 
     @Query(
         """

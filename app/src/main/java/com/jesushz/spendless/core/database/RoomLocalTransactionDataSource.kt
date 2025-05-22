@@ -28,19 +28,11 @@ class RoomLocalTransactionDataSource(
         }
     }
 
-    override fun getTodayTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getTodayTransactions(userId)
-    }
-
-    override fun getYesterdayTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getYesterdayTransactions(userId)
-    }
-
     override fun getLongestTransaction(userId: String): Flow<TransactionEntity?> {
         return transactionDao.getLongestTransaction(userId)
     }
 
-    override suspend fun getPreviousWeekBalance(userId: String): Double? {
+    override fun getPreviousWeekBalance(userId: String): Flow<Double?> {
         return transactionDao.getPreviousWeekBalance(userId)
     }
 
@@ -52,18 +44,12 @@ class RoomLocalTransactionDataSource(
         return transactionDao.getAllTransactions(userId)
     }
 
-    override fun getLatestTransaction(userId: String): Flow<TransactionEntity?> {
-        return transactionDao.getLatestTransaction(userId)
+    override fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>> {
+        return transactionDao.getLatestTransactions(userId)
     }
 
-    override suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionEntity>, DataError.Local> {
-        return try {
-            val transactions = transactionDao.getTodayRepeatTransactions(userId)
-            Result.Success(transactions)
-        } catch (e: Exception) {
-            Timber.e(e)
-            Result.Error(DataError.Local.UNKNOWN)
-        }
+    override fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>> {
+        return transactionDao.getTodayRepeatTransactions(userId)
     }
 
     override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {

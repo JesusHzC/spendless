@@ -43,33 +43,13 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.upsertTransaction(entity)
     }
 
-    override fun getTodayTransactions(userId: String): Flow<List<Transaction>> {
-        return localTransactionDataSource
-            .getTodayTransactions(userId)
-            .map { list ->
-                list.map {
-                    it.toTransaction()
-                }
-            }
-    }
-
-    override fun getYesterdayTransactions(userId: String): Flow<List<Transaction>> {
-        return localTransactionDataSource
-            .getYesterdayTransactions(userId)
-            .map { list ->
-                list.map {
-                    it.toTransaction()
-                }
-            }
-    }
-
     override fun getLongestTransaction(userId: String): Flow<Transaction?> {
         return localTransactionDataSource
             .getLongestTransaction(userId)
             .map { it?.toTransaction() }
     }
 
-    override suspend fun getPreviousWeekBalance(userId: String): Double? {
+    override fun getPreviousWeekBalance(userId: String): Flow<Double?> {
         return localTransactionDataSource.getPreviousWeekBalance(userId)
     }
 
@@ -87,13 +67,17 @@ class DashboardRepositoryImpl(
             }
     }
 
-    override fun getLatestTransaction(userId: String): Flow<Transaction?> {
+    override fun getLatestTransactions(userId: String): Flow<List<Transaction>> {
         return localTransactionDataSource
-            .getLatestTransaction(userId)
-            .map { it?.toTransaction() }
+            .getLatestTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransaction()
+                }
+            }
     }
 
-    override suspend fun getTodayRepeatTransactions(userId: String): Result<List<TransactionRepeat>, DataError.Local> {
+    override fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionRepeat>> {
         return localTransactionDataSource
             .getTodayRepeatTransactions(userId)
             .map { list ->
