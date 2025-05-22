@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class RegisterViewModel(
     private val validator: UsernameValidator,
@@ -52,6 +53,7 @@ class RegisterViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val result = repository
                 .checkIfUsernameExists(state.value.username.text.toString().trim())
+            Timber.d("checkIfUsernameExists: $result")
             withContext(Dispatchers.Main) {
                 when (result) {
                     is Result.Error -> {

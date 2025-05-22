@@ -1,6 +1,7 @@
 package com.jesushz.spendless.core.util
 
 import com.jesushz.spendless.auth.domain.PinFlow
+import com.jesushz.spendless.core.domain.preferences.PrefsFlow
 import kotlinx.serialization.Serializable
 
 sealed interface Routes {
@@ -23,7 +24,7 @@ sealed interface Routes {
 
     // Screens Dashboard Graph
     @Serializable
-    data object PreferencesScreen : Routes
+    data class PreferencesScreen(val flow: PrefsFlow) : Routes
     @Serializable
     data object DashboardScreen : Routes
     @Serializable

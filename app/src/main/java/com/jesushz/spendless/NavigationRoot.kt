@@ -10,6 +10,7 @@ import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
+import com.jesushz.spendless.core.domain.preferences.PrefsFlow
 import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
@@ -54,7 +55,11 @@ private fun NavGraphBuilder.authGraph(
                     navController.navigateUp()
                 },
                 onNavigateToPreferences = {
-                    navController.navigate(Routes.PreferencesScreen)
+                    navController.navigate(Routes.PreferencesScreen(PrefsFlow.AFTER_REGISTER)) {
+                        popUpTo(Routes.AuthGraph) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -115,14 +120,13 @@ private fun NavGraphBuilder.settingsGraph(
                     navController.navigateUp()
                 },
                 onNavigateToPreferences = {
-                    navController.navigate(Routes.PreferencesScreen)
+                    navController.navigate(Routes.PreferencesScreen(PrefsFlow.SETTINGS))
                 },
                 onNavigateToSecurity = {},
                 onLogOut = {
                     navController.navigate(Routes.AuthGraph) {
-                        popUpTo(Routes.DashboardGraph) {
-                            inclusive = true
-                        }
+                        popUpTo(0)
+                        launchSingleTop = true
                     }
                 }
             )
@@ -131,7 +135,13 @@ private fun NavGraphBuilder.settingsGraph(
         composable<Routes.PreferencesScreen> {
             PreferencesScreenRoot(
                 onNavigateToDashboard = {
-                    navController.navigate(Routes.DashboardScreen)
+                    navController.navigate(Routes.DashboardScreen) {
+                        popUpTo(0)
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateUp = {
+                    navController.navigateUp()
                 }
             )
         }

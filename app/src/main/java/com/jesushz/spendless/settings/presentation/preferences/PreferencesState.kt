@@ -1,5 +1,6 @@
 package com.jesushz.spendless.settings.presentation.preferences
 
+import com.jesushz.spendless.core.domain.preferences.PrefsFlow
 import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
@@ -13,6 +14,7 @@ data class PreferencesState(
     val currency: Currency = Currency.MEXICAN_PESO,
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,
     val thousandSeparator: ThousandSeparator = ThousandSeparator.SPACE,
+    val flow: PrefsFlow = PrefsFlow.SETTINGS
 ) {
     fun formatAmount(): String {
         return PrefsUtil.formatAmount(

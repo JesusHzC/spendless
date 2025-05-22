@@ -1,9 +1,12 @@
 package com.jesushz.spendless.settings.presentation.preferences
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
+import com.jesushz.spendless.core.util.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class PreferencesViewModel(
     private val dataStoreManager: DataStoreManager,
-    private val applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     private val _state = MutableStateFlow(PreferencesState())
@@ -24,7 +28,28 @@ class PreferencesViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        initPreferences()
+        _state.update {
+            it.copy(
+                flow = savedStateHandle.toRoute<Routes.PreferencesScreen>().flow
+            )
+        }
+
+        viewModelScope.launch {
+            val transactionsPreferences =
+                dataStoreManager.getAllTransactionsPreferences()
+
+            _state.update { oldState ->
+                val newState = oldState.copy(
+                    currency = transactionsPreferences.currency,
+                    expenseFormat = transactionsPreferences.expenseFormat,
+                    decimalSeparator = transactionsPreferences.decimalSeparator,
+                    thousandSeparator = transactionsPreferences.thousandSeparator,
+                )
+                newState.copy(
+                    totalSpendFormat = newState.formatAmount()
+                )
+            }
+        }
     }
 
     fun onAction(action: PreferencesAction) {
@@ -73,25 +98,6 @@ class PreferencesViewModel(
                 onStartTracking()
             }
             else -> Unit
-        }
-    }
-
-    private fun initPreferences() {
-        viewModelScope.launch {
-            val transactionsPreferences =
-                dataStoreManager.getAllTransactionsPreferences()
-
-            _state.update { oldState ->
-                val newState = oldState.copy(
-                    currency = transactionsPreferences.currency,
-                    expenseFormat = transactionsPreferences.expenseFormat,
-                    decimalSeparator = transactionsPreferences.decimalSeparator,
-                    thousandSeparator = transactionsPreferences.thousandSeparator,
-                )
-                newState.copy(
-                    totalSpendFormat = newState.formatAmount()
-                )
-            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.jesushz.spendless.settings.presentation.preferences
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
+import com.jesushz.spendless.core.domain.preferences.PrefsFlow
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessTopBar
@@ -52,7 +54,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PreferencesScreenRoot(
     viewModel: PreferencesViewModel = koinViewModel(),
-    onNavigateToDashboard: () -> Unit
+    onNavigateToDashboard: () -> Unit,
+    onNavigateUp: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ObserveAsEvents(
@@ -66,7 +69,12 @@ fun PreferencesScreenRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                PreferencesAction.OnNavigateBack -> onNavigateToDashboard()
+                PreferencesAction.OnNavigateBack -> {
+                    when (state.flow) {
+                        PrefsFlow.AFTER_REGISTER -> onNavigateToDashboard()
+                        PrefsFlow.SETTINGS -> onNavigateUp()
+                    }
+                }
                 else -> viewModel.onAction(action)
             }
         }
@@ -78,6 +86,9 @@ private fun PreferencesScreen(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit
 ) {
+    BackHandler {
+        onAction(PreferencesAction.OnNavigateBack)
+    }
     SpendLessScaffold(
         topBar = {
             SpendLessTopBar(
