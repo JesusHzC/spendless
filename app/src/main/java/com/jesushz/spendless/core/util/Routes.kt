@@ -24,8 +24,6 @@ sealed interface Routes {
 
     // Screens Dashboard Graph
     @Serializable
-    data class PreferencesScreen(val flow: PrefsFlow) : Routes
-    @Serializable
     data object DashboardScreen : Routes
     @Serializable
     data object AllTransactionsScreen : Routes
@@ -33,5 +31,9 @@ sealed interface Routes {
     // Screens Settings Graph
     @Serializable
     data object SettingsScreen: Routes
+    @Serializable
+    data class PreferencesScreen(val flow: PrefsFlow) : Routes
+    @Serializable
+    data object SecurityScreen: Routes
 
 }

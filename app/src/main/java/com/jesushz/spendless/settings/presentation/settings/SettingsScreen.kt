@@ -58,6 +58,7 @@ fun SettingsScreenRoot(
                     onNavigateToPreferences()
                 }
                 SettingsAction.OnSecurityClick -> {
+                    onNavigateToSecurity()
                 }
                 SettingsAction.OnBackClick -> {
                     onNavigateUp()

@@ -15,6 +15,7 @@ import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
 import com.jesushz.spendless.settings.presentation.preferences.PreferencesScreenRoot
+import com.jesushz.spendless.settings.presentation.security.SecurityScreenRoot
 import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
 
 @Composable
@@ -122,7 +123,9 @@ private fun NavGraphBuilder.settingsGraph(
                 onNavigateToPreferences = {
                     navController.navigate(Routes.PreferencesScreen(PrefsFlow.SETTINGS))
                 },
-                onNavigateToSecurity = {},
+                onNavigateToSecurity = {
+                    navController.navigate(Routes.SecurityScreen)
+                },
                 onLogOut = {
                     navController.navigate(Routes.AuthGraph) {
                         popUpTo(0)
@@ -140,6 +143,14 @@ private fun NavGraphBuilder.settingsGraph(
                         launchSingleTop = true
                     }
                 },
+                onNavigateUp = {
+                    navController.navigateUp()
+                }
+            )
+        }
+
+        composable<Routes.SecurityScreen> {
+            SecurityScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
                 }

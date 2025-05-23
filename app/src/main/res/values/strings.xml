@@ -64,4 +64,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="pick_date">Pick transaction date</string>
+    <string name="biometrics_for_pin_prompt">Biometrics for PIN prompt</string>
+    <string name="session_duration">Session expiry duration</string>
+    <string name="locked_out_duration">Locked out duration</string>
 </resources>
