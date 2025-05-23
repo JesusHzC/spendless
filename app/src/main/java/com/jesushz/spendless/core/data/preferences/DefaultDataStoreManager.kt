@@ -6,12 +6,16 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.preferences.PreferencesKeys
+import com.jesushz.spendless.core.domain.preferences.SecurityPreferences
 import com.jesushz.spendless.core.domain.user.User
 import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.ThousandSeparator
 import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
+import com.jesushz.spendless.core.domain.security.Biometrics
+import com.jesushz.spendless.core.domain.security.LockedOutDuration
+import com.jesushz.spendless.core.domain.security.SessionDuration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -116,15 +120,85 @@ class DefaultDataStoreManager(
         )
     }
 
-    override suspend fun clearUser() {
+    override suspend fun saveBiometrics(biometrics: Biometrics) {
+        val biometricsKey = stringPreferencesKey(PreferencesKeys.BIOMETRICS)
+        context.dataStore.edit { preferences ->
+            preferences[biometricsKey] = biometrics.name
+        }
+    }
+
+    override suspend fun getBiometrics(): Biometrics {
+        val preferences = context.dataStore.data.first()
+        val biometricsKey = stringPreferencesKey(PreferencesKeys.BIOMETRICS)
+        return Biometrics.valueOf(preferences[biometricsKey] ?: Biometrics.DISABLE.name)
+    }
+
+    override suspend fun saveSessionDuration(duration: SessionDuration) {
+        val sessionDurationKey = stringPreferencesKey(PreferencesKeys.SESSION_DURATION)
+        context.dataStore.edit { preferences ->
+            preferences[sessionDurationKey] = duration.name
+        }
+    }
+
+    override suspend fun getSessionDuration(): SessionDuration {
+        val preferences = context.dataStore.data.first()
+        val sessionDurationKey = stringPreferencesKey(PreferencesKeys.SESSION_DURATION)
+        return SessionDuration.valueOf(preferences[sessionDurationKey] ?: SessionDuration.FIVE_MINUTES.name)
+    }
+
+    override suspend fun saveLockedOutDuration(duration: LockedOutDuration) {
+        val lockedOutDurationKey = stringPreferencesKey(PreferencesKeys.LOCKED_OUT_DURATION)
+        context.dataStore.edit { preferences ->
+            preferences[lockedOutDurationKey] = duration.name
+        }
+    }
+
+    override suspend fun getLockedOutDuration(): LockedOutDuration {
+        val preferences = context.dataStore.data.first()
+        val lockedOutDurationKey = stringPreferencesKey(PreferencesKeys.LOCKED_OUT_DURATION)
+        return LockedOutDuration.valueOf(preferences[lockedOutDurationKey] ?: LockedOutDuration.FIFTEEN_SECONDS.name)
+    }
+
+    override suspend fun saveAllSecurityPreferences(preferences: SecurityPreferences) {
+        applicationScope.launch {
+            saveBiometrics(preferences.biometrics)
+            saveSessionDuration(preferences.sessionDuration)
+            saveLockedOutDuration(preferences.lockedOutDuration)
+        }.join()
+    }
+
+    override suspend fun getAllSecurityPreferences(): SecurityPreferences {
+        return SecurityPreferences(
+            biometrics = getBiometrics(),
+            sessionDuration = getSessionDuration(),
+            lockedOutDuration = getLockedOutDuration()
+        )
+    }
+
+    override suspend fun clearAllPreferences() {
         applicationScope.launch {
             val userNameKey = stringPreferencesKey(PreferencesKeys.USER_NAME)
             val userPinKey = stringPreferencesKey(PreferencesKeys.USER_PIN)
+            val expenseFormatKey = stringPreferencesKey(PreferencesKeys.EXPENSE_FORMAT)
+            val currencyKey = stringPreferencesKey(PreferencesKeys.CURRENCY)
+            val decimalSeparatorKey = stringPreferencesKey(PreferencesKeys.DECIMAL_SEPARATOR)
+            val thousandSeparatorKey = stringPreferencesKey(PreferencesKeys.THOUSAND_SEPARATOR)
+            val biometricsKey = stringPreferencesKey(PreferencesKeys.BIOMETRICS)
+            val sessionDurationKey = stringPreferencesKey(PreferencesKeys.SESSION_DURATION)
+            val lockedOutDurationKey = stringPreferencesKey(PreferencesKeys.LOCKED_OUT_DURATION)
+
             context.dataStore.edit { preferences ->
                 preferences.remove(userNameKey)
                 preferences.remove(userPinKey)
+                preferences.remove(expenseFormatKey)
+                preferences.remove(currencyKey)
+                preferences.remove(decimalSeparatorKey)
+                preferences.remove(thousandSeparatorKey)
+                preferences.remove(biometricsKey)
+                preferences.remove(sessionDurationKey)
+                preferences.remove(lockedOutDurationKey)
             }
-        }.join()
+        }
     }
 
     companion object {

@@ -1,5 +1,8 @@
 package com.jesushz.spendless.core.domain.preferences
 
+import com.jesushz.spendless.core.domain.security.Biometrics
+import com.jesushz.spendless.core.domain.security.LockedOutDuration
+import com.jesushz.spendless.core.domain.security.SessionDuration
 import com.jesushz.spendless.core.domain.user.User
 import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
@@ -20,6 +23,14 @@ interface DataStoreManager {
     suspend fun getThousandSeparator(): ThousandSeparator
     suspend fun saveAllTransactionsPreferences(preferences: TransactionsPreferences)
     suspend fun getAllTransactionsPreferences(): TransactionsPreferences
-    suspend fun clearUser()
+    suspend fun saveBiometrics(biometrics: Biometrics)
+    suspend fun getBiometrics(): Biometrics
+    suspend fun saveSessionDuration(duration: SessionDuration)
+    suspend fun getSessionDuration(): SessionDuration
+    suspend fun saveLockedOutDuration(duration: LockedOutDuration)
+    suspend fun getLockedOutDuration(): LockedOutDuration
+    suspend fun saveAllSecurityPreferences(preferences: SecurityPreferences)
+    suspend fun getAllSecurityPreferences(): SecurityPreferences
+    suspend fun clearAllPreferences()
 
 }

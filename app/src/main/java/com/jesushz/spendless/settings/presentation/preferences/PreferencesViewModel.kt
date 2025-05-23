@@ -102,15 +102,13 @@ class PreferencesViewModel(
     }
 
     private suspend fun savePreferences() {
-        applicationScope.launch {
-            val transactionsPreferences = TransactionsPreferences(
-                currency = state.value.currency,
-                expenseFormat = state.value.expenseFormat,
-                decimalSeparator = state.value.decimalSeparator,
-                thousandSeparator = state.value.thousandSeparator
-            )
-            dataStoreManager.saveAllTransactionsPreferences(transactionsPreferences)
-        }.join()
+        val transactionsPreferences = TransactionsPreferences(
+            currency = state.value.currency,
+            expenseFormat = state.value.expenseFormat,
+            decimalSeparator = state.value.decimalSeparator,
+            thousandSeparator = state.value.thousandSeparator
+        )
+        dataStoreManager.saveAllTransactionsPreferences(transactionsPreferences)
     }
 
     private fun onStartTracking() {
