@@ -1,5 +1,6 @@
 package com.jesushz.spendless
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -66,11 +67,14 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.LoginScreen> {
+            val activity = LocalActivity.current as? MainActivity
+
             LoginScreenRoot(
                 onNavigateToRegister = {
                     navController.navigate(Routes.LoginScreen)
                 },
                 onNavigateToDashboard = {
+                    activity?.updateIsSessionManagerPaused(false)
                     navController.navigate(Routes.DashboardGraph) {
                         popUpTo(Routes.AuthGraph) {
                             inclusive = true
