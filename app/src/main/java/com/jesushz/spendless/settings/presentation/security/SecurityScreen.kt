@@ -28,9 +28,11 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.core.domain.security.Biometrics
 import com.jesushz.spendless.core.domain.security.LockedOutDuration
 import com.jesushz.spendless.core.domain.security.SessionDuration
+import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessScaffold
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessTopBar
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
+import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -39,6 +41,13 @@ fun SecurityScreenRoot(
     onNavigateUp: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    ObserveAsEvents(
+        flow = viewModel.event,
+    ) { event ->
+        when (event) {
+            SecurityEvent.OnSaveSuccess -> onNavigateUp()
+        }
+    }
     SecurityScreen(
         state = state,
         onAction = { action ->
@@ -131,6 +140,19 @@ private fun SecurityScreen(
                         title = duration.title
                     )
                 }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            SpendLessButton(
+                onButtonClick = {
+                    onAction(SecurityAction.OnSaveClick)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.save),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }
