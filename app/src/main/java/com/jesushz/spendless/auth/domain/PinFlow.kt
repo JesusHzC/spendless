@@ -2,7 +2,6 @@ package com.jesushz.spendless.auth.domain
 
 enum class PinFlow {
     REGISTER,
-    LOGIN,
-    CONFIRM,
+    CONFIRM_REGISTER,
     REFRESH_LOGIN
 }

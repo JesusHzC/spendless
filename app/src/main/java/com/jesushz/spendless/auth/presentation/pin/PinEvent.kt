@@ -6,5 +6,7 @@ sealed interface PinEvent {
 
     data class OnError(val message: UiText): PinEvent
     data object OnRegisterSuccess: PinEvent
+    data object OnNavigateBack: PinEvent
+    data object OnRefreshLoginSuccess: PinEvent
 
 }

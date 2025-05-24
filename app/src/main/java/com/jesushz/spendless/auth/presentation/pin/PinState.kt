@@ -7,5 +7,6 @@ data class PinState(
     val confirmPin: String = "",
     val isPinValid: Boolean = false,
     val flow: PinFlow = PinFlow.REGISTER,
-    val username: String = ""
+    val username: String = "",
+    val pinSaved: String = ""
 )

@@ -7,11 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import com.jesushz.spendless.core.util.Routes
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -30,6 +32,14 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(state.isLoading) {
                     if (!state.isLoading) {
                         viewModel.onStartSession()
+                    }
+                }
+
+                LaunchedEffect(state.isLoggedIn) {
+                    if (state.isLoggedIn) {
+                        viewModel.onStartSession()
+                    } else {
+                        viewModel.onStopSession()
                     }
                 }
 
@@ -68,18 +78,25 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.onStartSession()
+        lifecycleScope.launch {
+            viewModel.onStartSession()
+        }
     }
 
     fun updateIsSessionManagerPaused(isPaused: Boolean) {
-        viewModel.updateIsSessionManagerPaused(isPaused)
+        lifecycleScope.launch {
+            viewModel.updateIsSessionManagerPaused(isPaused)
+            viewModel.onStartSession()
+        }
     }
 
     override fun onUserInteraction() {
         super.onUserInteraction()
         Timber.i("onUserInteraction")
-        viewModel.onTouch()
-        viewModel.onStartSession()
+        lifecycleScope.launch {
+            viewModel.onTouch()
+            viewModel.onStartSession()
+        }
     }
 
     override fun onDestroy() {

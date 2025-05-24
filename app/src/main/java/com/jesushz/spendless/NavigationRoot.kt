@@ -52,16 +52,23 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.PinScreen> {
+            val activity = LocalActivity.current as? MainActivity
+
             PinScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
                 },
                 onNavigateToPreferences = {
+                    activity?.updateIsSessionManagerPaused(false)
                     navController.navigate(Routes.PreferencesScreen(PrefsFlow.AFTER_REGISTER)) {
                         popUpTo(Routes.AuthGraph) {
                             inclusive = true
                         }
                     }
+                },
+                onRefreshLogin = {
+                    activity?.updateIsSessionManagerPaused(false)
+                    navController.navigateUp()
                 }
             )
         }
@@ -120,6 +127,8 @@ private fun NavGraphBuilder.settingsGraph(
         startDestination = Routes.SettingsScreen
     ) {
         composable<Routes.SettingsScreen> {
+            val activity = LocalActivity.current as? MainActivity
+
             SettingsScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
@@ -131,6 +140,7 @@ private fun NavGraphBuilder.settingsGraph(
                     navController.navigate(Routes.SecurityScreen)
                 },
                 onLogOut = {
+                    activity?.updateIsSessionManagerPaused(true)
                     navController.navigate(Routes.AuthGraph) {
                         popUpTo(0)
                         launchSingleTop = true

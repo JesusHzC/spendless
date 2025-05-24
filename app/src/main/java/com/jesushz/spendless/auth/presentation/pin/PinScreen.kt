@@ -1,5 +1,6 @@
 package com.jesushz.spendless.auth.presentation.pin
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 fun PinScreenRoot(
     viewModel: PinViewModel = koinViewModel(),
     onNavigateUp: () -> Unit,
+    onRefreshLogin: () -> Unit,
     onNavigateToPreferences: () -> Unit
 ) {
     val context = LocalContext.current
@@ -59,17 +61,14 @@ fun PinScreenRoot(
             PinEvent.OnRegisterSuccess -> {
                 onNavigateToPreferences()
             }
+            PinEvent.OnNavigateBack -> onNavigateUp()
+            PinEvent.OnRefreshLoginSuccess -> onRefreshLogin()
         }
     }
     PinScreen(
         state = state,
         snackBarHostState = snackBarHostState,
-        onAction = { action ->
-            when (action) {
-                PinAction.OnBackPressed -> onNavigateUp()
-                else -> viewModel.onAction(action)
-            }
-        }
+        onAction = viewModel::onAction
     )
 }
 
@@ -79,13 +78,18 @@ private fun PinScreen(
     snackBarHostState: SnackbarHostState,
     onAction: (PinAction) -> Unit,
 ) {
+    BackHandler {
+        onAction(PinAction.OnBackPressed)
+    }
     SpendLessScaffold(
         topBar = {
-            SpendLessTopBar(
-                onNavigateBack = {
-                    onAction(PinAction.OnBackPressed)
-                }
-            )
+            if (state.flow == PinFlow.REGISTER || state.flow == PinFlow.CONFIRM_REGISTER) {
+                SpendLessTopBar(
+                    onNavigateBack = {
+                        onAction(PinAction.OnBackPressed)
+                    }
+                )
+            }
         },
         snackBarHost = snackBarHostState
     ) { innerPadding ->
@@ -105,10 +109,11 @@ private fun PinScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
             Header(
-                flow = state.flow
+                flow = state.flow,
+                username = state.username
             )
             OtpInput(
-                pin = if (state.flow == PinFlow.CONFIRM) state.confirmPin else state.pin,
+                pin = if (state.flow == PinFlow.CONFIRM_REGISTER) state.confirmPin else state.pin,
                 maxDigits = PinViewModel.PIN_LENGTH,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -127,14 +132,14 @@ private fun PinScreen(
 
 @Composable
 private fun Header(
-    flow: PinFlow
+    flow: PinFlow,
+    username: String
 ) {
     Text(
         text = when (flow) {
             PinFlow.REGISTER -> stringResource(R.string.create_pin)
-            PinFlow.LOGIN -> stringResource(R.string.create_pin)
-            PinFlow.CONFIRM -> stringResource(R.string.repeat_pin)
-            PinFlow.REFRESH_LOGIN -> stringResource(R.string.create_pin)
+            PinFlow.CONFIRM_REGISTER -> stringResource(R.string.repeat_pin)
+            PinFlow.REFRESH_LOGIN -> "Hello, $username!"
         },
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.headlineMedium,
@@ -144,8 +149,7 @@ private fun Header(
     Text(
         text = when (flow) {
             PinFlow.REGISTER -> stringResource(R.string.create_pin_description)
-            PinFlow.LOGIN -> stringResource(R.string.create_pin_description)
-            PinFlow.CONFIRM -> stringResource(R.string.repeat_pin_description)
+            PinFlow.CONFIRM_REGISTER -> stringResource(R.string.repeat_pin_description)
             PinFlow.REFRESH_LOGIN -> stringResource(R.string.create_pin_description)
         },
         textAlign = TextAlign.Center,

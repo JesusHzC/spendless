@@ -46,21 +46,22 @@ class MainViewModel(
             dataStoreManager = dataStoreManager,
             applicationScope = applicationScope,
             onSessionExpired = {
-                updateIsSessionManagerPaused(true)
                 applicationScope.launch {
+                    updateIsSessionManagerPaused(true)
                     _event.send(MainEvent.OnNavigateToAuth)
                 }
             },
             onLockOut = {
-                updateIsSessionManagerPaused(true)
                 applicationScope.launch {
+                    updateIsSessionManagerPaused(true)
                     _event.send(MainEvent.OnNavigateToPin)
                 }
             }
         )
     }
 
-    fun onStartSession() {
+    suspend fun onStartSession() {
+        updateLogin()
         val isSessionManagerPaused = state.value.isSessionManagerPaused
         val isLoggedIn = state.value.isLoggedIn
 
@@ -69,9 +70,7 @@ class MainViewModel(
             return
         }
 
-        if (!state.value.isSessionManagerPaused) {
-            sessionManager?.start()
-        }
+        sessionManager?.start()
     }
 
     fun onStopSession() {
@@ -85,6 +84,16 @@ class MainViewModel(
     fun updateIsSessionManagerPaused(isPaused: Boolean) {
         _state.update {
             it.copy(isSessionManagerPaused = isPaused)
+        }
+    }
+
+    private suspend fun updateLogin() {
+        val user = dataStoreManager.getUser()
+        _state.update {
+            it.copy(
+                user = user,
+                isLoggedIn = user != null,
+            )
         }
     }
 

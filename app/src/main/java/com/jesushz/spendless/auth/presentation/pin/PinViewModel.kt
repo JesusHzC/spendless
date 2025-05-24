@@ -43,6 +43,14 @@ class PinViewModel(
                 username = savedStateHandle.toRoute<Routes.PinScreen>().username.orEmpty()
             )
         }
+        viewModelScope.launch {
+            val user = dataStoreManager.getUser()
+            _state.update {
+                it.copy(
+                    pinSaved = user?.pin.orEmpty()
+                )
+            }
+        }
         Timber.i("Pin flow: ${state.value.flow}")
         Timber.i("Username: ${state.value.username}")
     }
@@ -52,7 +60,25 @@ class PinViewModel(
             is PinAction.OnKeyPressed -> {
                 onKeyPressed(action.key)
             }
-            else -> Unit
+            PinAction.OnBackPressed -> {
+                when (state.value.flow) {
+                    PinFlow.REGISTER -> {
+                        viewModelScope.launch {
+                            _event.send(PinEvent.OnNavigateBack)
+                        }
+                    }
+                    PinFlow.CONFIRM_REGISTER -> {
+                        _state.update {
+                            it.copy(
+                                flow = PinFlow.REGISTER,
+                                confirmPin = "",
+                                pin = ""
+                            )
+                        }
+                    }
+                    PinFlow.REFRESH_LOGIN -> Unit
+                }
+            }
         }
     }
 
@@ -61,7 +87,7 @@ class PinViewModel(
             Keys.BLANK -> Unit
             Keys.DELETE -> {
                 when (state.value.flow) {
-                    PinFlow.CONFIRM -> {
+                    PinFlow.CONFIRM_REGISTER -> {
                         if (state.value.confirmPin.isNotEmpty()) {
                             _state.update {
                                 it.copy(confirmPin = state.value.confirmPin.dropLast(1))
@@ -79,7 +105,7 @@ class PinViewModel(
             }
             else -> {
                 when (state.value.flow) {
-                    PinFlow.CONFIRM -> {
+                    PinFlow.CONFIRM_REGISTER -> {
                         if (state.value.confirmPin.length < PIN_LENGTH) {
                             _state.update {
                                 it.copy(confirmPin = state.value.confirmPin + key.value)
@@ -109,10 +135,23 @@ class PinViewModel(
                         if (state.value.pin.length == PIN_LENGTH) {
                             if (state.value.flow == PinFlow.REGISTER) {
                                 _state.update {
-                                    it.copy(flow = PinFlow.CONFIRM)
+                                    it.copy(flow = PinFlow.CONFIRM_REGISTER)
                                 }
                             } else {
-                                Timber.i("Validate pin")
+                                if (state.value.pin == state.value.pinSaved) {
+                                    viewModelScope.launch {
+                                        _event.send(PinEvent.OnRefreshLoginSuccess)
+                                    }
+                                } else {
+                                    viewModelScope.launch {
+                                        _event.send(PinEvent.OnError(UiText.StringResource(R.string.wrong_pin)))
+                                    }
+                                    _state.update {
+                                        it.copy(
+                                            pin = "",
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
