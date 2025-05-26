@@ -2,6 +2,7 @@ package com.jesushz.spendless.dashboard.presentation.create_transaction
 
 import com.jesushz.spendless.core.domain.transactions.Category
 import com.jesushz.spendless.core.domain.transactions.Repeat
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 
 sealed interface CreateTransactionAction {
@@ -15,5 +16,6 @@ sealed interface CreateTransactionAction {
     data class OnRepeatSelected(val repeat: Repeat): CreateTransactionAction
     data object OnCreateTransactionClick: CreateTransactionAction
     data class OnDateSelected(val date: String): CreateTransactionAction
+    data class OnUpdateTransaction(val transaction: Transaction): CreateTransactionAction
 
 }

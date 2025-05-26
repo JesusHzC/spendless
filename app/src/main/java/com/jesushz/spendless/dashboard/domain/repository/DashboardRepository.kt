@@ -4,7 +4,6 @@ import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionRepeat
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
-import com.jesushz.spendless.core.util.Result
 import kotlinx.coroutines.flow.Flow
 
 interface DashboardRepository {

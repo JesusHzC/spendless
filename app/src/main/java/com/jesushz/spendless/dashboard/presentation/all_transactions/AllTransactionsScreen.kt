@@ -109,6 +109,12 @@ private fun AllTransactionsScreen(
                                 amountFormatted = state.formatAmount(transaction.amount),
                                 onItemSelected = {
                                     itemSelected = transaction
+                                },
+                                onItemEdit = {
+
+                                },
+                                onItemDelete = {
+
                                 }
                             )
                         }

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package com.jesushz.spendless.dashboard.presentation.create_transaction
 
 import androidx.lifecycle.ViewModel
@@ -25,6 +27,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class CreateTransactionViewModel(
     private val dataStoreManager: DataStoreManager,
@@ -149,8 +153,22 @@ class CreateTransactionViewModel(
                     )
                 }
             }
-            else -> {
-                Unit
+            is CreateTransactionAction.OnUpdateTransaction -> {
+                _state.update {
+                    it.copy(
+                        id = action.transaction.id,
+                        amount = action.transaction.amount.toString(),
+                        receiver = action.transaction.receiver,
+                        note = action.transaction.note,
+                        transactionType = action.transaction.transactionType,
+                        categorySelected = action.transaction.category ?: Category.OTHER,
+                        repeatSelected = action.transaction.repeat,
+                        dateSelected = action.transaction.date
+                    )
+                }
+            }
+            CreateTransactionAction.OnClose -> {
+                clearState()
             }
         }
     }
@@ -173,6 +191,7 @@ class CreateTransactionViewModel(
 
         val userId = state.value.userId
         val transaction = Transaction(
+            id = state.value.id ?: Uuid.random().toString(),
             transactionType = state.value.transactionType,
             category = if (state.value.transactionType == TransactionType.EXPENSE) {
                 state.value.categorySelected
@@ -208,6 +227,7 @@ class CreateTransactionViewModel(
     private fun clearState() {
         _state.update {
             it.copy(
+                id = null,
                 amount = "",
                 receiver = "",
                 note = "",

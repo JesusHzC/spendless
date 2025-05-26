@@ -27,6 +27,7 @@ import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
+import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.presentation.designsystem.theme.OnPrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContainerLow
@@ -60,6 +62,7 @@ import org.koin.androidx.compose.koinViewModel
 fun CreateTransactionBottomSheetRoot(
     viewModel: CreateTransactionViewModel = koinViewModel(),
     showBottomSheet: Boolean,
+    transaction: Transaction? = null,
     onDismissRequest: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -70,6 +73,12 @@ fun CreateTransactionBottomSheetRoot(
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
+
+    LaunchedEffect(transaction) {
+        if (transaction != null) {
+            viewModel.onAction(CreateTransactionAction.OnUpdateTransaction(transaction))
+        }
+    }
 
     ObserveAsEvents(
         flow = viewModel.event
@@ -96,7 +105,8 @@ fun CreateTransactionBottomSheetRoot(
         CreateTransactionBottomSheet(
             sheetState = sheetState,
             state = state,
-            onAction = { action -> 
+            onAction = { action ->
+                viewModel.onAction(action)
                 when (action) {
                     CreateTransactionAction.OnClose -> {
                         scope.launch {
@@ -104,7 +114,7 @@ fun CreateTransactionBottomSheetRoot(
                             onDismissRequest()
                         }
                     }
-                    else -> viewModel.onAction(action)
+                    else -> Unit
                 }
             }
         )

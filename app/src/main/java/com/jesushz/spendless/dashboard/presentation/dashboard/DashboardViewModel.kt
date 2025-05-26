@@ -195,9 +195,21 @@ class DashboardViewModel(
             DashboardAction.OnDismissTransactionClick -> {
                 _state.update {
                     it.copy(
-                        showCreateTransactionBottomSheet = false
+                        showCreateTransactionBottomSheet = false,
+                        tmpTransaction = null
                     )
                 }
+            }
+            is DashboardAction.OnEditTransaction -> {
+                _state.update {
+                    it.copy(
+                        tmpTransaction = action.transaction,
+                        showCreateTransactionBottomSheet = true
+                    )
+                }
+            }
+            is DashboardAction.OnDeleteTransaction -> {
+
             }
             else -> Unit
         }

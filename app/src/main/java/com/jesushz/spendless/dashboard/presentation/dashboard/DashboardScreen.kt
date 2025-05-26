@@ -82,6 +82,7 @@ private fun DashboardScreen(
 ) {
     CreateTransactionBottomSheetRoot(
         showBottomSheet = state.showCreateTransactionBottomSheet,
+        transaction = state.tmpTransaction,
         onDismissRequest = {
             onAction(DashboardAction.OnDismissTransactionClick)
         }
@@ -136,6 +137,12 @@ private fun DashboardScreen(
                     state = state,
                     onShowAllTransactions = {
                         onAction(DashboardAction.OnShowAllTransactions)
+                    },
+                    onEditTransaction = { transaction ->
+                        onAction(DashboardAction.OnEditTransaction(transaction))
+                    },
+                    onDeleteTransaction = { transaction ->
+                        onAction(DashboardAction.OnDeleteTransaction(transaction))
                     }
                 )
             }
@@ -147,7 +154,9 @@ private fun DashboardScreen(
 private fun LatestTransactions(
     modifier: Modifier = Modifier,
     state: DashboardState,
-    onShowAllTransactions: () -> Unit
+    onShowAllTransactions: () -> Unit,
+    onEditTransaction: (Transaction) -> Unit,
+    onDeleteTransaction: (Transaction) -> Unit
 ) {
     var itemSelected by remember { mutableStateOf<Transaction?>(null) }
     LazyColumn(
@@ -206,6 +215,12 @@ private fun LatestTransactions(
                                 amountFormatted = state.formatAmount(transaction.amount),
                                 onItemSelected = {
                                     itemSelected = transaction
+                                },
+                                onItemEdit = {
+                                    onEditTransaction(transaction)
+                                },
+                                onItemDelete = {
+                                    onDeleteTransaction(transaction)
                                 }
                             )
                         }

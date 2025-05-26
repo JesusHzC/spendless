@@ -97,8 +97,8 @@ class SecurityViewModel(
 
     private fun onSave() {
         viewModelScope.launch {
-            _event.send(SecurityEvent.OnSaveSuccess)
             savePreferences()
+            _event.send(SecurityEvent.OnSaveSuccess)
         }
     }
 
