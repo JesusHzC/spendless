@@ -28,6 +28,10 @@ interface DataStoreManager {
     fun getSessionDuration(): Flow<SessionDuration>
     suspend fun saveLockedOutDuration(duration: LockedOutDuration)
     fun getLockedOutDuration(): Flow<LockedOutDuration>
+    suspend fun updateSessionMonitorEnabled(isEnabled: Boolean)
+    fun isSessionMonitorEnabled(): Flow<Boolean>
+    suspend fun updateLockOutEnabled(isEnabled: Boolean)
+    fun isLockOutEnabled(): Flow<Boolean>
     suspend fun clearUserData()
 
 }

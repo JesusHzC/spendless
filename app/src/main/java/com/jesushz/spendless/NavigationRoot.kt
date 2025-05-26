@@ -1,6 +1,5 @@
 package com.jesushz.spendless
 
-import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -52,14 +51,11 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.PinScreen> {
-            val activity = LocalActivity.current as? MainActivity
-
             PinScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
                 },
                 onNavigateToPreferences = {
-                    activity?.updateIsSessionManagerPaused(false)
                     navController.navigate(Routes.PreferencesScreen(PrefsFlow.AFTER_REGISTER)) {
                         popUpTo(Routes.AuthGraph) {
                             inclusive = true
@@ -67,21 +63,17 @@ private fun NavGraphBuilder.authGraph(
                     }
                 },
                 onRefreshLogin = {
-                    activity?.updateIsSessionManagerPaused(false)
                     navController.navigateUp()
                 }
             )
         }
 
         composable<Routes.LoginScreen> {
-            val activity = LocalActivity.current as? MainActivity
-
             LoginScreenRoot(
                 onNavigateToRegister = {
                     navController.navigate(Routes.LoginScreen)
                 },
                 onNavigateToDashboard = {
-                    activity?.updateIsSessionManagerPaused(false)
                     navController.navigate(Routes.DashboardGraph) {
                         popUpTo(Routes.AuthGraph) {
                             inclusive = true
@@ -127,8 +119,6 @@ private fun NavGraphBuilder.settingsGraph(
         startDestination = Routes.SettingsScreen
     ) {
         composable<Routes.SettingsScreen> {
-            val activity = LocalActivity.current as? MainActivity
-
             SettingsScreenRoot(
                 onNavigateUp = {
                     navController.navigateUp()
@@ -140,7 +130,6 @@ private fun NavGraphBuilder.settingsGraph(
                     navController.navigate(Routes.SecurityScreen)
                 },
                 onLogOut = {
-                    activity?.updateIsSessionManagerPaused(true)
                     navController.navigate(Routes.AuthGraph) {
                         popUpTo(0)
                         launchSingleTop = true

@@ -75,6 +75,7 @@ class LoginViewModel(
                 is Result.Success -> {
                     if (result.data != null) {
                         dataStoreManager.saveUser(result.data)
+                        dataStoreManager.updateSessionMonitorEnabled(true)
                         withContext(Dispatchers.Main) {
                             _event.send(LoginEvent.OnLoginSuccess)
                         }

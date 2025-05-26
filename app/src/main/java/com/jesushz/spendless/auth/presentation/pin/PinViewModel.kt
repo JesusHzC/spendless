@@ -19,6 +19,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -38,29 +39,25 @@ class PinViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        val flow = savedStateHandle.toRoute<Routes.PinScreen>().flow
-        val usernameRoute = savedStateHandle.toRoute<Routes.PinScreen>().username
-
-        if (usernameRoute.isNullOrEmpty()) {
-            dataStoreManager
-                .getUser()
-                .onEach { user ->
-                    _state.update {
-                        it.copy(
-                            flow = flow,
-                            username = user?.username.orEmpty()
-                        )
-                    }
-                }
-                .launchIn(viewModelScope)
-        } else {
-            _state.update {
-                it.copy(
-                    flow = flow,
-                    username = savedStateHandle.toRoute<Routes.PinScreen>().username.orEmpty()
-                )
-            }
+        _state.update {
+            it.copy(
+                flow = savedStateHandle.toRoute<Routes.PinScreen>().flow,
+                username = savedStateHandle.toRoute<Routes.PinScreen>().username.orEmpty()
+            )
         }
+
+        dataStoreManager
+            .getUser()
+            .mapNotNull { it }
+            .onEach { user ->
+                _state.update {
+                    it.copy(
+                        pinSaved = user.pin,
+                        username = user.username
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: PinAction) {
@@ -149,6 +146,7 @@ class PinViewModel(
                                 if (state.value.pin == state.value.pinSaved) {
                                     viewModelScope.launch {
                                         _event.send(PinEvent.OnRefreshLoginSuccess)
+                                        dataStoreManager.updateLockOutEnabled(true)
                                     }
                                 } else {
                                     viewModelScope.launch {
@@ -189,6 +187,7 @@ class PinViewModel(
                 }
                 is Result.Success -> {
                     dataStoreManager.saveUser(user)
+                    dataStoreManager.updateSessionMonitorEnabled(true)
                     withContext(Dispatchers.Main) {
                         _event.send(PinEvent.OnRegisterSuccess)
                     }

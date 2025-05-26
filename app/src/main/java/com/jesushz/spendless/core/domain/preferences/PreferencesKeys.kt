@@ -11,5 +11,7 @@ object PreferencesKeys {
     const val BIOMETRICS = "biometrics"
     const val SESSION_DURATION = "session_duration"
     const val LOCKED_OUT_DURATION = "locked_out_duration"
+    const val SESSION_MONITOR_IS_ENABLED = "session_monitor_is_enabled"
+    const val LOCK_OUT_IS_ENABLED = "lock_out_is_enabled"
 
 }

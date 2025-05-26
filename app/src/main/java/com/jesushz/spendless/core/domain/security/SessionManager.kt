@@ -14,54 +14,71 @@ import timber.log.Timber
 class SessionManager(
     private val dataStoreManager: DataStoreManager,
     private val applicationScope: CoroutineScope,
-    private val onLockOut: () -> Unit,
-    private val onSessionExpired: () -> Unit
+    private val onSessionExpired: (SessionExpiredType) -> Unit,
 ) {
-
     private var lastUsed: Long = System.currentTimeMillis()
-    private var idleMonitorJob: Job? = null
 
-    fun start() {
+    private var sessionJob: Job? = null
+    private var lockoutJob: Job? = null
+
+    fun startSessionMonitor() {
+        sessionJob?.cancel()
         applicationScope.launch {
-            val lockedOutDuration = dataStoreManager.getLockedOutDuration().first()
-            val sessionDuration = dataStoreManager.getSessionDuration().first()
+            val duration = dataStoreManager.getSessionDuration().first().millis
+            val isEnabled = dataStoreManager.isSessionMonitorEnabled().first()
 
-            Timber.i("Starting idle monitor with lockout: ${lockedOutDuration.millis}, session: ${sessionDuration.millis}")
-            startIdleMonitor(lockedOutDuration.millis, sessionDuration.millis)
+            if (isEnabled) {
+                Timber.i("Starting session monitor")
+                sessionJob = launchMonitor(duration, SessionExpiredType.SESSION_EXPIRED)
+            }
         }
     }
 
-    private fun startIdleMonitor(lockoutMillis: Long, sessionMillis: Long) {
-        stop()
-        idleMonitorJob = applicationScope.launch(Dispatchers.Default) {
+    fun stopSessionMonitor() {
+        Timber.i("Stopping session monitor")
+        sessionJob?.cancel()
+        sessionJob = null
+    }
+
+    fun startLockoutMonitor() {
+        lockoutJob?.cancel()
+        applicationScope.launch {
+            val duration = dataStoreManager.getLockedOutDuration().first().millis
+            val isEnabled = dataStoreManager.isLockOutEnabled().first()
+
+            if (isEnabled) {
+                Timber.i("Starting lockout monitor")
+                lockoutJob = launchMonitor(duration, SessionExpiredType.LOCKED_OUT)
+            }
+        }
+    }
+
+    fun stopLockoutMonitor() {
+        Timber.i("Stopping lockout monitor")
+        lockoutJob?.cancel()
+        lockoutJob = null
+    }
+
+    private fun launchMonitor(duration: Long, type: SessionExpiredType): Job {
+        return applicationScope.launch(Dispatchers.Default) {
             while (isActive) {
                 val idle = System.currentTimeMillis() - lastUsed
-                Timber.i("Idle time: $idle")
-
-                if (idle > sessionMillis) {
+                Timber.i("[$type] Idle time: $idle ms (limit: $duration ms)")
+                if (idle > duration) {
                     withContext(Dispatchers.Main) {
-                        onSessionExpired()
-                        dataStoreManager.clearUserData()
+                        onSessionExpired(type)
                     }
-                    stop()
-                } else if (idle > lockoutMillis) {
-                    withContext(Dispatchers.Main) { onLockOut() }
-                    stop()
+                    break
                 }
-
                 delay(SLEEP_TIME)
             }
         }
     }
 
-    fun stop() {
-        Timber.i("Stopping idle monitor")
-        idleMonitorJob?.cancel()
-        idleMonitorJob = null
-    }
-
+    @Synchronized
     fun touch() {
         lastUsed = System.currentTimeMillis()
+        Timber.d("Session touched: $lastUsed")
     }
 
     companion object {

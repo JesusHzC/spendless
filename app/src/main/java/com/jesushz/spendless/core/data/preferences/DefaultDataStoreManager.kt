@@ -1,6 +1,7 @@
 package com.jesushz.spendless.core.data.preferences
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -140,6 +141,34 @@ class DefaultDataStoreManager(
         val key = stringPreferencesKey(PreferencesKeys.LOCKED_OUT_DURATION)
         return context.dataStore.data.map { preferences ->
             LockedOutDuration.valueOf(preferences[key] ?: LockedOutDuration.FIFTEEN_SECONDS.name)
+        }
+    }
+
+    override suspend fun updateSessionMonitorEnabled(isEnabled: Boolean) {
+        val sessionMonitorKey = booleanPreferencesKey(PreferencesKeys.SESSION_MONITOR_IS_ENABLED)
+        context.dataStore.edit { preferences ->
+            preferences[sessionMonitorKey] = isEnabled
+        }
+    }
+
+    override fun isSessionMonitorEnabled(): Flow<Boolean> {
+        val key = booleanPreferencesKey(PreferencesKeys.SESSION_MONITOR_IS_ENABLED)
+        return context.dataStore.data.map { preferences ->
+            preferences[key] == true
+        }
+    }
+
+    override suspend fun updateLockOutEnabled(isEnabled: Boolean) {
+        val lockOutKey = booleanPreferencesKey(PreferencesKeys.LOCK_OUT_IS_ENABLED)
+        context.dataStore.edit { preferences ->
+            preferences[lockOutKey] = isEnabled
+        }
+    }
+
+    override fun isLockOutEnabled(): Flow<Boolean> {
+        val key = booleanPreferencesKey(PreferencesKeys.LOCK_OUT_IS_ENABLED)
+        return context.dataStore.data.map { preferences ->
+            preferences[key] == true
         }
     }
 
