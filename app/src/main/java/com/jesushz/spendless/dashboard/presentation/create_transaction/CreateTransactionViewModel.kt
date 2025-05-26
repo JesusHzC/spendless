@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import com.jesushz.spendless.core.domain.transactions.Category
+import com.jesushz.spendless.core.domain.transactions.Repeat
 import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
 import com.jesushz.spendless.core.util.Result
+import com.jesushz.spendless.core.util.getDateFormat
 import com.jesushz.spendless.core.util.toNumber
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.Dispatchers
@@ -195,9 +198,24 @@ class CreateTransactionViewModel(
                     }
                     is Result.Success -> {
                         _event.send(CreateTransactionEvent.OnCreateTransactionSuccess)
+                        clearState()
                     }
                 }
             }
+        }
+    }
+
+    private fun clearState() {
+        _state.update {
+            it.copy(
+                amount = "",
+                receiver = "",
+                note = "",
+                transactionType = TransactionType.EXPENSE,
+                categorySelected = Category.OTHER,
+                repeatSelected = Repeat.NOT_REPEAT,
+                dateSelected = getDateFormat()
+            )
         }
     }
 
