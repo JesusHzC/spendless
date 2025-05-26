@@ -8,29 +8,26 @@ import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.ThousandSeparator
+import kotlinx.coroutines.flow.Flow
 
 interface DataStoreManager {
 
     suspend fun saveUser(user: User)
-    suspend fun getUser(): User?
+    fun getUser(): Flow<User?>
     suspend fun saveExpenseFormat(format: ExpenseFormat)
-    suspend fun getExpenseFormat(): ExpenseFormat
+    fun getExpenseFormat(): Flow<ExpenseFormat>
     suspend fun saveCurrency(currency: Currency)
-    suspend fun getCurrency(): Currency
+    fun getCurrency(): Flow<Currency>
     suspend fun saveDecimalSeparator(separator: DecimalSeparator)
-    suspend fun getDecimalSeparator(): DecimalSeparator
+    fun getDecimalSeparator(): Flow<DecimalSeparator>
     suspend fun saveThousandSeparator(separator: ThousandSeparator)
-    suspend fun getThousandSeparator(): ThousandSeparator
-    suspend fun saveAllTransactionsPreferences(preferences: TransactionsPreferences)
-    suspend fun getAllTransactionsPreferences(): TransactionsPreferences
+    fun getThousandSeparator(): Flow<ThousandSeparator>
     suspend fun saveBiometrics(biometrics: Biometrics)
-    suspend fun getBiometrics(): Biometrics
+    fun getBiometrics(): Flow<Biometrics>
     suspend fun saveSessionDuration(duration: SessionDuration)
-    suspend fun getSessionDuration(): SessionDuration
+    fun getSessionDuration(): Flow<SessionDuration>
     suspend fun saveLockedOutDuration(duration: LockedOutDuration)
-    suspend fun getLockedOutDuration(): LockedOutDuration
-    suspend fun saveAllSecurityPreferences(preferences: SecurityPreferences)
-    suspend fun getAllSecurityPreferences(): SecurityPreferences
-    suspend fun clearAllPreferences()
+    fun getLockedOutDuration(): Flow<LockedOutDuration>
+    suspend fun clearUserData()
 
 }

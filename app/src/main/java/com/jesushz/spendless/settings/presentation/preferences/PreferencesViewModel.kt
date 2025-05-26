@@ -5,12 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
-import com.jesushz.spendless.core.domain.preferences.TransactionsPreferences
 import com.jesushz.spendless.core.util.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,22 +35,61 @@ class PreferencesViewModel(
             )
         }
 
-        viewModelScope.launch {
-            val transactionsPreferences =
-                dataStoreManager.getAllTransactionsPreferences()
-
-            _state.update { oldState ->
-                val newState = oldState.copy(
-                    currency = transactionsPreferences.currency,
-                    expenseFormat = transactionsPreferences.expenseFormat,
-                    decimalSeparator = transactionsPreferences.decimalSeparator,
-                    thousandSeparator = transactionsPreferences.thousandSeparator,
-                )
-                newState.copy(
-                    totalSpendFormat = newState.formatAmount()
-                )
+        dataStoreManager
+            .getCurrency()
+            .onEach { currency ->
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        currency = currency
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getExpenseFormat()
+            .onEach { format ->
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        expenseFormat = format
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getDecimalSeparator()
+            .onEach { separator ->
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        decimalSeparator = separator
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getThousandSeparator()
+            .onEach { separator ->
+                _state.update { oldState ->
+                    val newState = oldState.copy(
+                        thousandSeparator = separator
+                    )
+                    newState.copy(
+                        totalSpendFormat = newState.formatAmount()
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: PreferencesAction) {
@@ -102,13 +142,12 @@ class PreferencesViewModel(
     }
 
     private suspend fun savePreferences() {
-        val transactionsPreferences = TransactionsPreferences(
-            currency = state.value.currency,
-            expenseFormat = state.value.expenseFormat,
-            decimalSeparator = state.value.decimalSeparator,
-            thousandSeparator = state.value.thousandSeparator
-        )
-        dataStoreManager.saveAllTransactionsPreferences(transactionsPreferences)
+        applicationScope.launch {
+            dataStoreManager.saveExpenseFormat(state.value.expenseFormat)
+            dataStoreManager.saveCurrency(state.value.currency)
+            dataStoreManager.saveDecimalSeparator(state.value.decimalSeparator)
+            dataStoreManager.saveThousandSeparator(state.value.thousandSeparator)
+        }.join()
     }
 
     private fun onStartTracking() {

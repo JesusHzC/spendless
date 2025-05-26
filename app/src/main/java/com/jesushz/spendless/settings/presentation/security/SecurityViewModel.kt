@@ -3,16 +3,19 @@ package com.jesushz.spendless.settings.presentation.security
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
-import com.jesushz.spendless.core.domain.preferences.SecurityPreferences
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SecurityViewModel(
-    private val dataStoreManager: DataStoreManager
+    private val dataStoreManager: DataStoreManager,
+    private val applicationScope: CoroutineScope
 ): ViewModel() {
 
     private val _state = MutableStateFlow(SecurityState())
@@ -22,18 +25,38 @@ class SecurityViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            val securityPreferences = dataStoreManager
-                .getAllSecurityPreferences()
-
-            _state.update {
-                it.copy(
-                    biometrics = securityPreferences.biometrics,
-                    sessionDuration = securityPreferences.sessionDuration,
-                    lockedOutDuration = securityPreferences.lockedOutDuration
-                )
+        dataStoreManager
+            .getBiometrics()
+            .onEach { biometrics ->
+                _state.update {
+                    it.copy(
+                        biometrics = biometrics
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getSessionDuration()
+            .onEach { sessionDuration ->
+                _state.update {
+                    it.copy(
+                        sessionDuration = sessionDuration
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getLockedOutDuration()
+            .onEach { duration ->
+                _state.update {
+                    it.copy(
+                        lockedOutDuration = duration
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: SecurityAction) {
@@ -64,15 +87,18 @@ class SecurityViewModel(
         }
     }
 
+    private suspend fun savePreferences() {
+        applicationScope.launch {
+            dataStoreManager.saveBiometrics(state.value.biometrics)
+            dataStoreManager.saveSessionDuration(state.value.sessionDuration)
+            dataStoreManager.saveLockedOutDuration(state.value.lockedOutDuration)
+        }.join()
+    }
+
     private fun onSave() {
-        val securityPreferences = SecurityPreferences(
-            biometrics = state.value.biometrics,
-            sessionDuration = state.value.sessionDuration,
-            lockedOutDuration = state.value.lockedOutDuration
-        )
         viewModelScope.launch {
             _event.send(SecurityEvent.OnSaveSuccess)
-            dataStoreManager.saveAllSecurityPreferences(securityPreferences)
+            savePreferences()
         }
     }
 

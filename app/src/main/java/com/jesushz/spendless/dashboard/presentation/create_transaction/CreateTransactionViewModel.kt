@@ -15,6 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,14 +35,60 @@ class CreateTransactionViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    userId = dataStoreManager.getUser()?.username.orEmpty(),
-                    transactionsPreferences = dataStoreManager.getAllTransactionsPreferences()
-                )
+        dataStoreManager
+            .getUser()
+            .onEach { user ->
+                _state.update {
+                    it.copy(
+                        userId = user?.username.orEmpty()
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getCurrency()
+            .onEach { currency ->
+                _state.update {
+                    it.copy(
+                        currency = currency
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getExpenseFormat()
+            .onEach { format ->
+                _state.update {
+                    it.copy(
+                        expenseFormat = format
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getDecimalSeparator()
+            .onEach { separator ->
+                _state.update {
+                    it.copy(
+                        decimalSeparator = separator
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getThousandSeparator()
+            .onEach { separator ->
+                _state.update {
+                    it.copy(
+                        thousandSeparator = separator
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: CreateTransactionAction) {

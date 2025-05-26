@@ -25,8 +25,8 @@ class SettingsViewModel(
 
     private fun logout() {
         viewModelScope.launch {
-            dataStoreManager.clearAllPreferences()
             _event.send(SettingsEvent.OnLogOutSuccess)
+            dataStoreManager.clearUserData()
         }
     }
 

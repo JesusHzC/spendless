@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,8 +23,8 @@ class SessionManager(
 
     fun start() {
         applicationScope.launch {
-            val lockedOutDuration = dataStoreManager.getLockedOutDuration()
-            val sessionDuration = dataStoreManager.getSessionDuration()
+            val lockedOutDuration = dataStoreManager.getLockedOutDuration().first()
+            val sessionDuration = dataStoreManager.getSessionDuration().first()
 
             Timber.i("Starting idle monitor with lockout: ${lockedOutDuration.millis}, session: ${sessionDuration.millis}")
             startIdleMonitor(lockedOutDuration.millis, sessionDuration.millis)
@@ -40,7 +41,7 @@ class SessionManager(
                 if (idle > sessionMillis) {
                     withContext(Dispatchers.Main) {
                         onSessionExpired()
-                        dataStoreManager.clearAllPreferences()
+                        dataStoreManager.clearUserData()
                     }
                     stop()
                 } else if (idle > lockoutMillis) {

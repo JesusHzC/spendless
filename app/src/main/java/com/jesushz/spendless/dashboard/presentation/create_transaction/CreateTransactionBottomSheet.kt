@@ -182,7 +182,7 @@ private fun CreateTransactionBottomSheet(
                 Spacer(modifier = Modifier.height(8.dp))
                 AmountTextField(
                     amount = state.amount,
-                    expenseFormat = state.transactionsPreferences.expenseFormat,
+                    expenseFormat = state.expenseFormat,
                     transactionType = state.transactionType,
                     onAmountChange = {
                         onAction(CreateTransactionAction.OnAmountChange(it))

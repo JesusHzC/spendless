@@ -18,11 +18,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class PinViewModel(
     savedStateHandle: SavedStateHandle,
@@ -37,22 +38,29 @@ class PinViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        _state.update {
-            it.copy(
-                flow = savedStateHandle.toRoute<Routes.PinScreen>().flow,
-                username = savedStateHandle.toRoute<Routes.PinScreen>().username.orEmpty()
-            )
-        }
-        viewModelScope.launch {
-            val user = dataStoreManager.getUser()
+        val flow = savedStateHandle.toRoute<Routes.PinScreen>().flow
+        val usernameRoute = savedStateHandle.toRoute<Routes.PinScreen>().username
+
+        if (usernameRoute.isNullOrEmpty()) {
+            dataStoreManager
+                .getUser()
+                .onEach { user ->
+                    _state.update {
+                        it.copy(
+                            flow = flow,
+                            username = user?.username.orEmpty()
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
+        } else {
             _state.update {
                 it.copy(
-                    pinSaved = user?.pin.orEmpty()
+                    flow = flow,
+                    username = savedStateHandle.toRoute<Routes.PinScreen>().username.orEmpty()
                 )
             }
         }
-        Timber.i("Pin flow: ${state.value.flow}")
-        Timber.i("Username: ${state.value.username}")
     }
 
     fun onAction(action: PinAction) {

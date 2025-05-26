@@ -1,18 +1,15 @@
 package com.jesushz.spendless
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.security.SessionManager
-import com.jesushz.spendless.core.util.Routes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -31,16 +28,17 @@ class MainViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        viewModelScope.launch {
-            val user = dataStoreManager.getUser()
-            _state.update {
-                it.copy(
-                    user = user,
-                    isLoggedIn = user != null,
-                    isLoading = false
-                )
+        dataStoreManager
+            .getUser()
+            .onEach { user ->
+                _state.update {
+                    it.copy(
+                        user = user,
+                        isLoggedIn = user != null
+                    )
+                }
             }
-        }
+            .launchIn(viewModelScope)
 
         sessionManager = SessionManager(
             dataStoreManager = dataStoreManager,
@@ -60,8 +58,7 @@ class MainViewModel(
         )
     }
 
-    suspend fun onStartSession() {
-        updateLogin()
+    fun onStartSession() {
         val isSessionManagerPaused = state.value.isSessionManagerPaused
         val isLoggedIn = state.value.isLoggedIn
 
@@ -84,16 +81,6 @@ class MainViewModel(
     fun updateIsSessionManagerPaused(isPaused: Boolean) {
         _state.update {
             it.copy(isSessionManagerPaused = isPaused)
-        }
-    }
-
-    private suspend fun updateLogin() {
-        val user = dataStoreManager.getUser()
-        _state.update {
-            it.copy(
-                user = user,
-                isLoggedIn = user != null,
-            )
         }
     }
 
