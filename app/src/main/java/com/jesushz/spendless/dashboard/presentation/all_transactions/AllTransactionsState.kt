@@ -15,6 +15,7 @@ data class AllTransactionsState(
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,
     val thousandSeparator: ThousandSeparator = ThousandSeparator.COMMA,
     val allTransactions: List<CombineTransaction> = emptyList(),
+    val comingSoonTransactions: List<CombineTransaction> = emptyList(),
     val showCreateTransactionBottomSheet: Boolean = false,
     val tmpTransaction: Transaction? = null
 ) {

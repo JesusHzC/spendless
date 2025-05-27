@@ -73,4 +73,8 @@ class RoomLocalTransactionDataSource(
         }
     }
 
+    override fun getComingSoonTransactions(userId: String): Flow<List<TransactionEntity>> {
+        return transactionDao.getComingSoonTransactions(userId)
+    }
+
 }

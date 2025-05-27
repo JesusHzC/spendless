@@ -8,8 +8,6 @@ import com.jesushz.spendless.core.domain.transactions.Transaction
 import com.jesushz.spendless.core.domain.transactions.TransactionRepeat
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
-import com.jesushz.spendless.core.util.Result
-import com.jesushz.spendless.core.util.map
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -93,6 +91,16 @@ class DashboardRepositoryImpl(
 
     override suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local> {
         return localTransactionDataSource.deleteTransactionById(transactionId)
+    }
+
+    override fun getComingSoonTransactions(userId: String): Flow<List<Transaction>> {
+        return localTransactionDataSource
+            .getComingSoonTransactions(userId)
+            .map { list ->
+                list.map {
+                    it.toTransaction()
+                }
+            }
     }
 
 }

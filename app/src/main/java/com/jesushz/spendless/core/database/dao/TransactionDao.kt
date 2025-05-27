@@ -52,7 +52,8 @@ interface TransactionDao {
     @Query(
         """
             SELECT * FROM TransactionEntity 
-            WHERE userId = :userId 
+            WHERE userId = :userId
+            AND repeatDateTime IS NULL
             ORDER BY dateTime DESC
         """
     )
@@ -63,6 +64,7 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE userId = :userId 
+            AND repeatDateTime IS NULL
             ORDER BY dateTime DESC 
             LIMIT 10
         """
@@ -97,5 +99,16 @@ interface TransactionDao {
         """
     )
     suspend fun deleteTransactionById(transactionId: String)
+
+    // Get Coming Soon transactions
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            AND repeatDateTime IS NOT NULL
+            ORDER BY repeatDateTime ASC
+        """
+    )
+    fun getComingSoonTransactions(userId: String): Flow<List<TransactionEntity>>
 
 }

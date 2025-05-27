@@ -24,5 +24,6 @@ interface DashboardRepository {
     fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionRepeat>>
     suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local>
     suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local>
+    fun getComingSoonTransactions(userId: String): Flow<List<Transaction>>
 
 }

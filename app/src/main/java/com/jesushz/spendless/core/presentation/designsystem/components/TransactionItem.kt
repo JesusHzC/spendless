@@ -42,6 +42,7 @@ fun TransactionItem(
     modifier: Modifier = Modifier,
     transaction: Transaction,
     itemSelected: Transaction?,
+    showEditAction: Boolean = true,
     amountFormatted: String,
     onItemSelected: () -> Unit,
     onItemEdit: () -> Unit,
@@ -58,15 +59,17 @@ fun TransactionItem(
             isRevealed = false
         },
         actions = {
-            SwipeableAction(
-                icon = Icons.Default.Edit,
-                backgroundColor = Success,
-                contentDescription = stringResource(R.string.edit_transaction_action),
-                onActionClick = {
-                    onItemEdit()
-                    isRevealed = false
-                }
-            )
+            if (showEditAction) {
+                SwipeableAction(
+                    icon = Icons.Default.Edit,
+                    backgroundColor = Success,
+                    contentDescription = stringResource(R.string.edit_transaction_action),
+                    onActionClick = {
+                        onItemEdit()
+                        isRevealed = false
+                    }
+                )
+            }
             SwipeableAction(
                 icon = Icons.Default.Delete,
                 backgroundColor = MaterialTheme.colorScheme.error,

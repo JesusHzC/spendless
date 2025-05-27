@@ -121,6 +121,24 @@ class AllTransactionsViewModel(
                         }
                     }
                     .launchIn(viewModelScope)
+
+                dashboardRepository
+                    .getComingSoonTransactions(username)
+                    .onEach { transactions ->
+                        val newTransaction = transactions.map {
+                            CombineTransaction(
+                                date = "COMING SOON",
+                                transactions = transactions
+                            )
+                        }
+                        Timber.d("comingSoonTransactions: $newTransaction")
+                        _state.update {
+                            it.copy(
+                                comingSoonTransactions = newTransaction
+                            )
+                        }
+                    }
+                    .launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
     }
