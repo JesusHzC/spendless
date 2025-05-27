@@ -77,5 +77,6 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.data.store)
     implementation(libs.timber)
+    implementation(libs.androidx.biometrics)
 
 }

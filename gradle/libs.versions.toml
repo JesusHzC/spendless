@@ -15,6 +15,7 @@ room = "2.7.0"
 ksp = "2.0.20-1.0.24"
 data-store = "1.1.4"
 timber = "5.0.1"
+biometrics = "1.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -43,6 +44,7 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-data-store = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "data-store" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+androidx-biometrics = { group = "androidx.biometric", name = "biometric", version.ref = "biometrics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -4,20 +4,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.jesushz.spendless.auth.domain.PinFlow
+import com.jesushz.spendless.core.data.security.BiometricPromptManager
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import com.jesushz.spendless.core.util.Routes
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
+
+    internal val promptManager by lazy {
+        BiometricPromptManager(this@MainActivity)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +55,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 NavigationRoot(
-                    navController = navController,
-                    startDestination = if (state.isLoggedIn) {
-                        Routes.DashboardGraph
-                    } else {
-                        Routes.AuthGraph
-                    }
+                    navController = navController
                 )
             }
         }

@@ -6,4 +6,5 @@ data class LoginState(
     val username: TextFieldValue = TextFieldValue(),
     val pin : TextFieldValue = TextFieldValue(),
     val canLogin: Boolean = false,
+    val biometricsEnabled: Boolean = false
 )

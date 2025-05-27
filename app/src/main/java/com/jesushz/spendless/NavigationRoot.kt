@@ -1,5 +1,12 @@
 package com.jesushz.spendless
 
+import android.content.Intent
+import android.provider.Settings
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -7,16 +14,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.jesushz.spendless.auth.domain.PinFlow
+import com.jesushz.spendless.auth.presentation.login.LoginAction
 import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
+import com.jesushz.spendless.auth.presentation.login.LoginViewModel
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
+import com.jesushz.spendless.core.data.security.BiometricPromptManager.BiometricResult
 import com.jesushz.spendless.core.domain.preferences.PrefsFlow
+import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.util.Routes
 import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
 import com.jesushz.spendless.settings.presentation.preferences.PreferencesScreenRoot
 import com.jesushz.spendless.settings.presentation.security.SecurityScreenRoot
 import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
+import org.koin.androidx.compose.koinViewModel
+import timber.log.Timber
 
 @Composable
 fun NavigationRoot(
@@ -69,7 +83,65 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.LoginScreen> {
+            val activity = LocalActivity.current as MainActivity
+
+            val viewModel: LoginViewModel = koinViewModel()
+
+            val enrollLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult(),
+                onResult = {
+                    Timber.i("Activity result: $it")
+                }
+            )
+
+            ObserveAsEvents(
+                flow = activity.promptManager.promptResults
+            ) { result ->
+                when(result) {
+                    is BiometricResult.AuthenticationError -> {
+                        viewModel.onAction(
+                            LoginAction.OnBiometricsError(
+                                UiText.DynamicString(result.error),
+                                false
+                            )
+                        )
+                    }
+                    BiometricResult.AuthenticationFailed -> {
+                        Timber.e("Authentication failed")
+                    }
+                    BiometricResult.AuthenticationNotSet -> {
+                        val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                            putExtra(
+                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                            )
+                        }
+                        enrollLauncher.launch(enrollIntent)
+                    }
+                    BiometricResult.AuthenticationSuccess -> {
+                        viewModel.onAction(LoginAction.OnBiometricsSuccess)
+                    }
+                    BiometricResult.FeatureUnavailable -> {
+                        viewModel.onAction(
+                            LoginAction.OnBiometricsError(
+                                UiText.DynamicString("Feature unavailable"),
+                                true
+                            )
+                        )
+                    }
+                    BiometricResult.HardwareUnavailable -> {
+                        viewModel.onAction(
+                            LoginAction.OnBiometricsError(
+                                UiText.DynamicString("Hardware unavailable"),
+                                true
+                            )
+                        )
+                    }
+                }
+            }
+
             LoginScreenRoot(
+                viewModel = viewModel,
                 onNavigateToRegister = {
                     navController.navigate(Routes.RegisterScreen) {
                         popUpTo(Routes.AuthGraph) {
@@ -83,6 +155,14 @@ private fun NavGraphBuilder.authGraph(
                             inclusive = true
                         }
                     }
+                },
+                onRequestBiometrics = {
+                    activity
+                        .promptManager
+                        .showBiometricPrompt(
+                            title = "Biometric Authentication",
+                            description = "Log in using your biometric credential"
+                        )
                 }
             )
         }

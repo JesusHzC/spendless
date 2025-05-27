@@ -7,6 +7,8 @@ import com.jesushz.spendless.R
 import com.jesushz.spendless.auth.domain.UsernameValidator
 import com.jesushz.spendless.auth.domain.repository.AuthRepository
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import com.jesushz.spendless.core.domain.security.Biometrics
+import com.jesushz.spendless.core.domain.user.User
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
 import com.jesushz.spendless.core.util.Constants.PIN_MAX_LENGTH
@@ -16,6 +18,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,6 +37,26 @@ class LoginViewModel(
 
     private val _event = Channel<LoginEvent>()
     val event = _event.receiveAsFlow()
+
+    private var tempUser: User? = null
+
+    init {
+        dataStoreManager
+            .getBiometrics()
+            .distinctUntilChanged()
+            .onEach { biometrics ->
+                val isEnabled = when (biometrics) {
+                    Biometrics.ENABLE -> true
+                    Biometrics.DISABLE -> false
+                }
+                _state.update {
+                    it.copy(
+                        biometricsEnabled = isEnabled
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
+    }
 
     fun onAction(action: LoginAction) {
         when (action) {
@@ -56,6 +81,17 @@ class LoginViewModel(
                 }
                 validateFields()
             }
+            LoginAction.OnBiometricsSuccess -> {
+                confirmLogin()
+            }
+            is LoginAction.OnBiometricsError -> {
+                viewModelScope.launch {
+                    _event.send(LoginEvent.OnError(action.error))
+                    if (action.confirmLogout) {
+                        confirmLogin()
+                    }
+                }
+            }
             else -> Unit
         }
     }
@@ -74,10 +110,13 @@ class LoginViewModel(
                 }
                 is Result.Success -> {
                     if (result.data != null) {
-                        dataStoreManager.saveUser(result.data)
-                        dataStoreManager.updateSessionMonitorEnabled(true)
+                        tempUser = result.data
                         withContext(Dispatchers.Main) {
-                            _event.send(LoginEvent.OnLoginSuccess)
+                            if (state.value.biometricsEnabled) {
+                                _event.send(LoginEvent.OnRequestBiometrics)
+                            } else {
+                                confirmLogin()
+                            }
                         }
                     } else {
                         withContext(Dispatchers.Main) {
@@ -100,6 +139,17 @@ class LoginViewModel(
             it.copy(
                 canLogin = isValidUsername && isValidPin
             )
+        }
+    }
+
+    private fun confirmLogin() {
+        if (tempUser == null) return
+
+        viewModelScope.launch {
+            dataStoreManager.saveUser(tempUser!!)
+            dataStoreManager.updateSessionMonitorEnabled(true)
+            tempUser = null
+            _event.send(LoginEvent.OnLoginSuccess)
         }
     }
 

@@ -38,9 +38,10 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreenRoot(
-    viewModel: LoginViewModel = koinViewModel(),
+    viewModel: LoginViewModel,
     onNavigateToRegister: () -> Unit,
-    onNavigateToDashboard: () -> Unit
+    onNavigateToDashboard: () -> Unit,
+    onRequestBiometrics: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -58,6 +59,7 @@ fun LoginScreenRoot(
                 }
             }
             LoginEvent.OnLoginSuccess -> onNavigateToDashboard()
+            LoginEvent.OnRequestBiometrics -> onRequestBiometrics()
         }
     }
     LoginScreen(

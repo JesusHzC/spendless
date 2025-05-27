@@ -6,5 +6,6 @@ sealed interface LoginEvent {
 
     data class OnError(val error: UiText): LoginEvent
     data object OnLoginSuccess: LoginEvent
+    data object OnRequestBiometrics: LoginEvent
 
 }
