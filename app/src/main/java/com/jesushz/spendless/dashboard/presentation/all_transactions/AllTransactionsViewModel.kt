@@ -163,7 +163,7 @@ class AllTransactionsViewModel(
             }
             is AllTransactionsAction.OnDeleteTransaction -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    dashboardRepository.deleteTransactionById(action.transaction.id)
+                    dashboardRepository.clearRepeatDateTime(action.transaction.id)
                 }
             }
             else -> Unit

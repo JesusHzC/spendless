@@ -53,7 +53,6 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE userId = :userId
-            AND repeatDateTime IS NULL
             ORDER BY dateTime DESC
         """
     )
@@ -64,7 +63,6 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE userId = :userId 
-            AND repeatDateTime IS NULL
             ORDER BY dateTime DESC 
             LIMIT 10
         """
@@ -105,7 +103,7 @@ interface TransactionDao {
         """
             SELECT * FROM TransactionEntity 
             WHERE userId = :userId 
-            AND repeatDateTime IS NOT NULL
+            AND date(repeatDateTime) > date('now') 
             ORDER BY repeatDateTime ASC
         """
     )

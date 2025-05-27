@@ -109,7 +109,7 @@ private fun AllTransactionsScreen(
                         }
                         items(
                             items = transactions.transactions,
-                            key = { it.id }
+                            key = { it.hashCode() }
                         ) { transaction ->
                             TransactionItem(
                                 modifier = Modifier
