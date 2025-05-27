@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -31,6 +33,7 @@ import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoo
 import com.jesushz.spendless.settings.presentation.preferences.PreferencesScreenRoot
 import com.jesushz.spendless.settings.presentation.security.SecurityScreenRoot
 import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
+import kotlinx.coroutines.flow.emptyFlow
 import org.koin.androidx.compose.koinViewModel
 import timber.log.Timber
 
@@ -53,7 +56,11 @@ private fun NavGraphBuilder.authGraph(
     navController: NavHostController
 ) {
     navigation<Routes.AuthGraph>(
-        startDestination = Routes.RegisterScreen
+        startDestination = Routes.RegisterScreen,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) }
     ) {
         composable<Routes.RegisterScreen> {
             RegisterScreenRoot(
@@ -67,7 +74,7 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.PinScreen> {
-            val activity = LocalActivity.current as MainActivity
+            val activity = LocalActivity.current as? MainActivity
 
             val viewModel: PinViewModel = koinViewModel()
 
@@ -79,7 +86,7 @@ private fun NavGraphBuilder.authGraph(
             )
 
             ObserveAsEvents(
-                flow = activity.promptManager.promptResults
+                flow = activity?.promptManager?.promptResults ?: emptyFlow<BiometricResult>()
             ) { result ->
                 when(result) {
                     is BiometricResult.AuthenticationError -> {
@@ -137,9 +144,8 @@ private fun NavGraphBuilder.authGraph(
                     navController.navigateUp()
                 },
                 onBiometricLogin = {
-                    activity
-                        .promptManager
-                        .showBiometricPrompt(
+                    activity?.promptManager
+                        ?.showBiometricPrompt(
                             title = "Biometric Authentication",
                             description = "Log in using your biometric credential"
                         )
@@ -148,7 +154,7 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.LoginScreen> {
-            val activity = LocalActivity.current as MainActivity
+            val activity = LocalActivity.current as? MainActivity
 
             val viewModel: LoginViewModel = koinViewModel()
 
@@ -160,7 +166,7 @@ private fun NavGraphBuilder.authGraph(
             )
 
             ObserveAsEvents(
-                flow = activity.promptManager.promptResults
+                flow = activity?.promptManager?.promptResults ?: emptyFlow<BiometricResult>()
             ) { result ->
                 when(result) {
                     is BiometricResult.AuthenticationError -> {
@@ -222,9 +228,8 @@ private fun NavGraphBuilder.authGraph(
                     }
                 },
                 onRequestBiometrics = {
-                    activity
-                        .promptManager
-                        .showBiometricPrompt(
+                    activity?.promptManager
+                        ?.showBiometricPrompt(
                             title = "Biometric Authentication",
                             description = "Log in using your biometric credential"
                         )
@@ -238,7 +243,11 @@ private fun NavGraphBuilder.dashboardGraph(
     navController: NavHostController
 ) {
     navigation<Routes.DashboardGraph>(
-        startDestination = Routes.DashboardScreen
+        startDestination = Routes.DashboardScreen,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) }
     ) {
         composable<Routes.DashboardScreen> {
             DashboardScreenRoot(
@@ -265,7 +274,11 @@ private fun NavGraphBuilder.settingsGraph(
     navController: NavHostController
 ) {
     navigation<Routes.SettingsGraph>(
-        startDestination = Routes.SettingsScreen
+        startDestination = Routes.SettingsScreen,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) }
     ) {
         composable<Routes.SettingsScreen> {
             SettingsScreenRoot(
