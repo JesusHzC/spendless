@@ -152,7 +152,9 @@ private fun LoginScreen(
                 onButtonClick = {
                     keyboard?.hide()
                     autofillManager?.commit()
-                    onAction(LoginAction.OnLoginClick)
+                        .also {
+                            onAction(LoginAction.OnLoginClick)
+                        }
                 },
                 isEnabled = state.canLogin,
                 modifier = Modifier
