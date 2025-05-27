@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.jesushz.spendless.auth.presentation.login
 
 import androidx.compose.foundation.Image
@@ -17,11 +19,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.platform.LocalAutofillManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -82,6 +89,8 @@ private fun LoginScreen(
     onAction: (LoginAction) -> Unit
 ) {
     val keyboard = LocalSoftwareKeyboardController.current
+    val autofillManager = LocalAutofillManager.current
+
     SpendLessScaffold(
         snackBarHost = snackBarHostState
     ) { innerPadding ->
@@ -116,7 +125,11 @@ private fun LoginScreen(
             UsernameLoginTextField(
                 value = state.username,
                 hint = stringResource(R.string.username_hint_login),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        contentType = ContentType.Username
+                    },
                 onValueChange = {
                     onAction(LoginAction.OnUsernameChange(it))
                 }
@@ -125,7 +138,11 @@ private fun LoginScreen(
             PinLoginTextField(
                 value = state.pin,
                 hint = stringResource(R.string.pin_hint),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        contentType = ContentType.Password
+                    },
                 onValueChange = {
                     onAction(LoginAction.OnPinChange(it))
                 }
@@ -134,6 +151,7 @@ private fun LoginScreen(
             SpendLessButton(
                 onButtonClick = {
                     keyboard?.hide()
+                    autofillManager?.commit()
                     onAction(LoginAction.OnLoginClick)
                 },
                 isEnabled = state.canLogin,
