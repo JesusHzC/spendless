@@ -124,17 +124,18 @@ class AllTransactionsViewModel(
 
                 dashboardRepository
                     .getComingSoonTransactions(username)
+                    .distinctUntilChanged()
                     .onEach { transactions ->
-                        val newTransaction = transactions.map {
-                            CombineTransaction(
-                                date = "COMING SOON",
-                                transactions = transactions
-                            )
-                        }
-                        Timber.d("comingSoonTransactions: $newTransaction")
+                        Timber.d("comingSoonTransactions: $transactions")
+
                         _state.update {
                             it.copy(
-                                comingSoonTransactions = newTransaction
+                                comingSoonTransactions = listOf(
+                                    CombineTransaction(
+                                        date = "COMING SOON",
+                                        transactions = transactions.distinct()
+                                    )
+                                )
                             )
                         }
                     }

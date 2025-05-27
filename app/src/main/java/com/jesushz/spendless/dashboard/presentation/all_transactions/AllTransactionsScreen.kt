@@ -91,41 +91,43 @@ private fun AllTransactionsScreen(
                         .padding(12.dp)
                 ) {
                     state.comingSoonTransactions.fastForEach { transactions ->
-                        stickyHeader {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = transactions.date,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        color = MaterialTheme.colorScheme.background
-                                    )
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                        items(
-                            items = transactions.transactions,
-                            key = { it.hashCode() }
-                        ) { transaction ->
-                            TransactionItem(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                transaction = transaction,
-                                itemSelected = itemSelected,
-                                amountFormatted = state.formatAmount(transaction.amount),
-                                onItemSelected = {
-                                    itemSelected = transaction
-                                },
-                                showEditAction = false,
-                                onItemEdit = {},
-                                onItemDelete = {
-                                    onAction(AllTransactionsAction.OnDeleteRepeatTransaction(transaction))
-                                }
-                            )
+                        if (transactions.transactions.isNotEmpty()) {
+                            stickyHeader {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = transactions.date,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontSize = 12.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = MaterialTheme.colorScheme.background
+                                        )
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                            items(
+                                items = transactions.transactions,
+                                key = { it.hashCode() }
+                            ) { transaction ->
+                                TransactionItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    transaction = transaction,
+                                    itemSelected = itemSelected,
+                                    amountFormatted = state.formatAmount(transaction.amount),
+                                    onItemSelected = {
+                                        itemSelected = transaction
+                                    },
+                                    showEditAction = false,
+                                    onItemEdit = {},
+                                    onItemDelete = {
+                                        onAction(AllTransactionsAction.OnDeleteRepeatTransaction(transaction))
+                                    }
+                                )
+                            }
                         }
                     }
                     state.allTransactions.fastForEach { transactions ->
