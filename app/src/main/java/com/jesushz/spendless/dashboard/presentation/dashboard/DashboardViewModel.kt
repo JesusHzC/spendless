@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.transactions.CombineTransaction
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -92,12 +94,11 @@ class DashboardViewModel(
                 Timber.d("Username: $username")
                 dashboardRepository
                     .getAccountBalance(username)
-                    .mapNotNull { it }
                     .onEach { balance ->
                         Timber.d("Balance: $balance")
                         _state.update {
                             it.copy(
-                                accountBalance = balance
+                                accountBalance = balance ?: 0.0
                             )
                         }
                     }
@@ -105,7 +106,6 @@ class DashboardViewModel(
 
                 dashboardRepository
                     .getLongestTransaction(username)
-                    .mapNotNull { it }
                     .onEach { transaction ->
                         Timber.d("Longest transaction: $transaction")
                         _state.update {
@@ -118,12 +118,11 @@ class DashboardViewModel(
 
                 dashboardRepository
                     .getPreviousWeekBalance(username)
-                    .mapNotNull { it }
                     .onEach { balance ->
                         Timber.d("Previous week balance: $balance")
                         _state.update {
                             it.copy(
-                                previousWeekBalance = balance
+                                previousWeekBalance = balance ?: 0.0
                             )
                         }
                     }
@@ -209,7 +208,9 @@ class DashboardViewModel(
                 }
             }
             is DashboardAction.OnDeleteTransaction -> {
-
+                viewModelScope.launch(Dispatchers.IO) {
+                    dashboardRepository.deleteTransactionById(action.transaction.id)
+                }
             }
             else -> Unit
         }

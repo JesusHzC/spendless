@@ -16,5 +16,6 @@ interface LocalTransactionDataSource {
     fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>>
     fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>>
     suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local>
+    suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local>
 
 }

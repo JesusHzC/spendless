@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.transactions.CombineTransaction
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -121,6 +123,33 @@ class AllTransactionsViewModel(
                     .launchIn(viewModelScope)
             }
             .launchIn(viewModelScope)
+    }
+
+    fun onAction(action: AllTransactionsAction) {
+        when (action) {
+            AllTransactionsAction.OnDismissTransactionClick -> {
+                _state.update {
+                    it.copy(
+                        showCreateTransactionBottomSheet = false,
+                        tmpTransaction = null
+                    )
+                }
+            }
+            is AllTransactionsAction.OnEditTransaction -> {
+                _state.update {
+                    it.copy(
+                        showCreateTransactionBottomSheet = true,
+                        tmpTransaction = action.transaction
+                    )
+                }
+            }
+            is AllTransactionsAction.OnDeleteTransaction -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    dashboardRepository.deleteTransactionById(action.transaction.id)
+                }
+            }
+            else -> Unit
+        }
     }
 
 }

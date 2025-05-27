@@ -1,5 +1,6 @@
 package com.jesushz.spendless.core.database
 
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException
 import com.jesushz.spendless.core.database.dao.TransactionDao
 import com.jesushz.spendless.core.database.entity.TransactionEntity
@@ -55,6 +56,16 @@ class RoomLocalTransactionDataSource(
     override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {
         return try {
             transactionDao.clearRepeatDateTime(transactionId)
+            Result.Success(Unit)
+        } catch (e: Exception) {
+            Timber.e(e)
+            Result.Error(DataError.Local.UNKNOWN)
+        }
+    }
+
+    override suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local> {
+        return try {
+            transactionDao.deleteTransactionById(transactionId)
             Result.Success(Unit)
         } catch (e: Exception) {
             Timber.e(e)

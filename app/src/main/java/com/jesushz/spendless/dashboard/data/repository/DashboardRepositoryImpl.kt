@@ -91,4 +91,8 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.clearRepeatDateTime(transactionId)
     }
 
+    override suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local> {
+        return localTransactionDataSource.deleteTransactionById(transactionId)
+    }
+
 }

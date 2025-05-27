@@ -89,4 +89,13 @@ interface TransactionDao {
     )
     suspend fun clearRepeatDateTime(transactionId: String)
 
+    // Delete transaction by ID
+    @Query(
+        """
+            DELETE FROM TransactionEntity 
+            WHERE id = :transactionId
+        """
+    )
+    suspend fun deleteTransactionById(transactionId: String)
+
 }

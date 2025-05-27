@@ -37,6 +37,8 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.dashboard.presentation.all_transactions.components.AllTransactionsTopBar
 import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
+import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
+import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,6 +52,7 @@ fun AllTransactionsScreenRoot(
         onAction = { action ->
             when (action) {
                 AllTransactionsAction.OnBack -> onNavigateUp()
+                else -> viewModel.onAction(action)
             }
         }
     )
@@ -60,6 +63,13 @@ private fun AllTransactionsScreen(
     state: AllTransactionsState,
     onAction: (AllTransactionsAction) -> Unit
 ) {
+    CreateTransactionBottomSheetRoot(
+        showBottomSheet = state.showCreateTransactionBottomSheet,
+        transaction = state.tmpTransaction,
+        onDismissRequest = {
+            onAction(AllTransactionsAction.OnDismissTransactionClick)
+        }
+    )
     SpendLessScaffold(
         topBar = {
             AllTransactionsTopBar(
@@ -111,10 +121,10 @@ private fun AllTransactionsScreen(
                                     itemSelected = transaction
                                 },
                                 onItemEdit = {
-
+                                    onAction(AllTransactionsAction.OnEditTransaction(transaction))
                                 },
                                 onItemDelete = {
-
+                                    onAction(AllTransactionsAction.OnDeleteTransaction(transaction))
                                 }
                             )
                         }
