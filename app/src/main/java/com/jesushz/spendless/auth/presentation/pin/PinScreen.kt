@@ -34,14 +34,14 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PinScreenRoot(
-    viewModel: PinViewModel = koinViewModel(),
+    viewModel: PinViewModel,
     onNavigateUp: () -> Unit,
     onRefreshLogin: () -> Unit,
-    onNavigateToPreferences: () -> Unit
+    onNavigateToPreferences: () -> Unit,
+    onBiometricLogin: () -> Unit
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -63,6 +63,7 @@ fun PinScreenRoot(
             }
             PinEvent.OnNavigateBack -> onNavigateUp()
             PinEvent.OnRefreshLoginSuccess -> onRefreshLogin()
+            PinEvent.OnBiometricLogin -> onBiometricLogin()
         }
     }
     PinScreen(
@@ -122,6 +123,7 @@ private fun PinScreen(
             NumericKeyboard(
                 modifier = Modifier
                     .weight(1f),
+                showBiometrics = state.isBiometricEnabled,
                 onKeyClick = {
                     onAction(PinAction.OnKeyPressed(it))
                 }

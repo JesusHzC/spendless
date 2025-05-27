@@ -9,6 +9,7 @@ import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.auth.domain.repository.AuthRepository
 import com.jesushz.spendless.auth.presentation.pin.components.Keys
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
+import com.jesushz.spendless.core.domain.security.Biometrics
 import com.jesushz.spendless.core.domain.user.User
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.presentation.ui.asUiText
@@ -18,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -58,6 +60,20 @@ class PinViewModel(
                 }
             }
             .launchIn(viewModelScope)
+
+        dataStoreManager
+            .getBiometrics()
+            .distinctUntilChanged()
+            .onEach { biometrics ->
+                val isRefreshLogin = state.value.flow == PinFlow.REFRESH_LOGIN
+                val biometricsEnabled = biometrics == Biometrics.ENABLE && isRefreshLogin
+                _state.update {
+                    it.copy(
+                        isBiometricEnabled = biometricsEnabled,
+                    )
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: PinAction) {
@@ -84,12 +100,29 @@ class PinViewModel(
                     PinFlow.REFRESH_LOGIN -> Unit
                 }
             }
+            is PinAction.OnBiometricsError -> {
+                viewModelScope.launch {
+                    _event.send(PinEvent.OnError(action.error))
+                }
+            }
+            PinAction.OnBiometricsSuccess -> {
+                viewModelScope.launch {
+                    dataStoreManager.updateLockOutEnabled(true)
+                    _event.send(PinEvent.OnRefreshLoginSuccess)
+                }
+            }
         }
     }
 
     private fun onKeyPressed(key: Keys) {
         when (key) {
-            Keys.BLANK -> Unit
+            Keys.BLANK -> {
+                if (state.value.isBiometricEnabled) {
+                    viewModelScope.launch {
+                        _event.send(PinEvent.OnBiometricLogin)
+                    }
+                }
+            }
             Keys.DELETE -> {
                 when (state.value.flow) {
                     PinFlow.CONFIRM_REGISTER -> {
@@ -145,8 +178,8 @@ class PinViewModel(
                             } else {
                                 if (state.value.pin == state.value.pinSaved) {
                                     viewModelScope.launch {
-                                        _event.send(PinEvent.OnRefreshLoginSuccess)
                                         dataStoreManager.updateLockOutEnabled(true)
+                                        _event.send(PinEvent.OnRefreshLoginSuccess)
                                     }
                                 } else {
                                     viewModelScope.launch {

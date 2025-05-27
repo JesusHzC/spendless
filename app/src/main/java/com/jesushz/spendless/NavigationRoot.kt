@@ -17,7 +17,9 @@ import com.jesushz.spendless.auth.domain.PinFlow
 import com.jesushz.spendless.auth.presentation.login.LoginAction
 import com.jesushz.spendless.auth.presentation.login.LoginScreenRoot
 import com.jesushz.spendless.auth.presentation.login.LoginViewModel
+import com.jesushz.spendless.auth.presentation.pin.PinAction
 import com.jesushz.spendless.auth.presentation.pin.PinScreenRoot
+import com.jesushz.spendless.auth.presentation.pin.PinViewModel
 import com.jesushz.spendless.auth.presentation.register.RegisterScreenRoot
 import com.jesushz.spendless.core.data.security.BiometricPromptManager.BiometricResult
 import com.jesushz.spendless.core.domain.preferences.PrefsFlow
@@ -65,7 +67,62 @@ private fun NavGraphBuilder.authGraph(
         }
 
         composable<Routes.PinScreen> {
+            val activity = LocalActivity.current as MainActivity
+
+            val viewModel: PinViewModel = koinViewModel()
+
+            val enrollLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult(),
+                onResult = {
+                    Timber.i("Activity result: $it")
+                }
+            )
+
+            ObserveAsEvents(
+                flow = activity.promptManager.promptResults
+            ) { result ->
+                when(result) {
+                    is BiometricResult.AuthenticationError -> {
+                        viewModel.onAction(
+                            PinAction.OnBiometricsError(
+                                UiText.DynamicString(result.error)
+                            )
+                        )
+                    }
+                    BiometricResult.AuthenticationFailed -> {
+                        Timber.e("Authentication failed")
+                    }
+                    BiometricResult.AuthenticationNotSet -> {
+                        val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                            putExtra(
+                                Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                BIOMETRIC_STRONG or DEVICE_CREDENTIAL
+                            )
+                        }
+                        enrollLauncher.launch(enrollIntent)
+                    }
+                    BiometricResult.AuthenticationSuccess -> {
+                        viewModel.onAction(PinAction.OnBiometricsSuccess)
+                    }
+                    BiometricResult.FeatureUnavailable -> {
+                        viewModel.onAction(
+                            PinAction.OnBiometricsError(
+                                UiText.DynamicString("Feature unavailable")
+                            )
+                        )
+                    }
+                    BiometricResult.HardwareUnavailable -> {
+                        viewModel.onAction(
+                            PinAction.OnBiometricsError(
+                                UiText.DynamicString("Hardware unavailable")
+                            )
+                        )
+                    }
+                }
+            }
+
             PinScreenRoot(
+                viewModel = viewModel,
                 onNavigateUp = {
                     navController.navigateUp()
                 },
@@ -78,6 +135,14 @@ private fun NavGraphBuilder.authGraph(
                 },
                 onRefreshLogin = {
                     navController.navigateUp()
+                },
+                onBiometricLogin = {
+                    activity
+                        .promptManager
+                        .showBiometricPrompt(
+                            title = "Biometric Authentication",
+                            description = "Log in using your biometric credential"
+                        )
                 }
             )
         }

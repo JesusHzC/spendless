@@ -8,5 +8,6 @@ data class PinState(
     val isPinValid: Boolean = false,
     val flow: PinFlow = PinFlow.REGISTER,
     val username: String = "",
-    val pinSaved: String = ""
+    val pinSaved: String = "",
+    val isBiometricEnabled: Boolean = false
 )

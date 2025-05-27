@@ -55,6 +55,7 @@ enum class Keys(val value: Int) {
 @Composable
 fun NumericKeyboard(
     modifier: Modifier = Modifier,
+    showBiometrics: Boolean = false,
     onKeyClick: (Keys) -> Unit
 ) {
     var keyMaxWidth by remember {
@@ -91,17 +92,26 @@ fun NumericKeyboard(
                     .background(
                         color = when (key) {
                             Keys.DELETE -> DeleteKeyColor
-                            Keys.BLANK -> Color.Transparent
+                            Keys.BLANK -> {
+                                if (showBiometrics) DeleteKeyColor else Color.Transparent
+                            }
                             else -> PrimaryFixed
                         }
                     )
-                    .clickable(enabled = key != Keys.BLANK) {
+                    .clickable {
                         onKeyClick(key)
                     },
                 contentAlignment = Alignment.Center
             ) {
                 when (key) {
-                    Keys.BLANK -> Unit
+                    Keys.BLANK -> {
+                        if (showBiometrics) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_biometrics),
+                                contentDescription = stringResource(R.string.delete_key),
+                            )
+                        }
+                    }
                     Keys.DELETE -> Image(
                         painter = painterResource(R.drawable.ic_back_key),
                         contentDescription = stringResource(R.string.delete_key),

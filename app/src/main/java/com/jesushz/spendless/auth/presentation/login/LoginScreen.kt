@@ -34,7 +34,6 @@ import com.jesushz.spendless.core.presentation.designsystem.components.SpendLess
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LoginScreenRoot(

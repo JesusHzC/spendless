@@ -8,5 +8,6 @@ sealed interface PinEvent {
     data object OnRegisterSuccess: PinEvent
     data object OnNavigateBack: PinEvent
     data object OnRefreshLoginSuccess: PinEvent
+    data object OnBiometricLogin: PinEvent
 
 }
