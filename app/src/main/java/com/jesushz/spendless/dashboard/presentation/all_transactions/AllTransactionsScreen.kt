@@ -123,7 +123,7 @@ private fun AllTransactionsScreen(
                                 showEditAction = false,
                                 onItemEdit = {},
                                 onItemDelete = {
-                                    onAction(AllTransactionsAction.OnDeleteTransaction(transaction))
+                                    onAction(AllTransactionsAction.OnDeleteRepeatTransaction(transaction))
                                 }
                             )
                         }

@@ -163,6 +163,11 @@ class AllTransactionsViewModel(
             }
             is AllTransactionsAction.OnDeleteTransaction -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    dashboardRepository.deleteTransactionById(action.transaction.id)
+                }
+            }
+            is AllTransactionsAction.OnDeleteRepeatTransaction -> {
+                viewModelScope.launch(Dispatchers.IO) {
                     dashboardRepository.clearRepeatDateTime(action.transaction.id)
                 }
             }

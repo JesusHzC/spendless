@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -32,7 +33,6 @@ class MainViewModel(
 
     init {
         sessionManager = SessionManager(
-            dataStoreManager = dataStoreManager,
             applicationScope = applicationScope,
             onSessionExpired = { type ->
                 when (type) {
@@ -77,31 +77,29 @@ class MainViewModel(
             }
             .launchIn(viewModelScope)
 
-        dataStoreManager
-            .isSessionMonitorEnabled()
-            .distinctUntilChanged()
-            .onEach { enabled ->
-                Timber.i("Session monitor enabled: $enabled")
-                if (enabled) {
-                    sessionManager?.startSessionMonitor()
-                } else {
-                    sessionManager?.stopSessionMonitor()
-                }
+        combine(
+            dataStoreManager.isSessionMonitorEnabled(),
+            dataStoreManager.getSessionDuration()
+        ) { enabled, duration ->
+            Timber.i("Session monitor enabled: $enabled, duration: $duration")
+            if (enabled) {
+                sessionManager?.startSessionMonitor(duration.millis)
+            } else {
+                sessionManager?.stopSessionMonitor()
             }
-            .launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
 
-        dataStoreManager
-            .isLockOutEnabled()
-            .distinctUntilChanged()
-            .onEach { enabled ->
-                Timber.i("Lockout enabled: $enabled")
-                if (enabled) {
-                    sessionManager?.startLockoutMonitor()
-                } else {
-                    sessionManager?.stopLockoutMonitor()
-                }
+        combine(
+            dataStoreManager.isLockOutEnabled(),
+            dataStoreManager.getLockedOutDuration()
+        ) { enabled, duration ->
+            Timber.i("Session monitor enabled: $enabled, duration: $duration")
+            if (enabled) {
+                sessionManager?.startLockoutMonitor(duration.millis)
+            } else {
+                sessionManager?.stopLockoutMonitor()
             }
-            .launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
     }
 
     fun onUserInteraction() {

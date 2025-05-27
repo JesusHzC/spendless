@@ -1,18 +1,15 @@
 package com.jesushz.spendless.core.domain.security
 
-import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class SessionManager(
-    private val dataStoreManager: DataStoreManager,
     private val applicationScope: CoroutineScope,
     private val onSessionExpired: (SessionExpiredType) -> Unit,
 ) {
@@ -21,17 +18,9 @@ class SessionManager(
     private var sessionJob: Job? = null
     private var lockoutJob: Job? = null
 
-    fun startSessionMonitor() {
-        sessionJob?.cancel()
-        applicationScope.launch {
-            val duration = dataStoreManager.getSessionDuration().first().millis
-            val isEnabled = dataStoreManager.isSessionMonitorEnabled().first()
-
-            if (isEnabled) {
-                Timber.i("Starting session monitor")
-                sessionJob = launchMonitor(duration, SessionExpiredType.SESSION_EXPIRED)
-            }
-        }
+    fun startSessionMonitor(duration: Long) {
+        stopSessionMonitor()
+        sessionJob = launchMonitor(duration, SessionExpiredType.SESSION_EXPIRED)
     }
 
     fun stopSessionMonitor() {
@@ -40,17 +29,9 @@ class SessionManager(
         sessionJob = null
     }
 
-    fun startLockoutMonitor() {
-        lockoutJob?.cancel()
-        applicationScope.launch {
-            val duration = dataStoreManager.getLockedOutDuration().first().millis
-            val isEnabled = dataStoreManager.isLockOutEnabled().first()
-
-            if (isEnabled) {
-                Timber.i("Starting lockout monitor")
-                lockoutJob = launchMonitor(duration, SessionExpiredType.LOCKED_OUT)
-            }
-        }
+    fun startLockoutMonitor(duration: Long) {
+        stopLockoutMonitor()
+        lockoutJob = launchMonitor(duration, SessionExpiredType.LOCKED_OUT)
     }
 
     fun stopLockoutMonitor() {
