@@ -71,7 +71,11 @@ private fun NavGraphBuilder.authGraph(
         composable<Routes.LoginScreen> {
             LoginScreenRoot(
                 onNavigateToRegister = {
-                    navController.navigate(Routes.LoginScreen)
+                    navController.navigate(Routes.RegisterScreen) {
+                        popUpTo(Routes.AuthGraph) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onNavigateToDashboard = {
                     navController.navigate(Routes.DashboardGraph) {

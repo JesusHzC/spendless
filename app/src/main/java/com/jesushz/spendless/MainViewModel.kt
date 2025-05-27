@@ -106,4 +106,8 @@ class MainViewModel(
         sessionManager?.touch()
     }
 
+    suspend fun logout() {
+        dataStoreManager.clearUserData()
+    }
+
 }
