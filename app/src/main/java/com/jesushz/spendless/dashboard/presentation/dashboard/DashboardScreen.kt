@@ -190,18 +190,24 @@ private fun LatestTransactions(
                 state.latestTransactions.fastForEach { transactions ->
                     if (transactions.transactions.isNotEmpty()) {
                         stickyHeader {
-                            Text(
-                                text = transactions.date,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface,
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        color = MaterialTheme.colorScheme.background
+                                        color = MaterialTheme.colorScheme.surface
                                     )
-                            )
+                            ) {
+                                Text(
+                                    text = transactions.date,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontSize = 12.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                )
+                            }
                         }
                         items(
                             items = transactions.transactions,

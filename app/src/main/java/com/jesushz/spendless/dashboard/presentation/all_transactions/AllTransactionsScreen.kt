@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -93,24 +94,28 @@ private fun AllTransactionsScreen(
                     state.comingSoonTransactions.fastForEach { transactions ->
                         if (transactions.transactions.isNotEmpty()) {
                             stickyHeader {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Text(
-                                    text = transactions.date,
-                                    style = MaterialTheme.typography.bodySmall.copy(
-                                        fontSize = 12.sp
-                                    ),
-                                    color = MaterialTheme.colorScheme.onSurface,
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .background(
-                                            color = MaterialTheme.colorScheme.background
+                                            color = MaterialTheme.colorScheme.surface
                                         )
-                                )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                ) {
+                                    Text(
+                                        text = transactions.date,
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontSize = 12.sp
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    )
+                                }
                             }
                             items(
                                 items = transactions.transactions,
-                                key = { it.hashCode() }
+                                key = { it.id + it.date }
                             ) { transaction ->
                                 TransactionItem(
                                     modifier = Modifier
@@ -132,20 +137,24 @@ private fun AllTransactionsScreen(
                     }
                     state.allTransactions.fastForEach { transactions ->
                         stickyHeader {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = transactions.date,
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.sp
-                                ),
-                                color = MaterialTheme.colorScheme.onSurface,
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(
-                                        color = MaterialTheme.colorScheme.background
+                                        color = MaterialTheme.colorScheme.surface
                                     )
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            ) {
+                                Text(
+                                    text = transactions.date,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontSize = 12.sp
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                )
+                            }
                         }
                         items(
                             items = transactions.transactions,
