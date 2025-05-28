@@ -98,7 +98,7 @@ class DashboardRepositoryImpl(
             .getComingSoonTransactions(userId)
             .map { list ->
                 list.map {
-                    it.toTransaction()
+                    it.toTransaction(isComingSoon = true)
                 }
             }
     }

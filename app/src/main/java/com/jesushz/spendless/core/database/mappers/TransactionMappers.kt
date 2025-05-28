@@ -31,7 +31,7 @@ fun Transaction.toTransactionEntity(): TransactionEntity {
     )
 }
 
-fun TransactionEntity.toTransaction(): Transaction {
+fun TransactionEntity.toTransaction(isComingSoon: Boolean = false): Transaction {
     return Transaction(
         id = id,
         transactionType = transactionType,
@@ -39,7 +39,7 @@ fun TransactionEntity.toTransaction(): Transaction {
         amount = amount,
         receiver = receiver,
         note = note,
-        date = dateTime,
+        date = if (isComingSoon) repeatDateTime ?: "" else dateTime,
         repeat = repeat
     )
 }

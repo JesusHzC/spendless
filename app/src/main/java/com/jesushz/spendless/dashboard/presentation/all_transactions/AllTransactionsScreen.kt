@@ -127,6 +127,7 @@ private fun AllTransactionsScreen(
                                         itemSelected = transaction
                                     },
                                     showEditAction = false,
+                                    isComingTransaction = true,
                                     onItemEdit = {},
                                     onItemDelete = {
                                         onAction(AllTransactionsAction.OnDeleteRepeatTransaction(transaction))

@@ -36,6 +36,7 @@ import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.Success
+import com.jesushz.spendless.core.util.formatToReadableDate
 
 @Composable
 fun TransactionItem(
@@ -43,6 +44,7 @@ fun TransactionItem(
     transaction: Transaction,
     itemSelected: Transaction?,
     showEditAction: Boolean = true,
+    isComingTransaction: Boolean = false,
     amountFormatted: String,
     onItemSelected: () -> Unit,
     onItemEdit: () -> Unit,
@@ -154,19 +156,31 @@ fun TransactionItem(
                             )
                         )
                     }
-                    Text(
-                        text = if (transaction.transactionType == TransactionType.INCOME) {
-                            "$${transaction.amount}"
-                        } else {
-                            amountFormatted
-                        },
-                        style = MaterialTheme.typography.titleLarge,
-                        color = if (transaction.transactionType == TransactionType.INCOME) {
-                            Success
-                        } else {
-                            MaterialTheme.typography.titleLarge.color
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        if (isComingTransaction) {
+                            Text(
+                                text = formatToReadableDate(transaction.date),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 12.sp
+                                ),
+                            )
                         }
-                    )
+                        Text(
+                            text = if (transaction.transactionType == TransactionType.INCOME) {
+                                "$${transaction.amount}"
+                            } else {
+                                amountFormatted
+                            },
+                            style = MaterialTheme.typography.titleLarge,
+                            color = if (transaction.transactionType == TransactionType.INCOME) {
+                                Success
+                            } else {
+                                MaterialTheme.typography.titleLarge.color
+                            }
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 AnimatedVisibility(
