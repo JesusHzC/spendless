@@ -172,14 +172,30 @@ class DefaultDataStoreManager(
         }
     }
 
+    override suspend fun setIsLoggedIn(isLoggedIn: Boolean) {
+        val isLoggedInKey = booleanPreferencesKey(PreferencesKeys.IS_LOGGED_IN)
+        context.dataStore.edit { preferences ->
+            preferences[isLoggedInKey] = isLoggedIn
+        }
+    }
+
+    override fun isLoggedIn(): Flow<Boolean> {
+        val key = booleanPreferencesKey(PreferencesKeys.IS_LOGGED_IN)
+        return context.dataStore.data.map { preferences ->
+            preferences[key] == true
+        }
+    }
+
     override suspend fun clearUserData() {
         applicationScope.launch {
             val userNameKey = stringPreferencesKey(PreferencesKeys.USER_NAME)
             val userPinKey = stringPreferencesKey(PreferencesKeys.USER_PIN)
+            val isLoggedInKey = booleanPreferencesKey(PreferencesKeys.IS_LOGGED_IN)
 
             context.dataStore.edit { preferences ->
                 preferences.remove(userNameKey)
                 preferences.remove(userPinKey)
+                preferences.remove(isLoggedInKey)
             }
         }.join()
     }

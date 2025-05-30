@@ -38,15 +38,14 @@ class MainViewModel(
                 when (type) {
                     SessionExpiredType.SESSION_EXPIRED -> {
                         viewModelScope.launch {
+                            dataStoreManager.setIsLoggedIn(false)
                             _event.send(MainEvent.OnNavigateToAuth)
-                            dataStoreManager.updateSessionMonitorEnabled(false)
-                            dataStoreManager.clearUserData()
                         }
                     }
                     SessionExpiredType.LOCKED_OUT -> {
                         viewModelScope.launch {
-                            _event.send(MainEvent.OnNavigateToPin)
                             dataStoreManager.updateLockOutEnabled(false)
+                            _event.send(MainEvent.OnNavigateToPin)
                         }
                     }
                 }
@@ -57,13 +56,25 @@ class MainViewModel(
             .getUser()
             .distinctUntilChanged()
             .onEach { user ->
+                Timber.i("User data updated: $user")
                 _state.update {
                     it.copy(
-                        user = user,
-                        isLoggedIn = user != null
+                        user = user
                     )
                 }
-                if (user != null) {
+            }
+            .launchIn(viewModelScope)
+
+        dataStoreManager
+            .isLoggedIn()
+            .distinctUntilChanged()
+            .onEach { isLoggedIn ->
+                _state.update {
+                    it.copy(
+                        isLoggedIn = isLoggedIn
+                    )
+                }
+                if (isLoggedIn) {
                     viewModelScope.launch {
                         dataStoreManager.updateSessionMonitorEnabled(true)
                         dataStoreManager.updateLockOutEnabled(true)
@@ -78,8 +89,8 @@ class MainViewModel(
             .launchIn(viewModelScope)
 
         combine(
-            dataStoreManager.isSessionMonitorEnabled(),
-            dataStoreManager.getSessionDuration()
+            dataStoreManager.isSessionMonitorEnabled().distinctUntilChanged(),
+            dataStoreManager.getSessionDuration().distinctUntilChanged()
         ) { enabled, duration ->
             Timber.i("Session monitor enabled: $enabled, duration: $duration")
             if (enabled) {
@@ -90,8 +101,8 @@ class MainViewModel(
         }.launchIn(viewModelScope)
 
         combine(
-            dataStoreManager.isLockOutEnabled(),
-            dataStoreManager.getLockedOutDuration()
+            dataStoreManager.isLockOutEnabled().distinctUntilChanged(),
+            dataStoreManager.getLockedOutDuration().distinctUntilChanged()
         ) { enabled, duration ->
             Timber.i("Session monitor enabled: $enabled, duration: $duration")
             if (enabled) {
@@ -106,8 +117,10 @@ class MainViewModel(
         sessionManager?.touch()
     }
 
-    suspend fun logout() {
-        dataStoreManager.clearUserData()
+    fun endIsLoggedIn() {
+        viewModelScope.launch {
+            dataStoreManager.setIsLoggedIn(false)
+        }
     }
 
 }

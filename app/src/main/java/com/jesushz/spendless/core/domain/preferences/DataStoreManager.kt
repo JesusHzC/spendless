@@ -32,6 +32,8 @@ interface DataStoreManager {
     fun isSessionMonitorEnabled(): Flow<Boolean>
     suspend fun updateLockOutEnabled(isEnabled: Boolean)
     fun isLockOutEnabled(): Flow<Boolean>
+    suspend fun setIsLoggedIn(isLoggedIn: Boolean)
+    fun isLoggedIn(): Flow<Boolean>
     suspend fun clearUserData()
 
 }
