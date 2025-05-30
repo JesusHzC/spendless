@@ -2,6 +2,7 @@ package com.jesushz.spendless.dashboard.presentation.all_transactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jesushz.spendless.core.database.mappers.toTransaction
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.transactions.CombineTransaction
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
@@ -123,7 +124,7 @@ class AllTransactionsViewModel(
                     .launchIn(viewModelScope)
 
                 dashboardRepository
-                    .getComingSoonTransactions(username)
+                    .getAllPendingTransactionsPending(username)
                     .distinctUntilChanged()
                     .onEach { transactions ->
                         Timber.d("comingSoonTransactions: $transactions")
@@ -133,7 +134,9 @@ class AllTransactionsViewModel(
                                 comingSoonTransactions = listOf(
                                     CombineTransaction(
                                         date = "COMING SOON",
-                                        transactions = transactions.distinct()
+                                        transactions = transactions.map {
+                                            it.toTransaction()
+                                        }
                                     )
                                 )
                             )
@@ -169,7 +172,7 @@ class AllTransactionsViewModel(
             }
             is AllTransactionsAction.OnDeleteRepeatTransaction -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    dashboardRepository.clearRepeatDateTime(action.transaction.id)
+                    dashboardRepository.deleteTransactionPendingById(action.transaction.id)
                 }
             }
             else -> Unit

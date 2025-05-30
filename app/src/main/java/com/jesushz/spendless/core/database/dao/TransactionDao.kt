@@ -69,26 +69,6 @@ interface TransactionDao {
     )
     fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>>
 
-    // Get transactions where repeatDateTime is today
-    @Query(
-        """
-            SELECT * FROM TransactionEntity 
-            WHERE repeatDateTime IS NOT NULL 
-            AND date(repeatDateTime) <= date('now') 
-            AND userId = :userId
-        """
-    )
-    fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>>
-
-    @Query(
-        """
-            UPDATE TransactionEntity 
-            SET repeatDateTime = NULL 
-            WHERE id = :transactionId
-        """
-    )
-    suspend fun clearRepeatDateTime(transactionId: String)
-
     // Delete transaction by ID
     @Query(
         """
@@ -97,16 +77,5 @@ interface TransactionDao {
         """
     )
     suspend fun deleteTransactionById(transactionId: String)
-
-    // Get Coming Soon transactions
-    @Query(
-        """
-            SELECT * FROM TransactionEntity 
-            WHERE userId = :userId 
-            AND date(repeatDateTime) > date('now') 
-            ORDER BY repeatDateTime ASC
-        """
-    )
-    fun getComingSoonTransactions(userId: String): Flow<List<TransactionEntity>>
 
 }

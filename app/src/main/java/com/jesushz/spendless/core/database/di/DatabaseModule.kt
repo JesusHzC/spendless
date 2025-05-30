@@ -23,6 +23,7 @@ val databaseModule = module {
 
     single { get<SpendLessDatabase>().userDao }
     single { get<SpendLessDatabase>().transactionDao }
+    single { get<SpendLessDatabase>().transactionPendingDao }
 
     singleOf(::RoomLocalUserDataSource).bind<LocalUserDataSource>()
     singleOf(::RoomLocalTransactionDataSource).bind<LocalTransactionDataSource>()

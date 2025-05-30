@@ -11,7 +11,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @Entity
-data class TransactionEntity(
+data class TransactionPendingEntity(
     @PrimaryKey(autoGenerate = false)
     val id: String = Uuid.random().toString(),
     val userId: String,
@@ -21,5 +21,6 @@ data class TransactionEntity(
     val note: String,
     val repeat: Repeat,
     val transactionType: TransactionType,
+    val transactionParentId: String,
     val dateTime: String
 )

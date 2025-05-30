@@ -1,9 +1,10 @@
 package com.jesushz.spendless.core.database
 
-import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteFullException
 import com.jesushz.spendless.core.database.dao.TransactionDao
+import com.jesushz.spendless.core.database.dao.TransactionPendingDao
 import com.jesushz.spendless.core.database.entity.TransactionEntity
+import com.jesushz.spendless.core.database.entity.TransactionPendingEntity
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
@@ -11,9 +12,9 @@ import com.jesushz.spendless.core.util.Result
 import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 
-
 class RoomLocalTransactionDataSource(
-    private val transactionDao: TransactionDao
+    private val transactionDao: TransactionDao,
+    private val transactionPendingDao: TransactionPendingDao
 ): LocalTransactionDataSource {
 
     override suspend fun upsertTransaction(transactionEntity: TransactionEntity): EmptyDataResult<DataError.Local> {
@@ -46,35 +47,41 @@ class RoomLocalTransactionDataSource(
     }
 
     override fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getLatestTransactions(userId)
+        return transactionDao.getAllTransactions(userId)
     }
 
-    override fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getTodayRepeatTransactions(userId)
+    override suspend fun deleteTransactionById(transactionId: String) {
+        return transactionDao.deleteTransactionById(transactionId)
     }
 
-    override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {
+    // Pending Transactions
+    override suspend fun upsertTransactionPending(transactionPendingEntity: TransactionPendingEntity): EmptyDataResult<DataError.Local> {
         return try {
-            transactionDao.clearRepeatDateTime(transactionId)
+            transactionPendingDao.upsert(transactionPendingEntity)
             Result.Success(Unit)
+        } catch (e: SQLiteFullException) {
+            Timber.e(e)
+            Result.Error(DataError.Local.DISK_FULL)
         } catch (e: Exception) {
             Timber.e(e)
             Result.Error(DataError.Local.UNKNOWN)
         }
     }
 
-    override suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local> {
-        return try {
-            transactionDao.deleteTransactionById(transactionId)
-            Result.Success(Unit)
-        } catch (e: Exception) {
-            Timber.e(e)
-            Result.Error(DataError.Local.UNKNOWN)
-        }
+    override fun getAllPendingTransactionsPending(userId: String): Flow<List<TransactionPendingEntity>> {
+        return transactionPendingDao.getAllPendingTransactions(userId)
     }
 
-    override fun getComingSoonTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getComingSoonTransactions(userId)
+    override fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionPendingEntity>> {
+        return transactionPendingDao.getTodayRepeatTransactions(userId)
+    }
+
+    override suspend fun deleteTransactionPendingById(transactionPendingId: String) {
+        return transactionPendingDao.deletePendingTransaction(transactionPendingId)
+    }
+
+    override suspend fun deleteTransactionPendingByParentId(transactionParentId: String) {
+        return transactionPendingDao.deletePendingTransactionsByParentId(transactionParentId)
     }
 
 }

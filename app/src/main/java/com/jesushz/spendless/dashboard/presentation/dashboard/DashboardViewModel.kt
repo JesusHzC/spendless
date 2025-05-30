@@ -94,11 +94,12 @@ class DashboardViewModel(
                 Timber.d("Username: $username")
                 dashboardRepository
                     .getAccountBalance(username)
+                    .mapNotNull { it }
                     .onEach { balance ->
                         Timber.d("Balance: $balance")
                         _state.update {
                             it.copy(
-                                accountBalance = balance ?: 0.0
+                                accountBalance = balance
                             )
                         }
                     }
@@ -118,25 +119,24 @@ class DashboardViewModel(
 
                 dashboardRepository
                     .getPreviousWeekBalance(username)
+                    .mapNotNull { it }
                     .onEach { balance ->
                         Timber.d("Previous week balance: $balance")
                         _state.update {
                             it.copy(
-                                previousWeekBalance = balance ?: 0.0
+                                previousWeekBalance = balance
                             )
                         }
                     }
                     .launchIn(viewModelScope)
 
                 dashboardRepository
-                    .getTodayRepeatTransactions(username)
+                    .getTodayTransactionsPending(username)
                     .onEach { transactions ->
                         Timber.d("Today repeat transactions: $transactions")
                         for (transaction in transactions) {
-                            if (transaction.date.isNotEmpty()) {
-                                dashboardRepository.upsertTransactionRepeat(username, transaction)
-                                dashboardRepository.clearRepeatDateTime(transaction.oldTransactionId)
-                            }
+                            dashboardRepository.upsertTransaction(username, transaction)
+                            dashboardRepository.deleteTransactionPendingById(transaction.id)
                         }
                     }
                     .launchIn(viewModelScope)

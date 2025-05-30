@@ -1,48 +1,9 @@
 package com.jesushz.spendless.core.util
 
-import java.time.LocalDate
+import com.jesushz.spendless.core.domain.transactions.Repeat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
 import java.util.Locale
-
-/**
- * Get current day of Month
- */
-fun getCurrentDayOfMonth(): String {
-    return LocalDate.now().dayOfMonth.toString()
-}
-
-/**
- * Get name of current week
- */
-fun getCurrentWeekName(): String {
-    val dayOfWeek = LocalDate.now().dayOfWeek
-    return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
-}
-
-/**
- * Get current month name
- */
-fun getCurrentMonthName(): String {
-    val month = LocalDate.now().month
-    return month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-}
-
-/**
- * Get current day of Month with suffix
- */
-fun getCurrentDayOfMonthWithSuffix(): String {
-    val day = LocalDate.now().dayOfMonth
-    val suffix = when {
-        day in 11..13 -> "th"
-        day % 10 == 1 -> "st"
-        day % 10 == 2 -> "nd"
-        day % 10 == 3 -> "rd"
-        else -> "th"
-    }
-    return "$day$suffix"
-}
 
 /**
  * Get date time
@@ -77,4 +38,22 @@ fun parseDateToMillis(input: String): Long {
     val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
     val dateTime = LocalDateTime.parse(input, formatter)
     return dateTime.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+}
+
+/**
+ * Get next pending date by repeat and date selected
+ */
+fun getNextPendingDate(repeat: Repeat, oldDate: String): String? {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val baseDate = LocalDateTime.parse(oldDate, formatter)
+
+    val dateRepeat = when (repeat) {
+        Repeat.NOT_REPEAT -> null
+        Repeat.DAILY -> baseDate.plusDays(1).format(formatter)
+        Repeat.WEEKLY -> baseDate.plusWeeks(1).format(formatter)
+        Repeat.MONTHLY -> baseDate.plusMonths(1).format(formatter)
+        Repeat.YEARLY -> baseDate.plusYears(1).format(formatter)
+    }
+
+    return dateRepeat
 }

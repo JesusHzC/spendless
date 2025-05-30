@@ -2,16 +2,17 @@ package com.jesushz.spendless.dashboard.data.repository
 
 import com.jesushz.spendless.core.database.mappers.toTransaction
 import com.jesushz.spendless.core.database.mappers.toTransactionEntity
-import com.jesushz.spendless.core.database.mappers.toTransactionRepeat
+import com.jesushz.spendless.core.database.mappers.toTransactionPending
+import com.jesushz.spendless.core.database.mappers.toTransactionPendingEntity
 import com.jesushz.spendless.core.domain.transactions.LocalTransactionDataSource
+import com.jesushz.spendless.core.domain.transactions.Repeat
 import com.jesushz.spendless.core.domain.transactions.Transaction
-import com.jesushz.spendless.core.domain.transactions.TransactionRepeat
+import com.jesushz.spendless.core.domain.transactions.TransactionPending
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
 import com.jesushz.spendless.dashboard.domain.repository.DashboardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.collections.map
 
 class DashboardRepositoryImpl(
     private val localTransactionDataSource: LocalTransactionDataSource
@@ -21,30 +22,35 @@ class DashboardRepositoryImpl(
         userId: String,
         transaction: Transaction
     ): EmptyDataResult<DataError.Local> {
-        val entity = transaction
-            .toTransactionEntity()
-            .copy(
-                userId = userId
+        val entity = transaction.toTransactionEntity(userId)
+
+        deleteTransactionPendingByParentId(transaction.id)
+
+        val result = localTransactionDataSource.upsertTransaction(entity)
+        if (transaction.repeat != Repeat.NOT_REPEAT) {
+            return upsertTransactionPending(
+                userId = userId,
+                transaction = transaction
             )
-        return localTransactionDataSource.upsertTransaction(entity)
+        }
+
+        return result
     }
 
-    override suspend fun upsertTransactionRepeat(
+    override suspend fun upsertTransaction(
         userId: String,
-        transaction: TransactionRepeat
+        transactionPending: TransactionPending
     ): EmptyDataResult<DataError.Local> {
-        val entity = transaction
-            .toTransactionEntity()
-            .copy(
-                userId = userId
-            )
-        return localTransactionDataSource.upsertTransaction(entity)
+        val transaction = transactionPending.toTransaction(isUpsert = true)
+        return upsertTransaction(userId, transaction)
     }
 
     override fun getLongestTransaction(userId: String): Flow<Transaction?> {
         return localTransactionDataSource
             .getLongestTransaction(userId)
-            .map { it?.toTransaction() }
+            .map { entity ->
+                entity?.toTransaction()
+            }
     }
 
     override fun getPreviousWeekBalance(userId: String): Flow<Double?> {
@@ -59,9 +65,7 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource
             .getAllTransactions(userId)
             .map { list ->
-                list.map {
-                    it.toTransaction()
-                }
+                list.map { it.toTransaction() }
             }
     }
 
@@ -69,38 +73,47 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource
             .getLatestTransactions(userId)
             .map { list ->
-                list.map {
-                    it.toTransaction()
-                }
+                list.map { it.toTransaction() }
             }
     }
 
-    override fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionRepeat>> {
-        return localTransactionDataSource
-            .getTodayRepeatTransactions(userId)
-            .map { list ->
-                list.map {
-                    it.toTransactionRepeat()
-                }
-            }
-    }
-
-    override suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local> {
-        return localTransactionDataSource.clearRepeatDateTime(transactionId)
-    }
-
-    override suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local> {
+    override suspend fun deleteTransactionById(transactionId: String) {
         return localTransactionDataSource.deleteTransactionById(transactionId)
     }
 
-    override fun getComingSoonTransactions(userId: String): Flow<List<Transaction>> {
+    // Pending Transactions
+    override suspend fun upsertTransactionPending(
+        userId: String,
+        transaction: Transaction
+    ): EmptyDataResult<DataError.Local> {
+        val entity = transaction
+            .toTransactionPendingEntity(userId)
+
+        return localTransactionDataSource.upsertTransactionPending(entity)
+    }
+
+    override fun getTodayTransactionsPending(userId: String): Flow<List<TransactionPending>> {
         return localTransactionDataSource
-            .getComingSoonTransactions(userId)
+            .getTodayRepeatTransactions(userId)
             .map { list ->
-                list.map {
-                    it.toTransaction(isComingSoon = true)
-                }
+                list.map { it.toTransactionPending() }
             }
+    }
+
+    override fun getAllPendingTransactionsPending(userId: String): Flow<List<TransactionPending>> {
+        return localTransactionDataSource
+            .getAllPendingTransactionsPending(userId)
+            .map { list ->
+                list.map { it.toTransactionPending() }
+            }
+    }
+
+    override suspend fun deleteTransactionPendingById(transactionPendingId: String) {
+        return localTransactionDataSource.deleteTransactionPendingById(transactionPendingId)
+    }
+
+    override suspend fun deleteTransactionPendingByParentId(parentId: String) {
+        return localTransactionDataSource.deleteTransactionPendingByParentId(parentId)
     }
 
 }

@@ -5,7 +5,7 @@ package com.jesushz.spendless.core.domain.transactions
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-data class TransactionRepeat(
+data class TransactionPending(
     val id: String = Uuid.random().toString(),
     val transactionType: TransactionType,
     val category: Category? = null,
@@ -14,5 +14,5 @@ data class TransactionRepeat(
     val note: String,
     val date: String,
     val repeat: Repeat,
-    val oldTransactionId: String
+    val transactionParentId: String
 )

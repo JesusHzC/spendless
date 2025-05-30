@@ -1,7 +1,7 @@
 package com.jesushz.spendless.dashboard.domain.repository
 
 import com.jesushz.spendless.core.domain.transactions.Transaction
-import com.jesushz.spendless.core.domain.transactions.TransactionRepeat
+import com.jesushz.spendless.core.domain.transactions.TransactionPending
 import com.jesushz.spendless.core.util.DataError
 import com.jesushz.spendless.core.util.EmptyDataResult
 import kotlinx.coroutines.flow.Flow
@@ -12,18 +12,23 @@ interface DashboardRepository {
         userId: String,
         transaction: Transaction
     ): EmptyDataResult<DataError.Local>
-    suspend fun upsertTransactionRepeat(
+    suspend fun upsertTransaction(
         userId: String,
-        transaction: TransactionRepeat
+        transactionPending: TransactionPending
     ): EmptyDataResult<DataError.Local>
     fun getLongestTransaction(userId: String): Flow<Transaction?>
     fun getPreviousWeekBalance(userId: String): Flow<Double?>
     fun getAccountBalance(userId: String): Flow<Double?>
     fun getAllTransactions(userId: String): Flow<List<Transaction>>
     fun getLatestTransactions(userId: String): Flow<List<Transaction>>
-    fun getTodayRepeatTransactions(userId: String): Flow<List<TransactionRepeat>>
-    suspend fun clearRepeatDateTime(transactionId: String): EmptyDataResult<DataError.Local>
-    suspend fun deleteTransactionById(transactionId: String): EmptyDataResult<DataError.Local>
-    fun getComingSoonTransactions(userId: String): Flow<List<Transaction>>
+    suspend fun deleteTransactionById(transactionId: String)
 
+    suspend fun upsertTransactionPending(
+        userId: String,
+        transaction: Transaction
+    ): EmptyDataResult<DataError.Local>
+    fun getTodayTransactionsPending(userId: String): Flow<List<TransactionPending>>
+    fun getAllPendingTransactionsPending(userId: String): Flow<List<TransactionPending>>
+    suspend fun deleteTransactionPendingById(transactionPendingId: String)
+    suspend fun deleteTransactionPendingByParentId(parentId: String)
 }
