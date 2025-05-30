@@ -243,7 +243,7 @@ private fun CreateTransactionBottomSheet(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.create_transaction),
+                    text = if (state.isUpdate) stringResource(R.string.update_transaction) else stringResource(R.string.create_transaction),
                     style = MaterialTheme.typography.titleMedium
                 )
             }

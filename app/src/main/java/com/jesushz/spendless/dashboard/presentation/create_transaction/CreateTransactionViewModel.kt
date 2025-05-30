@@ -163,7 +163,8 @@ class CreateTransactionViewModel(
                         transactionType = action.transaction.transactionType,
                         categorySelected = action.transaction.category ?: Category.OTHER,
                         repeatSelected = action.transaction.repeat,
-                        dateSelected = action.transaction.date
+                        dateSelected = action.transaction.date,
+                        isUpdate = true
                     )
                 }
             }
@@ -234,7 +235,8 @@ class CreateTransactionViewModel(
                 transactionType = TransactionType.EXPENSE,
                 categorySelected = Category.OTHER,
                 repeatSelected = Repeat.NOT_REPEAT,
-                dateSelected = getDateFormat()
+                dateSelected = getDateFormat(),
+                isUpdate = false
             )
         }
     }

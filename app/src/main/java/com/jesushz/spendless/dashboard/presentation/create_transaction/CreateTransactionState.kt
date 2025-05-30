@@ -22,5 +22,6 @@ data class CreateTransactionState(
     val expenseFormat: ExpenseFormat = ExpenseFormat.NEGATIVE,
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,
     val thousandSeparator: ThousandSeparator = ThousandSeparator.COMMA,
-    val id: String? = null
+    val id: String? = null,
+    val isUpdate: Boolean = false
 )

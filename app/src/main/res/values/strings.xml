@@ -71,4 +71,5 @@
     <string name="wrong_pin">Wrong Pin</string>
     <string name="edit_transaction_action">Edit transaction</string>
     <string name="delete_transaction_action">Delete transaction</string>
+    <string name="update_transaction">Update</string>
 </resources>
