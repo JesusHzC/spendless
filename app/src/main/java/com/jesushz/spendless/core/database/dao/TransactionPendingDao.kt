@@ -17,7 +17,7 @@ interface TransactionPendingDao {
         """
             SELECT * FROM TransactionPendingEntity 
             WHERE userId = :userId
-            ORDER BY dateTime DESC
+            ORDER BY dateTime ASC
         """
     )
     fun getAllPendingTransactions(userId: String): Flow<List<TransactionPendingEntity>>

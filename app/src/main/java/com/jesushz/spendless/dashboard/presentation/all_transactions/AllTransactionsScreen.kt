@@ -115,7 +115,7 @@ private fun AllTransactionsScreen(
                             }
                             items(
                                 items = transactions.transactions,
-                                key = { it.id + it.date }
+                                key = { it.id }
                             ) { transaction ->
                                 TransactionItem(
                                     modifier = Modifier

@@ -210,6 +210,7 @@ class DashboardViewModel(
             is DashboardAction.OnDeleteTransaction -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     dashboardRepository.deleteTransactionById(action.transaction.id)
+                    dashboardRepository.deleteTransactionPendingByParentId(action.transaction.id)
                 }
             }
             else -> Unit

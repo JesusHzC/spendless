@@ -47,7 +47,7 @@ class RoomLocalTransactionDataSource(
     }
 
     override fun getLatestTransactions(userId: String): Flow<List<TransactionEntity>> {
-        return transactionDao.getAllTransactions(userId)
+        return transactionDao.getLatestTransactions(userId)
     }
 
     override suspend fun deleteTransactionById(transactionId: String) {
