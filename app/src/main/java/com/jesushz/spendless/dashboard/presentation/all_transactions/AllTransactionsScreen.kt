@@ -20,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +42,6 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.dashboard.presentation.all_transactions.components.AllTransactionsTopBar
 import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
 import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
-import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardAction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -68,7 +66,7 @@ private fun AllTransactionsScreen(
     state: AllTransactionsState,
     onAction: (AllTransactionsAction) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     CreateTransactionBottomSheetRoot(
         showBottomSheet = state.showCreateTransactionBottomSheet,
         transaction = state.tmpTransaction,

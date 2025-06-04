@@ -2,6 +2,8 @@
 
 package com.jesushz.spendless.dashboard.presentation.dashboard
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,7 +19,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +37,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.domain.transactions.Transaction
@@ -80,6 +88,44 @@ private fun DashboardScreen(
     state: DashboardState,
     onAction: (DashboardAction) -> Unit
 ) {
+    val stateList = rememberLazyListState()
+
+    val scrollOffset = remember {
+        derivedStateOf {
+            stateList.firstVisibleItemScrollOffset + stateList.firstVisibleItemIndex * 100
+        }
+    }
+
+    val progress by remember {
+        derivedStateOf {
+            (scrollOffset.value / 150f).coerceIn(0f, 1f)
+        }
+    }
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress,
+        animationSpec = tween(durationMillis = 200),
+        label = "animatedProgress"
+    )
+
+    val dynamicWeight by remember {
+        derivedStateOf {
+            lerp(0.7f, 0.25f, animatedProgress)
+        }
+    }
+
+    val dynamicWeightStatistics by remember {
+        derivedStateOf {
+            lerp(1f, 0.01f, animatedProgress)
+        }
+    }
+
+    val scale by remember {
+        derivedStateOf {
+            lerp(1f, 0f, animatedProgress)
+        }
+    }
+
     CreateTransactionBottomSheetRoot(
         showBottomSheet = state.showCreateTransactionBottomSheet,
         transaction = state.tmpTransaction,
@@ -105,7 +151,7 @@ private fun DashboardScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.7f)
+                    .weight(dynamicWeight)
                     .padding(16.dp)
             ) {
                 AccountBalance(
@@ -114,12 +160,21 @@ private fun DashboardScreen(
                         .fillMaxWidth()
                         .weight(1f)
                 )
-                Statistics(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f),
-                    state = state
-                )
+                        .weight(dynamicWeightStatistics)
+                        .graphicsLayer {
+                            scaleX = scale
+                            scaleY = scale
+                            alpha = scale
+                        }
+                ) {
+                    Statistics(
+                        modifier = Modifier.fillMaxSize(),
+                        state = state
+                    )
+                }
             }
             Column(
                 modifier = Modifier
@@ -131,6 +186,7 @@ private fun DashboardScreen(
                     )
             ) {
                 LatestTransactions(
+                    stateList = stateList,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
@@ -153,6 +209,7 @@ private fun DashboardScreen(
 @Composable
 private fun LatestTransactions(
     modifier: Modifier = Modifier,
+    stateList: LazyListState,
     state: DashboardState,
     onShowAllTransactions: () -> Unit,
     onEditTransaction: (Transaction) -> Unit,
@@ -160,6 +217,7 @@ private fun LatestTransactions(
 ) {
     var itemSelected by remember { mutableStateOf<Transaction?>(null) }
     LazyColumn(
+        state = stateList,
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
