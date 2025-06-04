@@ -220,7 +220,6 @@ class PinViewModel(
                 }
                 is Result.Success -> {
                     dataStoreManager.saveUser(user)
-                    dataStoreManager.updateSessionMonitorEnabled(true)
                     withContext(Dispatchers.Main) {
                         _event.send(PinEvent.OnRegisterSuccess)
                     }

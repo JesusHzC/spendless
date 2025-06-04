@@ -1,6 +1,5 @@
 package com.jesushz.spendless.auth.presentation.login
 
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,14 +18,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 class LoginViewModel(
     private val validator: UsernameValidator,
@@ -43,26 +41,20 @@ class LoginViewModel(
     private var tempUser: User? = null
 
     init {
-        combine(
-            dataStoreManager.getBiometrics().distinctUntilChanged(),
-            dataStoreManager.getUser().distinctUntilChanged()
-        ) { biometrics, user ->
-            val isEnabled = when (biometrics) {
-                Biometrics.ENABLE -> true
-                Biometrics.DISABLE -> false
+        dataStoreManager
+            .getBiometrics()
+            .distinctUntilChanged()
+            .onEach { biometrics ->
+                _state.update {
+                    it.copy(
+                        biometricsEnabled = when (biometrics) {
+                            Biometrics.ENABLE -> true
+                            Biometrics.DISABLE -> false
+                        }
+                    )
+                }
             }
-            _state.update {
-                it.copy(
-                    biometricsEnabled = isEnabled,
-                    pin = TextFieldValue(user?.pin ?: ""),
-                    username = TextFieldValue(user?.username ?: ""),
-                )
-            }
-            Timber.i("Biometrics: $biometrics, User: $user")
-            if (user != null && isEnabled) {
-                login()
-            }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: LoginAction) {
@@ -154,7 +146,6 @@ class LoginViewModel(
 
         viewModelScope.launch {
             dataStoreManager.saveUser(tempUser!!)
-            dataStoreManager.setIsLoggedIn(true)
             tempUser = null
             _event.send(LoginEvent.OnLoginSuccess)
         }

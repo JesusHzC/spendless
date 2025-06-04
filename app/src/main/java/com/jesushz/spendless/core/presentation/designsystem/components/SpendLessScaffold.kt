@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SpendLessScaffold(
+    modifier: Modifier = Modifier,
     topBar: @Composable () -> Unit = {},
     snackBarHost: SnackbarHostState? = null,
     content: @Composable (PaddingValues) -> Unit
@@ -37,6 +38,7 @@ fun SpendLessScaffold(
         },
         contentColor = MaterialTheme.colorScheme.onSurface,
         containerColor = MaterialTheme.colorScheme.background,
+        modifier = modifier
     ) { innerPadding ->
         content(innerPadding)
     }

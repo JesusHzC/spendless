@@ -3,7 +3,9 @@ package com.jesushz.spendless.core.domain.security
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -11,12 +13,14 @@ import timber.log.Timber
 
 class SessionManager(
     private val applicationScope: CoroutineScope,
-    private val onSessionExpired: (SessionExpiredType) -> Unit,
 ) {
     private var lastUsed: Long = System.currentTimeMillis()
 
     private var sessionJob: Job? = null
     private var lockoutJob: Job? = null
+
+    private val _sessionExpired = Channel<SessionExpiredType>()
+    val sessionExpired = _sessionExpired.receiveAsFlow()
 
     fun startSessionMonitor(duration: Long) {
         stopSessionMonitor()
@@ -47,7 +51,7 @@ class SessionManager(
                 Timber.i("[$type] Idle time: $idle ms (limit: $duration ms)")
                 if (idle > duration) {
                     withContext(Dispatchers.Main) {
-                        onSessionExpired(type)
+                        _sessionExpired.send(type)
                     }
                     break
                 }

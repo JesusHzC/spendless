@@ -1,7 +1,6 @@
 package com.jesushz.spendless
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.jesushz.spendless.core.domain.preferences.DataStoreManager
 import com.jesushz.spendless.core.domain.security.SessionExpiredType
 import com.jesushz.spendless.core.domain.security.SessionManager
@@ -20,10 +19,9 @@ import timber.log.Timber
 
 class MainViewModel(
     private val dataStoreManager: DataStoreManager,
-    private val applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope,
+    private val sessionManager: SessionManager
 ): ViewModel() {
-
-    private var sessionManager: SessionManager? = null
 
     private val _state = MutableStateFlow(MainState())
     val state = _state.asStateFlow()
@@ -32,25 +30,22 @@ class MainViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        sessionManager = SessionManager(
-            applicationScope = applicationScope,
-            onSessionExpired = { type ->
-                when (type) {
-                    SessionExpiredType.SESSION_EXPIRED -> {
-                        viewModelScope.launch {
-                            dataStoreManager.setIsLoggedIn(false)
-                            _event.send(MainEvent.OnNavigateToAuth)
-                        }
+        sessionManager.sessionExpired.onEach { sessionType ->
+            when (sessionType) {
+                SessionExpiredType.SESSION_EXPIRED -> {
+                    applicationScope.launch {
+                        dataStoreManager.clearUserData()
+                        _event.send(MainEvent.OnNavigateToAuth)
                     }
-                    SessionExpiredType.LOCKED_OUT -> {
-                        viewModelScope.launch {
-                            dataStoreManager.updateLockOutEnabled(false)
-                            _event.send(MainEvent.OnNavigateToPin)
-                        }
+                }
+                SessionExpiredType.LOCKED_OUT -> {
+                    applicationScope.launch {
+                        dataStoreManager.updateLockOutEnabled(false)
+                        _event.send(MainEvent.OnNavigateToPin)
                     }
                 }
             }
-        )
+        }.launchIn(applicationScope)
 
         dataStoreManager
             .getUser()
@@ -62,31 +57,15 @@ class MainViewModel(
                         user = user
                     )
                 }
-            }
-            .launchIn(viewModelScope)
-
-        dataStoreManager
-            .isLoggedIn()
-            .distinctUntilChanged()
-            .onEach { isLoggedIn ->
-                _state.update {
-                    it.copy(
-                        isLoggedIn = isLoggedIn
-                    )
-                }
-                if (isLoggedIn) {
-                    viewModelScope.launch {
-                        dataStoreManager.updateSessionMonitorEnabled(true)
-                        dataStoreManager.updateLockOutEnabled(true)
-                    }
+                if (user != null) {
+                    dataStoreManager.updateSessionMonitorEnabled(true)
+                    dataStoreManager.updateLockOutEnabled(true)
                 } else {
-                    viewModelScope.launch {
-                        dataStoreManager.updateSessionMonitorEnabled(false)
-                        dataStoreManager.updateLockOutEnabled(false)
-                    }
+                    dataStoreManager.updateSessionMonitorEnabled(false)
+                    dataStoreManager.updateLockOutEnabled(false)
                 }
             }
-            .launchIn(viewModelScope)
+            .launchIn(applicationScope)
 
         combine(
             dataStoreManager.isSessionMonitorEnabled().distinctUntilChanged(),
@@ -94,11 +73,11 @@ class MainViewModel(
         ) { enabled, duration ->
             Timber.i("Session monitor enabled: $enabled, duration: $duration")
             if (enabled) {
-                sessionManager?.startSessionMonitor(duration.millis)
+                sessionManager.startSessionMonitor(duration.millis)
             } else {
-                sessionManager?.stopSessionMonitor()
+                sessionManager.stopSessionMonitor()
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(applicationScope)
 
         combine(
             dataStoreManager.isLockOutEnabled().distinctUntilChanged(),
@@ -106,20 +85,20 @@ class MainViewModel(
         ) { enabled, duration ->
             Timber.i("Session monitor enabled: $enabled, duration: $duration")
             if (enabled) {
-                sessionManager?.startLockoutMonitor(duration.millis)
+                sessionManager.startLockoutMonitor(duration.millis)
             } else {
-                sessionManager?.stopLockoutMonitor()
+                sessionManager.stopLockoutMonitor()
             }
-        }.launchIn(viewModelScope)
+        }.launchIn(applicationScope)
     }
 
     fun onUserInteraction() {
-        sessionManager?.touch()
+        sessionManager.touch()
     }
 
     fun endIsLoggedIn() {
-        viewModelScope.launch {
-            dataStoreManager.setIsLoggedIn(false)
+        applicationScope.launch {
+            dataStoreManager.clearUserData()
         }
     }
 
