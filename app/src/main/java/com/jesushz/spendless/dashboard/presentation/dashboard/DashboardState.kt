@@ -21,7 +21,8 @@ data class DashboardState(
     val decimalSeparator: DecimalSeparator = DecimalSeparator.POINT,
     val thousandSeparator: ThousandSeparator = ThousandSeparator.COMMA,
     val isLoading: Boolean = true,
-    val tmpTransaction: Transaction? = null
+    val tmpTransaction: Transaction? = null,
+    val shouldShowBalance: Boolean = false,
 ) {
     fun formatAmount(amount: Number): String {
         return PrefsUtil.formatAmount(

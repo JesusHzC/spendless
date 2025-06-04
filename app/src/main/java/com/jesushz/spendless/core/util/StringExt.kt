@@ -13,3 +13,14 @@ fun String.isNumber(): Boolean {
 fun String.toNumber(): Double {
     return this.trim().toDoubleOrNull() ?: 0.0
 }
+
+/**
+ * Mask string with asterisks
+ */
+fun String.mask(): String {
+    return if (isNotEmpty()) {
+        "*".repeat(length)
+    } else {
+        ""
+    }
+}

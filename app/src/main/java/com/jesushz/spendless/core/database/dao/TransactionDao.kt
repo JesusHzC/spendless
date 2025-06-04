@@ -17,7 +17,8 @@ interface TransactionDao {
     @Query(
         """
             SELECT * FROM TransactionEntity 
-            WHERE userId = :userId 
+            WHERE userId = :userId
+            AND transactionType = 'EXPENSE'
             ORDER BY amount DESC 
             LIMIT 1
         """

@@ -213,6 +213,13 @@ class DashboardViewModel(
                     dashboardRepository.deleteTransactionPendingByParentId(action.transaction.id)
                 }
             }
+            DashboardAction.OnShowBalanceClick -> {
+                _state.update {
+                    it.copy(
+                        shouldShowBalance = !it.shouldShowBalance
+                    )
+                }
+            }
             else -> Unit
         }
     }

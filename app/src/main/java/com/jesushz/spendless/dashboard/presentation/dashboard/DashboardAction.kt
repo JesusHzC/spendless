@@ -10,5 +10,6 @@ sealed interface DashboardAction {
     data object OnSettingsClick: DashboardAction
     data class OnEditTransaction(val transaction: Transaction): DashboardAction
     data class OnDeleteTransaction(val transaction: Transaction): DashboardAction
+    data object OnShowBalanceClick: DashboardAction
 
 }

@@ -25,6 +25,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,6 +57,7 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SecondaryFixed
 import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.core.util.formatToReadableDate
 import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
+import com.jesushz.spendless.core.util.mask
 import com.jesushz.spendless.dashboard.presentation.create_transaction.CreateTransactionBottomSheetRoot
 import com.jesushz.spendless.dashboard.presentation.dashboard.components.DashboardScaffold
 import org.koin.androidx.compose.koinViewModel
@@ -158,7 +160,11 @@ private fun DashboardScreen(
                     accountBalance = state.formatAmount(state.accountBalance),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .weight(1f),
+                    showBalance = state.shouldShowBalance,
+                    onShowBalanceClick = {
+                        onAction(DashboardAction.OnShowBalanceClick)
+                    }
                 )
                 Box(
                     modifier = Modifier
@@ -494,22 +500,53 @@ private fun Statistics(
 @Composable
 private fun AccountBalance(
     modifier: Modifier = Modifier,
-    accountBalance: String
+    showBalance: Boolean = true,
+    accountBalance: String,
+    onShowBalanceClick: () -> Unit
 ) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = accountBalance,
-            style = MaterialTheme.typography.displayLarge
-        )
+        if (showBalance) {
+            Text(
+                text = accountBalance,
+                style = MaterialTheme.typography.displayLarge
+            )
+        } else {
+            Text(
+                text = accountBalance.mask(),
+                style = MaterialTheme.typography.displaySmall
+            )
+        }
         Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.account_balance),
-            style = MaterialTheme.typography.bodySmall
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.account_balance),
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            IconButton(
+                onClick = onShowBalanceClick,
+                modifier = Modifier
+                    .size(14.dp)
+            ) {
+                Icon(
+                    painter = if (showBalance) {
+                        painterResource(R.drawable.ic_hidde)
+                    } else {
+                        painterResource(R.drawable.ic_show)
+                    },
+                    contentDescription = stringResource(R.string.show_balance)
+                )
+            }
+        }
     }
 }
 
