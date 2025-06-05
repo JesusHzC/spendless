@@ -30,22 +30,24 @@ class MainViewModel(
     val event = _event.receiveAsFlow()
 
     init {
-        sessionManager.sessionExpired.onEach { sessionType ->
-            when (sessionType) {
-                SessionExpiredType.SESSION_EXPIRED -> {
-                    applicationScope.launch {
-                        dataStoreManager.clearUserData()
-                        _event.send(MainEvent.OnNavigateToAuth)
+        sessionManager.sessionExpired
+            .distinctUntilChanged()
+            .onEach { sessionType ->
+                when (sessionType) {
+                    SessionExpiredType.SESSION_EXPIRED -> {
+                        applicationScope.launch {
+                            dataStoreManager.clearUserData()
+                            _event.send(MainEvent.OnNavigateToAuth)
+                        }
+                    }
+                    SessionExpiredType.LOCKED_OUT -> {
+                        applicationScope.launch {
+                            dataStoreManager.updateLockOutEnabled(false)
+                            _event.send(MainEvent.OnNavigateToPin)
+                        }
                     }
                 }
-                SessionExpiredType.LOCKED_OUT -> {
-                    applicationScope.launch {
-                        dataStoreManager.updateLockOutEnabled(false)
-                        _event.send(MainEvent.OnNavigateToPin)
-                    }
-                }
-            }
-        }.launchIn(applicationScope)
+            }.launchIn(applicationScope)
 
         dataStoreManager
             .getUser()
