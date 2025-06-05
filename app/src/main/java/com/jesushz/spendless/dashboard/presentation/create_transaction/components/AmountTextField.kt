@@ -1,5 +1,6 @@
 package com.jesushz.spendless.dashboard.presentation.create_transaction.components
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.jesushz.spendless.MainActivity
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.presentation.designsystem.theme.Success
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
@@ -39,6 +41,7 @@ fun AmountTextField(
 ) {
     val textStyle = MaterialTheme.typography.displayMedium
     var isFocused by remember { mutableStateOf(false) }
+    val activity = LocalActivity.current as MainActivity
 
     Row(
         modifier = modifier,
@@ -80,6 +83,7 @@ fun AmountTextField(
         BasicTextField(
             value = amount,
             onValueChange = {
+                activity.onUserInteraction()
                 if (it.isNumber() || it.isEmpty()) {
                     onAmountChange(it)
                 }

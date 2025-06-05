@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.jesushz.spendless.core.domain.transactions.Category
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
+import com.jesushz.spendless.core.util.userInteraction
 
 @Composable
 fun DropDownCategories(
@@ -107,6 +108,7 @@ fun DropDownCategories(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .width(menuMaxWidthDp)
+                .userInteraction()
         ) {
             Category.entries.fastForEach { category ->
                 DropdownMenuItem(

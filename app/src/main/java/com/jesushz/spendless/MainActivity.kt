@@ -1,6 +1,8 @@
 package com.jesushz.spendless
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -56,9 +58,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onUserInteraction() {
-        super.onUserInteraction()
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         viewModel.onUserInteraction()
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        viewModel.onUserInteraction()
+        return super.dispatchKeyEvent(event)
+    }
+
+    override fun onUserInteraction() {
+        viewModel.onUserInteraction()
+        super.onUserInteraction()
     }
 
 }

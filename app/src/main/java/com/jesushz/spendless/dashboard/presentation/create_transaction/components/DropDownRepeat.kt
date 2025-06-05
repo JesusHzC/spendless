@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.jesushz.spendless.core.domain.transactions.Repeat
 import com.jesushz.spendless.core.presentation.designsystem.theme.PrimaryFixed
+import com.jesushz.spendless.core.util.userInteraction
 
 @Composable
 fun DropDownRepeat(
@@ -107,6 +108,7 @@ fun DropDownRepeat(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .width(menuMaxWidthDp)
+                .userInteraction()
         ) {
             Repeat.entries.fastForEach { type ->
                 DropdownMenuItem(

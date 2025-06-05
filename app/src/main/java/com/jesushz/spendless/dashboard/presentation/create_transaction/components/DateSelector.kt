@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.jesushz.spendless.R
 import com.jesushz.spendless.core.util.formatToReadableDate
 import com.jesushz.spendless.core.util.parseDateToMillis
+import com.jesushz.spendless.core.util.userInteraction
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -115,7 +116,9 @@ fun DatePickerModal(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.cancel))
             }
-        }
+        },
+        modifier = Modifier
+            .userInteraction()
     ) {
         DatePicker(
             state = datePickerState,

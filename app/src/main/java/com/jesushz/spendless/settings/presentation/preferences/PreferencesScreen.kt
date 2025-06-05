@@ -49,6 +49,7 @@ import com.jesushz.spendless.core.domain.transactions.Currency
 import com.jesushz.spendless.core.domain.transactions.DecimalSeparator
 import com.jesushz.spendless.core.domain.transactions.ExpenseFormat
 import com.jesushz.spendless.core.domain.transactions.ThousandSeparator
+import com.jesushz.spendless.core.util.userInteraction
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -293,7 +294,8 @@ private fun CurrencySelector(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
             modifier = Modifier
-                .width(menuMaxWidthDp),
+                .width(menuMaxWidthDp)
+                .userInteraction(),
             containerColor = MaterialTheme.colorScheme.onPrimary
         ) {
             Currency.entries.fastForEach { currency ->

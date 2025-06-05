@@ -1,5 +1,6 @@
 package com.jesushz.spendless.dashboard.presentation.create_transaction.components
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import com.jesushz.spendless.MainActivity
 import com.jesushz.spendless.R
 
 @Composable
@@ -26,10 +28,14 @@ fun NoteTextField(
     onNoteChange: (String) -> Unit,
 ) {
     var isFocused by remember { mutableStateOf(false) }
+    val activity = LocalActivity.current as MainActivity
 
     BasicTextField(
         value = note,
-        onValueChange = onNoteChange,
+        onValueChange = {
+            activity.onUserInteraction()
+            onNoteChange(it)
+        },
         textStyle = MaterialTheme.typography.titleMedium.copy(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center

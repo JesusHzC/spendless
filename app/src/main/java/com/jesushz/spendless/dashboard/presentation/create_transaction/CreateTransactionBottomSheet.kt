@@ -49,6 +49,7 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContain
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import com.jesushz.spendless.core.util.userInteraction
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.AmountTextField
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.DateSelector
 import com.jesushz.spendless.dashboard.presentation.create_transaction.components.DropDownCategories
@@ -136,6 +137,7 @@ private fun CreateTransactionBottomSheet(
         contentColor = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .systemBarsPadding()
+            .userInteraction()
     ) {
         Column(
             modifier = Modifier
