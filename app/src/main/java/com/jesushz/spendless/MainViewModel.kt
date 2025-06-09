@@ -31,7 +31,6 @@ class MainViewModel(
 
     init {
         sessionManager.sessionExpired
-            .distinctUntilChanged()
             .onEach { sessionType ->
                 when (sessionType) {
                     SessionExpiredType.SESSION_EXPIRED -> {
