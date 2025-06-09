@@ -220,6 +220,20 @@ class DashboardViewModel(
                     )
                 }
             }
+            DashboardAction.OnExportTransactionClick -> {
+                _state.update {
+                    it.copy(
+                        showExportTransactionBottomSheet = true
+                    )
+                }
+            }
+            DashboardAction.OnDismissExportTransactionBottomSheet -> {
+                _state.update {
+                    it.copy(
+                        showExportTransactionBottomSheet = false
+                    )
+                }
+            }
             else -> Unit
         }
     }

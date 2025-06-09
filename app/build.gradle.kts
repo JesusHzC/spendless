@@ -78,5 +78,7 @@ dependencies {
     implementation(libs.androidx.data.store)
     implementation(libs.timber)
     implementation(libs.androidx.biometrics)
+    implementation(libs.moko.permissions)
+    implementation(libs.moko.permissions.compose)
 
 }

@@ -175,6 +175,20 @@ class AllTransactionsViewModel(
                     dashboardRepository.deleteTransactionPendingById(action.transaction.id)
                 }
             }
+            AllTransactionsAction.OnExportTransactionClick -> {
+                _state.update {
+                    it.copy(
+                        showExportTransactionBottomSheet = true
+                    )
+                }
+            }
+            AllTransactionsAction.OnDismissExportTransactionBottomSheet -> {
+                _state.update {
+                    it.copy(
+                        showExportTransactionBottomSheet = false
+                    )
+                }
+            }
             else -> Unit
         }
     }

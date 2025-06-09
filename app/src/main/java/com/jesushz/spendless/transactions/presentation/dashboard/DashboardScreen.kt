@@ -29,6 +29,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,11 +37,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,6 +64,8 @@ import com.jesushz.spendless.core.presentation.designsystem.components.Transacti
 import com.jesushz.spendless.core.util.mask
 import com.jesushz.spendless.transactions.presentation.create_transaction.CreateTransactionBottomSheetRoot
 import com.jesushz.spendless.transactions.presentation.dashboard.components.DashboardScaffold
+import com.jesushz.spendless.transactions.presentation.export_transactions.ExportTransactionsBottomSheetRoot
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -70,8 +75,14 @@ fun DashboardScreenRoot(
     onNavigateToSettings: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
     DashboardScreen(
         state = state,
+        snackBarHostState = snackBarHostState,
         onAction = { action ->
             when (action) {
                 DashboardAction.OnShowAllTransactions -> {
@@ -79,6 +90,13 @@ fun DashboardScreenRoot(
                 }
                 DashboardAction.OnSettingsClick -> {
                     onNavigateToSettings()
+                }
+                is DashboardAction.OnError -> {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = action.error.asString(context)
+                        )
+                    }
                 }
                 else -> viewModel.onAction(action)
             }
@@ -89,6 +107,7 @@ fun DashboardScreenRoot(
 @Composable
 private fun DashboardScreen(
     state: DashboardState,
+    snackBarHostState: SnackbarHostState,
     onAction: (DashboardAction) -> Unit
 ) {
     val stateList = rememberLazyListState()
@@ -136,11 +155,26 @@ private fun DashboardScreen(
         transaction = state.tmpTransaction,
         onDismissRequest = {
             onAction(DashboardAction.OnDismissTransactionClick)
+        },
+        onError = {
+            onAction(DashboardAction.OnError(it))
+        }
+    )
+    ExportTransactionsBottomSheetRoot(
+        showBottomSheet = state.showExportTransactionBottomSheet,
+        onDismissRequest = {
+            onAction(DashboardAction.OnDismissExportTransactionBottomSheet)
+        },
+        onError = { error ->
+            onAction(DashboardAction.OnError(error))
         }
     )
     DashboardScaffold(
         title = state.username,
-        onExportDataClick = {},
+        snackBarHost = snackBarHostState,
+        onExportDataClick = {
+            onAction(DashboardAction.OnExportTransactionClick)
+        },
         onSettingsClick = {
             onAction(DashboardAction.OnSettingsClick)
         },
@@ -559,6 +593,7 @@ private fun DashboardScreenPreview() {
     SpendLessTheme {
         DashboardScreen(
             state = DashboardState(),
+            snackBarHostState = SnackbarHostState(),
             onAction = {}
         )
     }

@@ -23,6 +23,7 @@ data class DashboardState(
     val isLoading: Boolean = true,
     val tmpTransaction: Transaction? = null,
     val shouldShowBalance: Boolean = false,
+    val showExportTransactionBottomSheet: Boolean = false
 ) {
     fun formatAmount(amount: Number): String {
         return PrefsUtil.formatAmount(

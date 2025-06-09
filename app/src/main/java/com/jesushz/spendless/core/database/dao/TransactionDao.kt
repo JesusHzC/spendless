@@ -79,4 +79,54 @@ interface TransactionDao {
     )
     suspend fun deleteTransactionById(transactionId: String)
 
+    // Export Transactions
+    // Get last three months transactions
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            AND dateTime >= datetime('now', '-3 months', 'start of day') 
+            ORDER BY dateTime DESC
+        """
+    )
+    fun getLastThreeMonthsTransactions(userId: String): List<TransactionEntity>
+
+    // Get last month transactions
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            AND dateTime >= datetime('now', '-1 month', 'start of day') 
+            ORDER BY dateTime DESC
+        """
+    )
+    fun getLastMonthTransactions(userId: String): List<TransactionEntity>
+
+    // Get current month transactions
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            AND dateTime >= datetime('now', 'start of month') 
+            ORDER BY dateTime DESC
+        """
+    )
+    fun getCurrentMonthTransactions(userId: String): List<TransactionEntity>
+
+    // Get transactions by custom date range
+    @Query(
+        """
+            SELECT * FROM TransactionEntity 
+            WHERE userId = :userId 
+            AND dateTime >= :startDate 
+            AND dateTime <= :endDate 
+            ORDER BY dateTime DESC
+        """
+    )
+    fun getTransactionsByCustomDateRange(
+        userId: String,
+        startDate: String,
+        endDate: String
+    ): List<TransactionEntity>
+
 }

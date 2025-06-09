@@ -2,7 +2,6 @@
 
 package com.jesushz.spendless.transactions.presentation.create_transaction
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +32,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +47,7 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SurfaceContain
 import com.jesushz.spendless.core.domain.transactions.TransactionType
 import com.jesushz.spendless.core.presentation.designsystem.components.SpendLessButton
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
+import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.util.userInteraction
 import com.jesushz.spendless.transactions.presentation.create_transaction.components.AmountTextField
 import com.jesushz.spendless.transactions.presentation.create_transaction.components.DateSelector
@@ -64,7 +63,8 @@ fun CreateTransactionBottomSheetRoot(
     viewModel: CreateTransactionViewModel = koinViewModel(),
     showBottomSheet: Boolean,
     transaction: Transaction? = null,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onError: (UiText) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -72,8 +72,6 @@ fun CreateTransactionBottomSheetRoot(
         skipPartiallyExpanded = true
     )
     val scope = rememberCoroutineScope()
-
-    val context = LocalContext.current
 
     LaunchedEffect(transaction) {
         if (transaction != null) {
@@ -92,12 +90,7 @@ fun CreateTransactionBottomSheetRoot(
                 }
             }
             is CreateTransactionEvent.OnError -> {
-                Toast
-                    .makeText(
-                        context,
-                        event.error.asString(context),
-                        Toast.LENGTH_LONG
-                    ).show()
+                onError(event.error)
             }
         }
     }

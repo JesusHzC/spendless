@@ -116,4 +116,32 @@ class DashboardRepositoryImpl(
         return localTransactionDataSource.deleteTransactionPendingByParentId(parentId)
     }
 
+    override suspend fun getLastThreeMonthsTransactions(userId: String): List<Transaction> {
+        return localTransactionDataSource
+            .getLastThreeMonthsTransactions(userId)
+            .map { it.toTransaction() }
+    }
+
+    override suspend fun getLastMonthTransactions(userId: String): List<Transaction> {
+        return localTransactionDataSource
+            .getLastMonthTransactions(userId)
+            .map { it.toTransaction() }
+    }
+
+    override suspend fun getCurrentMonthTransactions(userId: String): List<Transaction> {
+        return localTransactionDataSource
+            .getCurrentMonthTransactions(userId)
+            .map { it.toTransaction() }
+    }
+
+    override fun getTransactionsByCustomDateRange(
+        userId: String,
+        startDate: String,
+        endDate: String
+    ): List<Transaction> {
+        return localTransactionDataSource
+            .getTransactionsByCustomDateRange(userId, startDate, endDate)
+            .map { it.toTransaction() }
+    }
+
 }

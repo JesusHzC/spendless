@@ -31,4 +31,13 @@ interface DashboardRepository {
     fun getAllPendingTransactionsPending(userId: String): Flow<List<TransactionPending>>
     suspend fun deleteTransactionPendingById(transactionPendingId: String)
     suspend fun deleteTransactionPendingByParentId(parentId: String)
+
+    suspend fun getLastThreeMonthsTransactions(userId: String): List<Transaction>
+    suspend fun getLastMonthTransactions(userId: String): List<Transaction>
+    suspend fun getCurrentMonthTransactions(userId: String): List<Transaction>
+    fun getTransactionsByCustomDateRange(
+        userId: String,
+        startDate: String,
+        endDate: String
+    ): List<Transaction>
 }

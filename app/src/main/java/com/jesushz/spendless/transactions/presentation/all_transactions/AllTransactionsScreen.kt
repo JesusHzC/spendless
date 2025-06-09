@@ -18,16 +18,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +45,8 @@ import com.jesushz.spendless.core.presentation.designsystem.theme.SpendLessTheme
 import com.jesushz.spendless.transactions.presentation.all_transactions.components.AllTransactionsTopBar
 import com.jesushz.spendless.core.presentation.designsystem.components.TransactionItem
 import com.jesushz.spendless.transactions.presentation.create_transaction.CreateTransactionBottomSheetRoot
+import com.jesushz.spendless.transactions.presentation.export_transactions.ExportTransactionsBottomSheetRoot
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -50,11 +55,24 @@ fun AllTransactionsScreenRoot(
     onNavigateUp: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    val context = LocalContext.current
+
     AllTransactionsScreen(
         state = state,
+        snackBarHostState = snackBarHostState,
         onAction = { action ->
             when (action) {
                 AllTransactionsAction.OnBack -> onNavigateUp()
+                is AllTransactionsAction.OnError -> {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = action.error.asString(context)
+                        )
+                    }
+                }
                 else -> viewModel.onAction(action)
             }
         }
@@ -64,6 +82,7 @@ fun AllTransactionsScreenRoot(
 @Composable
 private fun AllTransactionsScreen(
     state: AllTransactionsState,
+    snackBarHostState: SnackbarHostState,
     onAction: (AllTransactionsAction) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -72,6 +91,18 @@ private fun AllTransactionsScreen(
         transaction = state.tmpTransaction,
         onDismissRequest = {
             onAction(AllTransactionsAction.OnDismissTransactionClick)
+        },
+        onError = {
+            onAction(AllTransactionsAction.OnError(it))
+        }
+    )
+    ExportTransactionsBottomSheetRoot(
+        showBottomSheet = state.showExportTransactionBottomSheet,
+        onDismissRequest = {
+            onAction(AllTransactionsAction.OnDismissExportTransactionBottomSheet)
+        },
+        onError = { error ->
+            onAction(AllTransactionsAction.OnError(error))
         }
     )
     SpendLessScaffold(
@@ -81,9 +112,12 @@ private fun AllTransactionsScreen(
                 onNavigateBack = {
                     onAction(AllTransactionsAction.OnBack)
                 },
-                onExportDataClick = {}
+                onExportDataClick = {
+                    onAction(AllTransactionsAction.OnExportTransactionClick)
+                }
             )
         },
+        snackBarHost = snackBarHostState,
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { innerPadding ->
@@ -220,6 +254,7 @@ private fun AllTransactionsScreenPreview() {
     SpendLessTheme {
         AllTransactionsScreen(
             state = AllTransactionsState(),
+            snackBarHostState = SnackbarHostState(),
             onAction = {}
         )
     }

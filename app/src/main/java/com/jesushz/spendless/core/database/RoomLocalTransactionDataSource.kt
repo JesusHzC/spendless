@@ -84,4 +84,24 @@ class RoomLocalTransactionDataSource(
         return transactionPendingDao.deletePendingTransactionsByParentId(transactionParentId)
     }
 
+    override suspend fun getLastThreeMonthsTransactions(userId: String): List<TransactionEntity> {
+        return transactionDao.getLastThreeMonthsTransactions(userId)
+    }
+
+    override suspend fun getLastMonthTransactions(userId: String): List<TransactionEntity> {
+        return transactionDao.getLastMonthTransactions(userId)
+    }
+
+    override suspend fun getCurrentMonthTransactions(userId: String): List<TransactionEntity> {
+        return transactionDao.getCurrentMonthTransactions(userId)
+    }
+
+    override fun getTransactionsByCustomDateRange(
+        userId: String,
+        startDate: String,
+        endDate: String
+    ): List<TransactionEntity> {
+        return transactionDao.getTransactionsByCustomDateRange(userId, startDate, endDate)
+    }
+
 }

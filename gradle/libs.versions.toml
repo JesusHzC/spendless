@@ -16,6 +16,7 @@ ksp = "2.0.20-1.0.24"
 data-store = "1.1.4"
 timber = "5.0.1"
 biometrics = "1.1.0"
+mokoPermissions = "0.18.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,8 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-data-store = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "data-store" }
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 androidx-biometrics = { group = "androidx.biometric", name = "biometric", version.ref = "biometrics" }
+moko-permissions = { group = "dev.icerock.moko", name = "permissions", version.ref = "mokoPermissions" }
+moko-permissions-compose = { group = "dev.icerock.moko", name = "permissions-compose", version.ref = "mokoPermissions" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

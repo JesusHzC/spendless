@@ -73,4 +73,6 @@
     <string name="delete_transaction_action">Delete transaction</string>
     <string name="update_transaction">Update</string>
     <string name="show_balance">Show balance</string>
+    <string name="export_transactions">Export</string>
+    <string name="export_success">Export Success</string>
 </resources>

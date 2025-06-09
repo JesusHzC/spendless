@@ -17,7 +17,8 @@ data class AllTransactionsState(
     val allTransactions: List<CombineTransaction> = emptyList(),
     val comingSoonTransactions: List<CombineTransaction> = emptyList(),
     val showCreateTransactionBottomSheet: Boolean = false,
-    val tmpTransaction: Transaction? = null
+    val tmpTransaction: Transaction? = null,
+    val showExportTransactionBottomSheet: Boolean = false,
 ) {
     fun formatAmount(amount: Number): String {
         return PrefsUtil.formatAmount(

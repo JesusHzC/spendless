@@ -23,4 +23,14 @@ interface LocalTransactionDataSource {
     suspend fun deleteTransactionPendingById(transactionPendingId: String)
     suspend fun deleteTransactionPendingByParentId(transactionParentId: String)
 
+    // Export transactions
+    suspend fun getLastThreeMonthsTransactions(userId: String): List<TransactionEntity>
+    suspend fun getLastMonthTransactions(userId: String): List<TransactionEntity>
+    suspend fun getCurrentMonthTransactions(userId: String): List<TransactionEntity>
+    fun getTransactionsByCustomDateRange(
+        userId: String,
+        startDate: String,
+        endDate: String
+    ): List<TransactionEntity>
+
 }
