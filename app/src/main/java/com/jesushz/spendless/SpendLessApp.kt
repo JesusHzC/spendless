@@ -4,7 +4,7 @@ import android.app.Application
 import com.jesushz.spendless.auth.di.authModule
 import com.jesushz.spendless.core.database.di.databaseModule
 import com.jesushz.spendless.core.di.coreModule
-import com.jesushz.spendless.dashboard.di.dashboardModule
+import com.jesushz.spendless.transactions.di.dashboardModule
 import com.jesushz.spendless.di.appModule
 import com.jesushz.spendless.settings.di.settingsModule
 import kotlinx.coroutines.CoroutineScope

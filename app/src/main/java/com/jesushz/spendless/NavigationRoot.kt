@@ -28,8 +28,8 @@ import com.jesushz.spendless.core.domain.preferences.PrefsFlow
 import com.jesushz.spendless.core.presentation.ui.ObserveAsEvents
 import com.jesushz.spendless.core.presentation.ui.UiText
 import com.jesushz.spendless.core.util.Routes
-import com.jesushz.spendless.dashboard.presentation.all_transactions.AllTransactionsScreenRoot
-import com.jesushz.spendless.dashboard.presentation.dashboard.DashboardScreenRoot
+import com.jesushz.spendless.transactions.presentation.all_transactions.AllTransactionsScreenRoot
+import com.jesushz.spendless.transactions.presentation.dashboard.DashboardScreenRoot
 import com.jesushz.spendless.settings.presentation.preferences.PreferencesScreenRoot
 import com.jesushz.spendless.settings.presentation.security.SecurityScreenRoot
 import com.jesushz.spendless.settings.presentation.settings.SettingsScreenRoot
